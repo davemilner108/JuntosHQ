@@ -19,7 +19,9 @@ def create_app(config_class=Config):
     app.register_blueprint(juntos.bp)
     app.register_blueprint(members.bp)
 
-    app.instance_path and os.makedirs(app.instance_path, exist_ok=True)
+    uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
+    if uri.startswith("sqlite:///"):
+        os.makedirs(os.path.dirname(uri[10:]), exist_ok=True)
 
     with app.app_context():
         db.create_all()
