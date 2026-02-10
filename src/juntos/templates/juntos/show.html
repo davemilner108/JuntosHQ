@@ -4,31 +4,35 @@
 
 {% block content %}
 <h1>{{ junto.name }}</h1>
-<p>{{ junto.description }}</p>
-<p>
-    <a href="{{ url_for('juntos.edit', id=junto.id) }}">Edit</a>
-    <form method="post" action="{{ url_for('juntos.delete', id=junto.id) }}" style="display:inline">
-        <button type="submit">Delete</button>
+<p class="detail-description">{{ junto.description }}</p>
+<div class="action-bar">
+    <a class="btn btn-secondary" href="{{ url_for('juntos.edit', id=junto.id) }}">Edit</a>
+    <form method="post" action="{{ url_for('juntos.delete', id=junto.id) }}">
+        <button class="btn btn-danger" type="submit">Delete</button>
     </form>
-</p>
+</div>
 
 <h2>Members</h2>
-<p><a href="{{ url_for('members.new', junto_id=junto.id) }}">Add Member</a></p>
+<p><a class="btn btn-primary" href="{{ url_for('members.new', junto_id=junto.id) }}">Add Member</a></p>
 {% if junto.members %}
-<ul>
+<ul class="member-list">
     {% for member in junto.members %}
-    <li>
-        {{ member.name }}{% if member.role %} &mdash; {{ member.role }}{% endif %}
-        <a href="{{ url_for('members.edit', junto_id=junto.id, id=member.id) }}">Edit</a>
-        <form method="post" action="{{ url_for('members.delete', junto_id=junto.id, id=member.id) }}" style="display:inline">
-            <button type="submit">Delete</button>
-        </form>
+    <li class="member-item">
+        <div class="member-info">
+            {{ member.name }}{% if member.role %} <span class="member-role">&mdash; {{ member.role }}</span>{% endif %}
+        </div>
+        <div class="member-actions">
+            <a class="btn btn-secondary" href="{{ url_for('members.edit', junto_id=junto.id, id=member.id) }}">Edit</a>
+            <form method="post" action="{{ url_for('members.delete', junto_id=junto.id, id=member.id) }}">
+                <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+        </div>
     </li>
     {% endfor %}
 </ul>
 {% else %}
-<p>No members yet.</p>
+<p class="empty-state">No members yet.</p>
 {% endif %}
 
-<p><a href="{{ url_for('main.index') }}">Back</a></p>
+<p><a href="{{ url_for('main.index') }}">&larr; Back to all juntos</a></p>
 {% endblock %}

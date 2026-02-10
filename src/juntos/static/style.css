@@ -1,3 +1,22 @@
+/* === Colonial-era design tokens === */
+:root {
+    --parchment: #f5f0e8;
+    --parchment-dark: #e8e0d0;
+    --colonial-blue: #2c3e6b;
+    --colonial-blue-hover: #1e2d52;
+    --brown-text: #3a2e1f;
+    --brown-light: #6b5b4a;
+    --brick-red: #8b3a3a;
+    --brick-red-hover: #6e2c2c;
+    --border: #c9bda8;
+    --card-bg: #faf7f2;
+    --success-bg: #e8f0e4;
+    --success-border: #7a9a6a;
+    --error-bg: #f0e4e4;
+    --error-border: #9a6a6a;
+}
+
+/* === Reset & base === */
 * {
     margin: 0;
     padding: 0;
@@ -5,34 +24,293 @@
 }
 
 body {
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: Georgia, "Times New Roman", Times, serif;
     line-height: 1.6;
-    color: #333;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1rem;
+    color: var(--brown-text);
+    background-color: var(--parchment);
 }
 
-header nav a {
-    font-size: 1.5rem;
+/* === Header / Nav === */
+header {
+    background-color: var(--colonial-blue);
+    padding: 1.25rem 2rem;
+}
+
+header nav {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+header nav a.site-title {
+    font-size: 1.75rem;
     font-weight: bold;
-    color: #333;
+    color: var(--parchment);
     text-decoration: none;
 }
 
+header nav a.site-title:hover {
+    color: #fff;
+}
+
+header .tagline {
+    color: var(--parchment-dark);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-top: 0.2rem;
+}
+
+/* === Main content === */
 main {
-    margin-top: 2rem;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
 }
 
+/* === Typography === */
 h1 {
+    font-size: 2rem;
     margin-bottom: 1rem;
+    color: var(--colonial-blue);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0.4rem;
 }
 
-ul {
+h2 {
+    font-size: 1.4rem;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--colonial-blue);
+}
+
+p {
+    margin-bottom: 0.75rem;
+}
+
+a {
+    color: var(--colonial-blue);
+}
+
+a:hover {
+    color: var(--colonial-blue-hover);
+}
+
+/* === Flash messages === */
+.flash {
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.25rem;
+    border: 1px solid;
+}
+
+.flash.success {
+    background-color: var(--success-bg);
+    border-color: var(--success-border);
+    color: #3a5a2a;
+}
+
+.flash.error {
+    background-color: var(--error-bg);
+    border-color: var(--error-border);
+    color: var(--brick-red);
+}
+
+/* === Buttons === */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.6;
+}
+
+.btn-primary {
+    background-color: var(--colonial-blue);
+    color: var(--parchment);
+}
+
+.btn-primary:hover {
+    background-color: var(--colonial-blue-hover);
+    color: #fff;
+}
+
+.btn-danger {
+    background-color: var(--brick-red);
+    color: var(--parchment);
+}
+
+.btn-danger:hover {
+    background-color: var(--brick-red-hover);
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: var(--parchment-dark);
+    color: var(--brown-text);
+}
+
+.btn-secondary:hover {
+    background-color: var(--border);
+}
+
+/* === Cards === */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.card a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.card .card-description {
+    color: var(--brown-light);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+/* === Card list (juntos index) === */
+.card-list {
     list-style: none;
 }
 
-ul li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
+/* === Member list === */
+.member-list {
+    list-style: none;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.member-info {
+    flex: 1;
+}
+
+.member-role {
+    color: var(--brown-light);
+    font-size: 0.9rem;
+}
+
+.member-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.member-actions form {
+    display: inline;
+}
+
+/* === Action bar (edit/delete buttons row) === */
+.action-bar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.action-bar form {
+    display: inline;
+}
+
+/* === Forms === */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+    color: var(--brown-text);
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background-color: #fff;
+    color: var(--brown-text);
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--colonial-blue);
+    box-shadow: 0 0 0 2px rgba(44, 62, 107, 0.15);
+}
+
+.form-group textarea {
+    min-height: 6rem;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 1.25rem;
+}
+
+/* === Detail block (junto show) === */
+.detail-description {
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+}
+
+/* === Empty state === */
+.empty-state {
+    color: var(--brown-light);
+    font-style: italic;
+}
+
+/* === Footer === */
+footer {
+    max-width: 800px;
+    margin: 3rem auto 1.5rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--brown-light);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+    header {
+        padding: 1rem;
+    }
+
+    header nav a.site-title {
+        font-size: 1.35rem;
+    }
+
+    main {
+        padding: 0 1rem;
+    }
+
+    .member-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
 }

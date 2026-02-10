@@ -2,14 +2,17 @@
 
 {% block content %}
 <h1>Juntos</h1>
-<p><a href="{{ url_for('juntos.new') }}">Create Junto</a></p>
+<p><a class="btn btn-primary" href="{{ url_for('juntos.new') }}">Create Junto</a></p>
 {% if juntos %}
-<ul>
+<ul class="card-list">
     {% for junto in juntos %}
-    <li><a href="{{ url_for('juntos.show', id=junto.id) }}">{{ junto.name }}</a> &mdash; {{ junto.description }}</li>
+    <li class="card">
+        <a href="{{ url_for('juntos.show', id=junto.id) }}">{{ junto.name }}</a>
+        <div class="card-description">{{ junto.description }}</div>
+    </li>
     {% endfor %}
 </ul>
 {% else %}
-<p>No juntos yet. Create one to get started.</p>
+<p class="empty-state">No juntos yet. Create one to get started.</p>
 {% endif %}
 {% endblock %}

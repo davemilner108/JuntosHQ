@@ -5,13 +5,17 @@
 {% block content %}
 <h1>Edit Member</h1>
 <form method="post" action="{{ url_for('members.edit', junto_id=junto.id, id=member.id) }}">
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" value="{{ member.name }}" required>
-
-    <label for="role">Role</label>
-    <input type="text" id="role" name="role" value="{{ member.role or '' }}">
-
-    <button type="submit">Save</button>
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" value="{{ member.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="role">Role</label>
+        <input type="text" id="role" name="role" value="{{ member.role or '' }}">
+    </div>
+    <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save</button>
+        <a class="btn btn-secondary" href="{{ url_for('juntos.show', id=junto.id) }}">Cancel</a>
+    </div>
 </form>
-<p><a href="{{ url_for('juntos.show', id=junto.id) }}">Cancel</a></p>
 {% endblock %}

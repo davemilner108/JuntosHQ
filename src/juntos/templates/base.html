@@ -9,7 +9,8 @@
 <body>
     <header>
         <nav>
-            <a href="{{ url_for('main.index') }}">JuntosHQ</a>
+            <a class="site-title" href="{{ url_for('main.index') }}">JuntosHQ</a>
+            <div class="tagline">A mutual improvement society &mdash; in the spirit of Franklin's Junto, 1727</div>
         </nav>
     </header>
     <main>
@@ -22,5 +23,8 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </main>
+    <footer>
+        &ldquo;An investment in knowledge pays the best interest.&rdquo; &mdash; Benjamin Franklin
+    </footer>
 </body>
 </html>
