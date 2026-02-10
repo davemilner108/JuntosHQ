@@ -41,6 +41,12 @@ header nav {
     margin: 0 auto;
 }
 
+.nav-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+}
+
 header nav a.site-title {
     font-size: 1.75rem;
     font-weight: bold;
@@ -49,6 +55,16 @@ header nav a.site-title {
 }
 
 header nav a.site-title:hover {
+    color: #fff;
+}
+
+a.nav-link {
+    color: var(--parchment-dark);
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+a.nav-link:hover {
     color: #fff;
 }
 
@@ -64,6 +80,33 @@ main {
     max-width: 800px;
     margin: 2rem auto;
     padding: 0 1.5rem;
+}
+
+/* === Hero (index page) === */
+.hero {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero-franklin {
+    flex-shrink: 0;
+}
+
+.hero-text h1 {
+    margin-bottom: 0.4rem;
+}
+
+.hero-text p {
+    color: var(--brown-light);
+    font-style: italic;
+    margin-bottom: 0;
+}
+
+/* === About page === */
+.about-prose p {
+    margin-bottom: 1rem;
 }
 
 /* === Typography === */
@@ -306,6 +349,11 @@ footer {
 
     main {
         padding: 0 1rem;
+    }
+
+    .hero {
+        flex-direction: column;
+        text-align: center;
     }
 
     .member-item {

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" width="200" height="220">
+  <!-- Face -->
+  <ellipse cx="100" cy="105" rx="60" ry="70" fill="#f5e6d0" stroke="#3a2e1f" stroke-width="2"/>
+  <!-- Balding forehead highlight -->
+  <ellipse cx="100" cy="60" rx="40" ry="20" fill="#f8edd8" stroke="none"/>
+  <!-- Long hair left -->
+  <path d="M40 95 Q25 100 28 140 Q30 165 45 175 Q38 150 42 120 Z" fill="#8a7560" stroke="#3a2e1f" stroke-width="1.5"/>
+  <path d="M45 90 Q30 95 32 135 Q34 158 48 168 Q42 145 46 115 Z" fill="#9a8570" stroke="none"/>
+  <!-- Long hair right -->
+  <path d="M160 95 Q175 100 172 140 Q170 165 155 175 Q162 150 158 120 Z" fill="#8a7560" stroke="#3a2e1f" stroke-width="1.5"/>
+  <path d="M155 90 Q170 95 168 135 Q166 158 152 168 Q158 145 154 115 Z" fill="#9a8570" stroke="none"/>
+  <!-- Hair wisps on top -->
+  <path d="M65 50 Q70 30 85 38" fill="none" stroke="#8a7560" stroke-width="2" stroke-linecap="round"/>
+  <path d="M135 50 Q130 30 115 38" fill="none" stroke="#8a7560" stroke-width="2" stroke-linecap="round"/>
+  <path d="M80 42 Q90 25 100 35" fill="none" stroke="#8a7560" stroke-width="2" stroke-linecap="round"/>
+  <path d="M120 42 Q110 25 100 35" fill="none" stroke="#8a7560" stroke-width="2" stroke-linecap="round"/>
+  <!-- Eyebrows -->
+  <path d="M70 82 Q80 76 92 80" fill="none" stroke="#3a2e1f" stroke-width="2" stroke-linecap="round"/>
+  <path d="M108 80 Q120 76 130 82" fill="none" stroke="#3a2e1f" stroke-width="2" stroke-linecap="round"/>
+  <!-- Eyes -->
+  <ellipse cx="82" cy="90" rx="8" ry="6" fill="#fff" stroke="#3a2e1f" stroke-width="1.5"/>
+  <circle cx="83" cy="90" r="3.5" fill="#3a2e1f"/>
+  <circle cx="84" cy="89" r="1" fill="#fff"/>
+  <ellipse cx="118" cy="90" rx="8" ry="6" fill="#fff" stroke="#3a2e1f" stroke-width="1.5"/>
+  <circle cx="117" cy="90" r="3.5" fill="#3a2e1f"/>
+  <circle cx="118" cy="89" r="1" fill="#fff"/>
+  <!-- Glasses -->
+  <circle cx="82" cy="90" r="14" fill="none" stroke="#3a2e1f" stroke-width="2"/>
+  <circle cx="118" cy="90" r="14" fill="none" stroke="#3a2e1f" stroke-width="2"/>
+  <line x1="96" y1="90" x2="104" y2="90" stroke="#3a2e1f" stroke-width="2"/>
+  <line x1="68" y1="88" x2="55" y2="82" stroke="#3a2e1f" stroke-width="2"/>
+  <line x1="132" y1="88" x2="145" y2="82" stroke="#3a2e1f" stroke-width="2"/>
+  <!-- Nose -->
+  <path d="M100 95 Q104 108 100 115 Q96 115 93 112" fill="none" stroke="#3a2e1f" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Warm smile -->
+  <path d="M80 128 Q90 142 100 142 Q110 142 120 128" fill="none" stroke="#3a2e1f" stroke-width="2" stroke-linecap="round"/>
+  <path d="M85 130 Q92 136 100 136 Q108 136 115 130" fill="#fff" stroke="none"/>
+  <!-- Cheeks (rosy) -->
+  <circle cx="68" cy="118" r="8" fill="#e8c0b0" opacity="0.5"/>
+  <circle cx="132" cy="118" r="8" fill="#e8c0b0" opacity="0.5"/>
+  <!-- Chin -->
+  <path d="M85 155 Q100 170 115 155" fill="none" stroke="#d4c4ad" stroke-width="1"/>
+  <!-- Collar / coat hint -->
+  <path d="M55 170 Q60 160 75 158 Q88 156 100 160 Q112 156 125 158 Q140 160 145 170 Q148 180 150 195 L50 195 Q52 180 55 170 Z" fill="#2c3e6b" stroke="#1e2d52" stroke-width="1.5"/>
+  <!-- Collar white -->
+  <path d="M80 158 Q90 168 100 165 Q110 168 120 158 L118 170 Q110 175 100 172 Q90 175 82 170 Z" fill="#f5f0e8" stroke="#c9bda8" stroke-width="1"/>
+  <!-- Buttons -->
+  <circle cx="100" cy="182" r="2.5" fill="#c9bda8" stroke="#1e2d52" stroke-width="1"/>
+  <circle cx="100" cy="193" r="2.5" fill="#c9bda8" stroke="#1e2d52" stroke-width="1"/>
+</svg>

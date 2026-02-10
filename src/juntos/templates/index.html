@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Juntos</h1>
+<div class="hero">
+    <img class="hero-franklin" src="{{ url_for('static', filename='franklin.svg') }}" alt="Cartoon Benjamin Franklin" width="160" height="176">
+    <div class="hero-text">
+        <h1>Juntos</h1>
+        <p>Twelve citizens. One purpose. Mutual improvement in the spirit of Franklin.</p>
+    </div>
+</div>
 <p><a class="btn btn-primary" href="{{ url_for('juntos.new') }}">Create Junto</a></p>
 {% if juntos %}
 <ul class="card-list">

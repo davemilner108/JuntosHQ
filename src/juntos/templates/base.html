@@ -9,7 +9,10 @@
 <body>
     <header>
         <nav>
-            <a class="site-title" href="{{ url_for('main.index') }}">JuntosHQ</a>
+            <div class="nav-row">
+                <a class="site-title" href="{{ url_for('main.index') }}">JuntosHQ</a>
+                <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
+            </div>
             <div class="tagline">A mutual improvement society &mdash; in the spirit of Franklin's Junto, 1727</div>
         </nav>
     </header>
