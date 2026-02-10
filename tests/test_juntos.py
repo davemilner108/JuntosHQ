@@ -1,0 +1,90 @@
+from juntos.models import Junto
+
+
+def test_new_junto_form(client):
+    response = client.get("/juntos/new")
+    assert response.status_code == 200
+    assert b"New Junto" in response.data
+
+
+def test_create_junto(client, db):
+    response = client.post(
+        "/juntos/", data={"name": "Builders", "description": "We build things"}
+    )
+    assert response.status_code == 302
+
+    junto = db.session.execute(db.select(Junto)).scalar_one()
+    assert junto.name == "Builders"
+    assert junto.description == "We build things"
+
+
+def test_create_junto_missing_name(client, db):
+    response = client.post("/juntos/", data={"name": "", "description": "No name"})
+    assert response.status_code == 302
+    assert db.session.execute(db.select(Junto)).scalar_one_or_none() is None
+
+
+def test_show_junto(client, db):
+    junto = Junto(name="Readers", description="Book club")
+    db.session.add(junto)
+    db.session.commit()
+
+    response = client.get(f"/juntos/{junto.id}")
+    assert response.status_code == 200
+    assert b"Readers" in response.data
+    assert b"Book club" in response.data
+
+
+def test_show_junto_not_found(client):
+    response = client.get("/juntos/999")
+    assert response.status_code == 404
+
+
+def test_edit_junto_form(client, db):
+    junto = Junto(name="Original", description="Desc")
+    db.session.add(junto)
+    db.session.commit()
+
+    response = client.get(f"/juntos/{junto.id}/edit")
+    assert response.status_code == 200
+    assert b"Original" in response.data
+
+
+def test_update_junto(client, db):
+    junto = Junto(name="Old Name", description="Old desc")
+    db.session.add(junto)
+    db.session.commit()
+
+    response = client.post(
+        f"/juntos/{junto.id}/edit",
+        data={"name": "New Name", "description": "New desc"},
+    )
+    assert response.status_code == 302
+
+    db.session.refresh(junto)
+    assert junto.name == "New Name"
+    assert junto.description == "New desc"
+
+
+def test_update_junto_missing_name(client, db):
+    junto = Junto(name="Keep Me", description="Desc")
+    db.session.add(junto)
+    db.session.commit()
+
+    response = client.post(
+        f"/juntos/{junto.id}/edit", data={"name": "", "description": "Desc"}
+    )
+    assert response.status_code == 302
+
+    db.session.refresh(junto)
+    assert junto.name == "Keep Me"
+
+
+def test_delete_junto(client, db):
+    junto = Junto(name="Gone", description="Bye")
+    db.session.add(junto)
+    db.session.commit()
+
+    response = client.post(f"/juntos/{junto.id}/delete")
+    assert response.status_code == 302
+    assert db.session.execute(db.select(Junto)).scalar_one_or_none() is None

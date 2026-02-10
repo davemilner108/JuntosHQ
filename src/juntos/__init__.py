@@ -11,9 +11,11 @@ def create_app(config_class=Config):
 
     db.init_app(app)
 
-    from juntos.routes import main
+    from juntos.routes import juntos, main, members
 
     app.register_blueprint(main.bp)
+    app.register_blueprint(juntos.bp)
+    app.register_blueprint(members.bp)
 
     with app.app_context():
         db.create_all()

@@ -1,0 +1,62 @@
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+
+from juntos.models import Junto, db
+
+bp = Blueprint("juntos", __name__, url_prefix="/juntos")
+
+
+@bp.route("/new")
+def new():
+    return render_template("juntos/new.html")
+
+
+@bp.route("/", methods=["POST"])
+def create():
+    name = request.form.get("name", "").strip()
+    description = request.form.get("description", "").strip()
+
+    if not name:
+        flash("Name is required.", "error")
+        return redirect(url_for("juntos.new"))
+
+    junto = Junto(name=name, description=description)
+    db.session.add(junto)
+    db.session.commit()
+    flash("Junto created.", "success")
+    return redirect(url_for("juntos.show", id=junto.id))
+
+
+@bp.route("/<int:id>")
+def show(id):
+    junto = db.get_or_404(Junto, id)
+    return render_template("juntos/show.html", junto=junto)
+
+
+@bp.route("/<int:id>/edit", methods=["GET", "POST"])
+def edit(id):
+    junto = db.get_or_404(Junto, id)
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        description = request.form.get("description", "").strip()
+
+        if not name:
+            flash("Name is required.", "error")
+            return redirect(url_for("juntos.edit", id=junto.id))
+
+        junto.name = name
+        junto.description = description
+        db.session.commit()
+        flash("Junto updated.", "success")
+        return redirect(url_for("juntos.show", id=junto.id))
+
+    return render_template("juntos/edit.html", junto=junto)
+
+
+@bp.route("/<int:id>/delete", methods=["POST"])
+def delete(id):
+    junto = db.get_or_404(Junto, id)
+    db.session.delete(junto)
+    db.session.commit()
+    flash("Junto deleted.", "success")
+    return redirect(url_for("main.index"))

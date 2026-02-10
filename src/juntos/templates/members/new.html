@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}New Member — JuntosHQ{% endblock %}
+
+{% block content %}
+<h1>Add Member to {{ junto.name }}</h1>
+<form method="post" action="{{ url_for('members.create', junto_id=junto.id) }}">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="role">Role</label>
+    <input type="text" id="role" name="role">
+
+    <button type="submit">Add</button>
+</form>
+<p><a href="{{ url_for('juntos.show', id=junto.id) }}">Back</a></p>
+{% endblock %}

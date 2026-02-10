@@ -2,10 +2,11 @@
 
 {% block content %}
 <h1>Juntos</h1>
+<p><a href="{{ url_for('juntos.new') }}">Create Junto</a></p>
 {% if juntos %}
 <ul>
     {% for junto in juntos %}
-    <li>{{ junto.name }} &mdash; {{ junto.description }}</li>
+    <li><a href="{{ url_for('juntos.show', id=junto.id) }}">{{ junto.name }}</a> &mdash; {{ junto.description }}</li>
     {% endfor %}
 </ul>
 {% else %}

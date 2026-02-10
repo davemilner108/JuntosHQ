@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ junto.name }} — JuntosHQ{% endblock %}
+
+{% block content %}
+<h1>Edit Junto</h1>
+<form method="post" action="{{ url_for('juntos.edit', id=junto.id) }}">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" value="{{ junto.name }}" required>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description">{{ junto.description or '' }}</textarea>
+
+    <button type="submit">Save</button>
+</form>
+<p><a href="{{ url_for('juntos.show', id=junto.id) }}">Cancel</a></p>
+{% endblock %}
