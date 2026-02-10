@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(git config:*)",
+      "Bash(pip install:*)",
+      "Bash(python -m pip install:*)",
+      "Bash(python -m uv sync:*)",
+      "Bash(python -m uv run pytest:*)",
+      "Bash(python -m uv run ruff check:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(findstr:*)",
+      "Bash(gh auth status:*)",
+      "Bash(cmdkey /list:*)",
+      "Bash(cmd.exe:*)",
+      "Bash(printf:*)",
+      "Bash(git credential fill:*)",
+      "Bash(git credential:*)",
+      "Bash(python -m uv run:*)",
+      "Bash(python -c:*)",
+      "Bash(powershell:*)",
+      "Bash(uv run ruff check:*)",
+      "Bash(where:*)",
+      "Bash(cmd /c \"uv run pytest -v\")",
+      "Bash(echo:*)",
+      "Bash(export PATH=\"/c/Users/Dave/AppData/Roaming/Python/Python313/Scripts:$PATH\")",
+      "Bash(uv:*)",
+      "Bash(ls -la \"C:\\\\Users\\\\Dave\\\\source\\\\repos\\\\JuntosHQ\\\\src\\\\juntos\\\\static\"\" 2>&1 || echo \"Directory may not exist \")",
+      "Bash(git -C C:UsersDavesourcereposJuntosHQ status)"
+    ]
+  }
+}
