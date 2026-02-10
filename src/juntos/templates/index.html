@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Juntos</h1>
+{% if juntos %}
+<ul>
+    {% for junto in juntos %}
+    <li>{{ junto.name }} &mdash; {{ junto.description }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No juntos yet. Create one to get started.</p>
+{% endif %}
+{% endblock %}
