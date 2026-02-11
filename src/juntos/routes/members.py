@@ -1,19 +1,25 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
+from juntos.auth_utils import login_required, require_junto_owner
 from juntos.models import Junto, Member, db
 
 bp = Blueprint("members", __name__, url_prefix="/juntos/<int:junto_id>/members")
 
 
 @bp.route("/new")
+@login_required
 def new(junto_id):
     junto = db.get_or_404(Junto, junto_id)
+    require_junto_owner(junto)
     return render_template("members/new.html", junto=junto)
 
 
 @bp.route("/", methods=["POST"])
+@login_required
 def create(junto_id):
     junto = db.get_or_404(Junto, junto_id)
+    require_junto_owner(junto)
+
     name = request.form.get("name", "").strip()
     role = request.form.get("role", "").strip()
 
@@ -29,8 +35,10 @@ def create(junto_id):
 
 
 @bp.route("/<int:id>/edit", methods=["GET", "POST"])
+@login_required
 def edit(junto_id, id):
     junto = db.get_or_404(Junto, junto_id)
+    require_junto_owner(junto)
     member = db.get_or_404(Member, id)
 
     if request.method == "POST":
@@ -51,8 +59,10 @@ def edit(junto_id, id):
 
 
 @bp.route("/<int:id>/delete", methods=["POST"])
+@login_required
 def delete(junto_id, id):
     junto = db.get_or_404(Junto, junto_id)
+    require_junto_owner(junto)
     member = db.get_or_404(Member, id)
     db.session.delete(member)
     db.session.commit()

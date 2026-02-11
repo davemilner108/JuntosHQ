@@ -5,15 +5,20 @@
 {% block content %}
 <h1>{{ junto.name }}</h1>
 <p class="detail-description">{{ junto.description }}</p>
+
+{% if current_user and junto.owner_id == current_user.id %}
 <div class="action-bar">
     <a class="btn btn-secondary" href="{{ url_for('juntos.edit', id=junto.id) }}">Edit</a>
     <form method="post" action="{{ url_for('juntos.delete', id=junto.id) }}">
         <button class="btn btn-danger" type="submit">Delete</button>
     </form>
 </div>
+{% endif %}
 
 <h2>Members</h2>
+{% if current_user and junto.owner_id == current_user.id %}
 <p><a class="btn btn-primary" href="{{ url_for('members.new', junto_id=junto.id) }}">Add Member</a></p>
+{% endif %}
 {% if junto.members %}
 <ul class="member-list">
     {% for member in junto.members %}
@@ -21,12 +26,14 @@
         <div class="member-info">
             {{ member.name }}{% if member.role %} <span class="member-role">&mdash; {{ member.role }}</span>{% endif %}
         </div>
+        {% if current_user and junto.owner_id == current_user.id %}
         <div class="member-actions">
             <a class="btn btn-secondary" href="{{ url_for('members.edit', junto_id=junto.id, id=member.id) }}">Edit</a>
             <form method="post" action="{{ url_for('members.delete', junto_id=junto.id, id=member.id) }}">
                 <button class="btn btn-danger" type="submit">Delete</button>
             </form>
         </div>
+        {% endif %}
     </li>
     {% endfor %}
 </ul>

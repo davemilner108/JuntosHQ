@@ -1,16 +1,19 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
+from juntos.auth_utils import login_required, require_junto_owner
 from juntos.models import Junto, db
 
 bp = Blueprint("juntos", __name__, url_prefix="/juntos")
 
 
 @bp.route("/new")
+@login_required
 def new():
     return render_template("juntos/new.html")
 
 
 @bp.route("/", methods=["POST"])
+@login_required
 def create():
     name = request.form.get("name", "").strip()
     description = request.form.get("description", "").strip()
@@ -19,7 +22,7 @@ def create():
         flash("Name is required.", "error")
         return redirect(url_for("juntos.new"))
 
-    junto = Junto(name=name, description=description)
+    junto = Junto(name=name, description=description, owner_id=g.current_user.id)
     db.session.add(junto)
     db.session.commit()
     flash("Junto created.", "success")
@@ -33,8 +36,10 @@ def show(id):
 
 
 @bp.route("/<int:id>/edit", methods=["GET", "POST"])
+@login_required
 def edit(id):
     junto = db.get_or_404(Junto, id)
+    require_junto_owner(junto)
 
     if request.method == "POST":
         name = request.form.get("name", "").strip()
@@ -54,8 +59,11 @@ def edit(id):
 
 
 @bp.route("/<int:id>/delete", methods=["POST"])
+@login_required
 def delete(id):
     junto = db.get_or_404(Junto, id)
+    require_junto_owner(junto)
+
     db.session.delete(junto)
     db.session.commit()
     flash("Junto deleted.", "success")

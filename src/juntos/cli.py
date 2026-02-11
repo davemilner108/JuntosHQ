@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+
+load_dotenv()  # must run before juntos.config is imported
+
 from juntos import create_app
 
 
