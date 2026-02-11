@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Pricing — JuntosHQ{% endblock %}
+{% block content %}
+<section class="pricing">
+  <h1>Simple Plans for Every Junto</h1>
+  <p class="lead">Start free. Upgrade when your groups grow. All tiers include Franklin's weekly prompts and core collaboration tools.</p>
+
+  <div class="tier-cards">
+    <!-- Free Card -->
+    <div class="tier-card free">
+      <h2>Free</h2>
+      <div class="price">$0 <small>forever</small></div>
+      <ul>
+        <li>1 junto</li>
+        <li>Last 3 meetings visible</li>
+        <li>Owner-managed commitments</li>
+        <li>Weekly Franklin discussion prompts</li>
+      </ul>
+      <p class="tagline">Perfect to try your first group</p>
+      <a href="/signup" class="btn">Get Started Free</a>
+    </div>
+
+    <!-- Standard Card (highlighted) -->
+    <div class="tier-card standard popular">
+      <div class="badge">Most Popular</div>
+      <h2>Standard</h2>
+      <div class="price">$4.99 <small>/month</small></div>
+      <ul>
+        <li>Up to 5 juntos</li>
+        <li>Up to 25 meetings visible per junto</li>
+        <li>Member self-reporting commitments</li>
+        <li>Invite links & exports</li>
+        <li>+ Everything in Free</li>
+      </ul>
+      <p class="tagline">Ideal for running multiple groups</p>
+      <a href="/account/subscription/checkout?plan=standard" class="btn primary">Subscribe to Standard</a>
+    </div>
+
+    <!-- Expanded Card -->
+    <div class="tier-card expanded">
+      <h2>Expanded</h2>
+      <div class="price">$9.99 <small>/month</small></div>
+      <ul>
+        <li>Up to 15 juntos</li>
+        <li>Up to 80 meetings visible per junto</li>
+        <li>Custom discussion prompts</li>
+        <li>Priority support</li>
+        <li>+ Everything in Standard</li>
+      </ul>
+      <p class="tagline">For dedicated leaders & multi-group organizers</p>
+      <a href="/account/subscription/checkout?plan=expanded" class="btn">Subscribe to Expanded</a>
+    </div>
+  </div>
+
+  <div class="addon-section">
+    <h3>Optional Add-on</h3>
+    <div class="addon-card">
+      <h4>Ben Franklin AI Chatbot</h4>
+      <div class="price">$4.99 <small>/month</small></div>
+      <p>Get personalized advice from a RAG-powered Benjamin Franklin, grounded in his writings.</p>
+      <a href="/account/subscription/checkout?addon=chatbot" class="btn secondary">Add Chatbot</a>
+    </div>
+  </div>
+
+  <div class="faq">
+    <h3>Frequently Asked Questions</h3>
+    <!-- Add your FAQ items here, e.g. data on downgrade, cancellations, etc. -->
+  </div>
+</section>
+{% endblock %}
+
+
+
+
+

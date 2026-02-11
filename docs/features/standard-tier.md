@@ -218,8 +218,6 @@ When a Standard user cancels:
 ---
 
 ## Related Docs
-
-- [Subscription Tiers](subscription-tiers.md) — full comparison and billing architecture
+- [Subscription Tiers](subscription-tiers.md) — full tier comparison and billing architecture
 - [Free Tier](free-tier.md) — what users start with
-- [Unlimited Tier](unlimited-tier.md) — the next step up
-- [Commitments Tracking](commitments-tracking.md) — self-reporting details
+- [Expanded Tier](expanded-tier.md) — more room to grow for leaders

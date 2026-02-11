@@ -159,5 +159,4 @@ Each trigger links to `/pricing` with a `?source=` parameter for conversion trac
 
 - [Subscription Tiers](subscription-tiers.md) — full tier comparison and billing architecture
 - [Standard Tier](standard-tier.md) — the next step up
-- [Meeting Log](meeting-log.md) — meeting history feature details
-- [Commitments Tracking](commitments-tracking.md) — commitment feature details
+- [Expanded Tier](expanded-tier.md) - more room to grow for leaders
