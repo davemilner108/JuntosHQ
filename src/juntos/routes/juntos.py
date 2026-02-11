@@ -2,6 +2,7 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 
 from juntos.auth_utils import login_required, require_junto_owner
 from juntos.models import Junto, db
+from juntos.franklin import get_weekly_prompt
 
 bp = Blueprint("juntos", __name__, url_prefix="/juntos")
 
@@ -32,7 +33,7 @@ def create():
 @bp.route("/<int:id>")
 def show(id):
     junto = db.get_or_404(Junto, id)
-    return render_template("juntos/show.html", junto=junto)
+    return render_template("juntos/show.html", junto=junto, prompt=get_weekly_prompt())
 
 
 @bp.route("/<int:id>/edit", methods=["GET", "POST"])

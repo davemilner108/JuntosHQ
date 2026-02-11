@@ -40,6 +40,20 @@
 {% else %}
 <p class="empty-state">No members yet.</p>
 {% endif %}
+{% if prompt %}
+    <div class="franklin-prompt-card" style="margin: 1.5rem 0; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
+      <p style="font-weight: bold; margin-bottom: 0.5rem;">
+        This week's Franklin question 
+        <span style="color: #666; font-size: 0.9em;">(Q{{ prompt.number }} of 24)</span>
+      </p>
+      <blockquote style="font-style: italic; margin: 1rem 0; line-height: 1.5;">
+        "{{ prompt.text }}"
+      </blockquote>
+      <cite style="display: block; text-align: right; color: #777; font-size: 0.9em;">
+        — Benjamin Franklin, Junto Rules, 1727
+      </cite>
+    </div>
+  {% endif %}
 
 <p><a href="{{ url_for('main.index') }}">&larr; Back to all juntos</a></p>
 {% endblock %}
