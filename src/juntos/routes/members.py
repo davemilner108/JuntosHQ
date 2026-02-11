@@ -11,6 +11,9 @@ bp = Blueprint("members", __name__, url_prefix="/juntos/<int:junto_id>/members")
 def new(junto_id):
     junto = db.get_or_404(Junto, junto_id)
     require_junto_owner(junto)
+    if junto.is_full:
+        flash(f"This junto already has {Junto.MAX_MEMBERS} members — the maximum.", "error")
+        return redirect(url_for("juntos.show", id=junto.id))
     return render_template("members/new.html", junto=junto)
 
 
@@ -19,6 +22,10 @@ def new(junto_id):
 def create(junto_id):
     junto = db.get_or_404(Junto, junto_id)
     require_junto_owner(junto)
+
+    if junto.is_full:
+        flash(f"This junto already has {Junto.MAX_MEMBERS} members — the maximum.", "error")
+        return redirect(url_for("juntos.show", id=junto.id))
 
     name = request.form.get("name", "").strip()
     role = request.form.get("role", "").strip()

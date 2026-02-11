@@ -93,6 +93,32 @@ def test_delete_member(logged_in_client, db, user):
     assert db.session.execute(db.select(Member)).scalar_one_or_none() is None
 
 
+def test_member_limit_blocks_new_form(logged_in_client, db, user):
+    junto = _create_junto(db, user)
+    for i in range(Junto.MAX_MEMBERS):
+        db.session.add(Member(name=f"Member {i}", junto_id=junto.id))
+    db.session.commit()
+
+    response = logged_in_client.get(f"/juntos/{junto.id}/members/new")
+    assert response.status_code == 302  # redirected back
+
+
+def test_member_limit_blocks_create(logged_in_client, db, user):
+    junto = _create_junto(db, user)
+    for i in range(Junto.MAX_MEMBERS):
+        db.session.add(Member(name=f"Member {i}", junto_id=junto.id))
+    db.session.commit()
+
+    response = logged_in_client.post(
+        f"/juntos/{junto.id}/members/",
+        data={"name": "Thirteenth", "role": "Overflow"},
+    )
+    assert response.status_code == 302
+    assert db.session.execute(
+        db.select(db.func.count(Member.id)).where(Member.junto_id == junto.id)
+    ).scalar() == Junto.MAX_MEMBERS  # still 12, not 13
+
+
 def test_cascade_delete_removes_members(logged_in_client, db, user):
     junto = _create_junto(db, user)
     member = Member(name="Cascade", role="Test", junto_id=junto.id)

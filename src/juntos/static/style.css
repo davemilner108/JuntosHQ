@@ -449,6 +449,14 @@ hr.ornamental::before {
     margin-top: 1.25rem;
 }
 
+.member-count {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--brown-faint);
+    font-style: italic;
+}
+
 /* === MEMBER LIST === */
 .member-list {
     list-style: none;

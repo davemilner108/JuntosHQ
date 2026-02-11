@@ -15,8 +15,8 @@
 </div>
 {% endif %}
 
-<h2>Members</h2>
-{% if current_user and junto.owner_id == current_user.id %}
+<h2>Members <span class="member-count">{{ junto.members|length }}/{{ junto.MAX_MEMBERS }}</span></h2>
+{% if current_user and junto.owner_id == current_user.id and not junto.is_full %}
 <p><a class="btn btn-primary" href="{{ url_for('members.new', junto_id=junto.id) }}">Add Member</a></p>
 {% endif %}
 {% if junto.members %}
