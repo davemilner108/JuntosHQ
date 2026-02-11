@@ -35,6 +35,13 @@ def create_app(config_class=Config):
     app.register_blueprint(juntos.bp)
     app.register_blueprint(members.bp)
 
+    @app.cli.command("seed")
+    def seed_command():
+        """Seed the database with default data."""
+        from juntos.seed import run
+
+        run()
+
     @app.before_request
     def load_current_user():
         user_id = session.get("user_id")
