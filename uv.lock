@@ -351,8 +351,8 @@ dependencies = [
     { name = "authlib" },
     { name = "flask" },
     { name = "flask-sqlalchemy" },
-    { name = "psycopg", extra = ["binary"] },
     { name = "python-dotenv" },
+    { name = "psycopg", extra = ["binary"] },
     { name = "requests" },
 ]
 
@@ -369,8 +369,8 @@ requires-dist = [
     { name = "flask", specifier = ">=3.1" },
     { name = "flask-sqlalchemy", specifier = ">=3.1" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.1" },
-    { name = "python-dotenv", specifier = ">=1.0" },
     { name = "requests", specifier = ">=2.32" },
+    { name = "python-dotenv", specifier = ">=1.2.1" },
 ]
 
 [package.metadata.requires-dev]
