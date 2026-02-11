@@ -33,6 +33,8 @@ class User(db.Model):
 class Junto(db.Model):
     __tablename__ = "junto"
 
+    MAX_MEMBERS = 12
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
@@ -40,6 +42,10 @@ class Junto(db.Model):
     members = db.relationship(
         "Member", backref="junto", lazy=True, cascade="all, delete-orphan"
     )
+
+    @property
+    def is_full(self):
+        return len(self.members) >= self.MAX_MEMBERS
 
     def __repr__(self):
         return f"<Junto {self.name}>"
