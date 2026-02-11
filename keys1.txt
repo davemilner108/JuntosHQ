@@ -2,14 +2,13 @@ Juntos HQ - Keys
 
 GitHub
 ClientID
-Ov23liepFlYIOHOBiX6i
+ghcid
 Secret
-541520557e79ecc3dcc4f5a2536a6ea7cbbe0ed4
-
+ghcsecret
 GCP
 ClientID
-93682766063-qfh35k1ssd4njov4a7al46llgrun3nsj.apps.googleusercontent.com
+gcp.apps.googleusercontent.com
 Client Secret
-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
+GOCSPX-gcpapp
 
 
