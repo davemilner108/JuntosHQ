@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Colonial printing press ornament / press mark -->
+
+  <!-- Outer decorative frame -->
+  <rect x="2" y="2" width="60" height="60" rx="3" ry="3"
+        fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+  <rect x="5" y="5" width="54" height="54" rx="2" ry="2"
+        fill="none" stroke="#c9a84c" stroke-width="0.75"/>
+
+  <!-- Press platen (top crossbeam) -->
+  <rect x="10" y="10" width="44" height="6" rx="1"
+        fill="#2c3e6b" stroke="#1e2d52" stroke-width="1"/>
+
+  <!-- Press uprights (left and right posts) -->
+  <rect x="10" y="16" width="5" height="36" rx="1"
+        fill="#3a2e1f" stroke="#2a1e0f" stroke-width="0.75"/>
+  <rect x="49" y="16" width="5" height="36" rx="1"
+        fill="#3a2e1f" stroke="#2a1e0f" stroke-width="0.75"/>
+
+  <!-- Central screw shaft -->
+  <line x1="32" y1="16" x2="32" y2="42"
+        stroke="#6b5b4a" stroke-width="2.5"/>
+  <!-- Screw thread marks -->
+  <line x1="29" y1="19" x2="35" y2="22" stroke="#c9bda8" stroke-width="0.75"/>
+  <line x1="29" y1="23" x2="35" y2="26" stroke="#c9bda8" stroke-width="0.75"/>
+  <line x1="29" y1="27" x2="35" y2="30" stroke="#c9bda8" stroke-width="0.75"/>
+  <line x1="29" y1="31" x2="35" y2="34" stroke="#c9bda8" stroke-width="0.75"/>
+
+  <!-- Horizontal bar / handle at top of screw -->
+  <rect x="20" y="14" width="24" height="3" rx="1.5"
+        fill="#8a7560" stroke="#6b5b4a" stroke-width="0.75"/>
+
+  <!-- Platen (printing plate, lower) -->
+  <rect x="16" y="42" width="32" height="5" rx="1"
+        fill="#2c3e6b" stroke="#1e2d52" stroke-width="1"/>
+
+  <!-- Type bed / base -->
+  <rect x="12" y="50" width="40" height="4" rx="1"
+        fill="#3a2e1f" stroke="#2a1e0f" stroke-width="0.75"/>
+
+  <!-- Paper / sheet suggestion (light rectangle on type bed) -->
+  <rect x="18" y="48" width="28" height="4"
+        fill="#f5f0e8" stroke="#c9bda8" stroke-width="0.5" opacity="0.9"/>
+
+  <!-- Corner ornaments (fleurons) -->
+  <text x="4" y="11" font-size="6" fill="#c9a84c" font-family="serif">❧</text>
+  <text x="52" y="11" font-size="6" fill="#c9a84c" font-family="serif">☙</text>
+  <text x="4" y="60" font-size="6" fill="#c9a84c" font-family="serif">☙</text>
+  <text x="52" y="60" font-size="6" fill="#c9a84c" font-family="serif">❧</text>
+</svg>

@@ -1,39 +1,86 @@
-/* === Colonial-era design tokens === */
+/* ============================================================
+   JuntosHQ — Colonial / Letterpress Design System
+   Inspired by Philadelphia broadsheets & Franklin's printing house, c. 1728
+   ============================================================ */
+
+/* === Google Fonts: Playfair Display SC (colonial display type) === */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700&display=swap');
+
+/* === Design Tokens === */
 :root {
-    --parchment: #f5f0e8;
-    --parchment-dark: #e8e0d0;
-    --colonial-blue: #2c3e6b;
-    --colonial-blue-hover: #1e2d52;
-    --brown-text: #3a2e1f;
+    /* Parchment palette */
+    --parchment:       #f5f0e8;
+    --parchment-mid:   #ede5d4;
+    --parchment-dark:  #e0d5c0;
+    --parchment-deep:  #c9bda8;
+
+    /* Ink & wood */
+    --brown-text:  #3a2e1f;
+    --brown-mid:   #5a4a36;
     --brown-light: #6b5b4a;
-    --brick-red: #8b3a3a;
+    --brown-faint: #a09080;
+
+    /* Colonial blue (navy coat) */
+    --colonial-blue:       #2c3e6b;
+    --colonial-blue-hover: #1e2d52;
+    --colonial-blue-light: #4a5e8b;
+
+    /* Gold (gilt lettering, wax seals) */
+    --gold:       #c9a84c;
+    --gold-light: #d4b87a;
+    --gold-pale:  #ede0b8;
+
+    /* Brick red (printer's correction marks) */
+    --brick-red:       #8b3a3a;
     --brick-red-hover: #6e2c2c;
-    --border: #c9bda8;
-    --card-bg: #faf7f2;
-    --success-bg: #e8f0e4;
+
+    /* UI states */
+    --success-bg:     #e8f0e4;
     --success-border: #7a9a6a;
-    --error-bg: #f0e4e4;
-    --error-border: #9a6a6a;
+    --error-bg:       #f0e4e4;
+    --error-border:   #9a6a6a;
+
+    /* Card surface */
+    --card-bg:    #faf7f2;
+    --card-hover: #f7f2ea;
 }
 
-/* === Reset & base === */
-* {
+/* === Reset === */
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* === Paper texture on body === */
 body {
     font-family: Georgia, "Times New Roman", Times, serif;
-    line-height: 1.6;
+    line-height: 1.7;
     color: var(--brown-text);
     background-color: var(--parchment);
+    /* Subtle cross-grain paper texture via layered gradients */
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 28px,
+            rgba(139, 120, 90, 0.03) 28px,
+            rgba(139, 120, 90, 0.03) 29px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 40px,
+            rgba(139, 120, 90, 0.02) 40px,
+            rgba(139, 120, 90, 0.02) 41px
+        );
 }
 
-/* === Header / Nav === */
+/* === HEADER / MASTHEAD === */
 header {
     background-color: var(--colonial-blue);
-    padding: 1.25rem 2rem;
+    border-bottom: 3px double var(--gold);
+    padding: 1.25rem 2rem 0.75rem;
 }
 
 header nav {
@@ -43,89 +90,134 @@ header nav {
 
 .nav-row {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 1.5rem;
 }
 
+/* Site title — typeset like a colonial broadsheet masthead */
 header nav a.site-title {
-    font-size: 1.75rem;
-    font-weight: bold;
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 1.9rem;
+    font-weight: 700;
     color: var(--parchment);
     text-decoration: none;
+    letter-spacing: 0.06em;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 header nav a.site-title:hover {
-    color: #fff;
+    color: var(--gold-light);
+    text-decoration: none;
 }
 
 a.nav-link {
     color: var(--parchment-dark);
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    font-style: italic;
+    letter-spacing: 0.02em;
 }
 
 a.nav-link:hover {
-    color: #fff;
+    color: var(--gold-light);
 }
 
+/* Auth controls pushed to the right */
+.nav-auth {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Tagline — set like a colonial broadsheet subhead */
 header .tagline {
+    color: var(--gold-pale);
+    font-size: 0.8rem;
+    font-style: italic;
+    letter-spacing: 0.08em;
+    margin-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    /* Thin rule below tagline */
+    border-bottom: 1px solid rgba(201, 168, 76, 0.25);
+}
+
+/* Nav avatar */
+.nav-avatar {
+    border-radius: 50%;
+    border: 1px solid var(--parchment-dark);
+    vertical-align: middle;
+}
+
+.nav-username {
     color: var(--parchment-dark);
     font-size: 0.9rem;
     font-style: italic;
-    margin-top: 0.2rem;
 }
 
-/* === Main content === */
+/* === MAIN CONTENT === */
 main {
     max-width: 800px;
     margin: 2rem auto;
     padding: 0 1.5rem;
 }
 
-/* === Hero (index page) === */
-.hero {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
+/* === TYPOGRAPHY — colonial broadsheet style === */
 
-.hero-franklin {
-    flex-shrink: 0;
-}
-
-.hero-text h1 {
-    margin-bottom: 0.4rem;
-}
-
-.hero-text p {
-    color: var(--brown-light);
-    font-style: italic;
-    margin-bottom: 0;
-}
-
-/* === About page === */
-.about-prose p {
-    margin-bottom: 1rem;
-}
-
-/* === Typography === */
 h1 {
+    font-family: 'Playfair Display SC', Georgia, serif;
     font-size: 2rem;
-    margin-bottom: 1rem;
+    font-weight: 700;
     color: var(--colonial-blue);
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 0.4rem;
+    letter-spacing: 0.04em;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    /* Ornamental double-rule underline */
+    border-bottom: 3px double var(--parchment-deep);
+    position: relative;
+}
+
+/* Centered fleuron ornament on h1 rule */
+h1::after {
+    content: '❦';
+    display: block;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--gold);
+    line-height: 0;
+    position: absolute;
+    bottom: -0.55rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment);
+    padding: 0 0.6rem;
+    font-style: normal;
 }
 
 h2 {
-    font-size: 1.4rem;
-    margin: 1.5rem 0 0.75rem;
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 400;
     color: var(--colonial-blue);
+    letter-spacing: 0.05em;
+    margin: 1.75rem 0 0.75rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--parchment-deep);
+}
+
+h3 {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 1.05rem;
+    color: var(--brown-mid);
+    margin: 1.25rem 0 0.5rem;
+    letter-spacing: 0.03em;
 }
 
 p {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.85rem;
 }
 
 a {
@@ -136,12 +228,87 @@ a:hover {
     color: var(--colonial-blue-hover);
 }
 
-/* === Flash messages === */
+/* === ORNAMENTAL RULE === */
+/* Usage: <hr class="ornamental"> between major sections */
+hr.ornamental {
+    border: none;
+    text-align: center;
+    margin: 2rem 0;
+    overflow: visible;
+    position: relative;
+    height: 1px;
+    background: var(--parchment-deep);
+}
+
+hr.ornamental::before {
+    content: '— ❦ —';
+    display: inline-block;
+    background: var(--parchment);
+    padding: 0 0.75rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--gold);
+    letter-spacing: 0.25em;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+/* === HERO (index page) === */
+.hero {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem 1.75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-top: 4px solid var(--colonial-blue);
+    box-shadow: 2px 3px 8px rgba(58, 46, 31, 0.1);
+}
+
+.hero-franklin {
+    flex-shrink: 0;
+    filter: drop-shadow(2px 2px 4px rgba(58, 46, 31, 0.2));
+}
+
+/* Hero h1 — no ornament, no bottom rule */
+.hero-text h1 {
+    border-bottom: none;
+    margin-bottom: 0.5rem;
+}
+
+.hero-text h1::after {
+    display: none;
+}
+
+.hero-text p {
+    color: var(--brown-light);
+    font-style: italic;
+    font-size: 1.05rem;
+    margin-bottom: 0;
+}
+
+/* === ABOUT PAGE === */
+.about-prose p {
+    margin-bottom: 1rem;
+    text-align: justify;
+    hyphens: auto;
+}
+
+.about-prose h2 {
+    margin-top: 2rem;
+}
+
+/* === FLASH MESSAGES === */
 .flash {
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    margin-bottom: 1.25rem;
+    padding: 0.75rem 1rem 0.75rem 1.25rem;
     border: 1px solid;
+    border-left-width: 4px;
+    border-radius: 2px;
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
 }
 
 .flash.success {
@@ -156,76 +323,115 @@ a:hover {
     color: var(--brick-red);
 }
 
-/* === Buttons === */
+/* === BUTTONS — letterpress stamped === */
 .btn {
     display: inline-block;
-    padding: 0.5rem 1.25rem;
-    font-family: Georgia, "Times New Roman", Times, serif;
-    font-size: 0.95rem;
-    border: none;
-    border-radius: 4px;
+    padding: 0.5rem 1.35rem;
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.88rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    border: 1px solid transparent;
+    border-radius: 2px;
     cursor: pointer;
     text-decoration: none;
     line-height: 1.6;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-primary {
     background-color: var(--colonial-blue);
     color: var(--parchment);
+    border-color: var(--colonial-blue-hover);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 1px 1px 3px rgba(0,0,0,0.2);
 }
 
 .btn-primary:hover {
     background-color: var(--colonial-blue-hover);
-    color: #fff;
+    color: var(--gold-pale);
+    text-decoration: none;
 }
 
 .btn-danger {
     background-color: var(--brick-red);
     color: var(--parchment);
+    border-color: var(--brick-red-hover);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 1px 1px 3px rgba(0,0,0,0.2);
 }
 
 .btn-danger:hover {
     background-color: var(--brick-red-hover);
     color: #fff;
+    text-decoration: none;
 }
 
 .btn-secondary {
-    background-color: var(--parchment-dark);
-    color: var(--brown-text);
+    background-color: var(--parchment-mid);
+    color: var(--brown-mid);
+    border-color: var(--parchment-deep);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .btn-secondary:hover {
-    background-color: var(--border);
+    background-color: var(--parchment-dark);
+    color: var(--brown-text);
+    text-decoration: none;
 }
 
-/* === Cards === */
+.btn-sm {
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+}
+
+/* === CARDS — printed broadsheet entry === */
 .card {
     background-color: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    border: 1px solid var(--parchment-deep);
+    border-left: 4px solid var(--colonial-blue);
+    border-radius: 0;
     padding: 1rem 1.25rem;
     margin-bottom: 0.75rem;
+    box-shadow: 2px 2px 5px rgba(58, 46, 31, 0.07);
+    transition: box-shadow 0.15s ease, border-left-color 0.15s ease, background-color 0.15s ease;
+}
+
+.card:hover {
+    background-color: var(--card-hover);
+    border-left-color: var(--gold);
+    box-shadow: 3px 3px 8px rgba(58, 46, 31, 0.13);
 }
 
 .card a {
     text-decoration: none;
-    font-weight: bold;
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--colonial-blue);
+}
+
+.card a:hover {
+    color: var(--colonial-blue-hover);
+    text-decoration: underline;
 }
 
 .card .card-description {
     color: var(--brown-light);
     font-size: 0.9rem;
-    margin-top: 0.25rem;
+    font-style: italic;
+    margin-top: 0.3rem;
 }
 
-/* === Card list (juntos index) === */
+/* === CARD LIST === */
 .card-list {
     list-style: none;
+    margin-top: 1.25rem;
 }
 
-/* === Member list === */
+/* === MEMBER LIST === */
 .member-list {
     list-style: none;
+    margin-top: 0.5rem;
 }
 
 .member-item {
@@ -233,19 +439,28 @@ a:hover {
     align-items: center;
     justify-content: space-between;
     background-color: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.6rem 1rem;
-    margin-bottom: 0.5rem;
+    border: 1px solid var(--parchment-deep);
+    border-left: 3px solid var(--parchment-deep);
+    border-radius: 0;
+    padding: 0.65rem 1rem;
+    margin-bottom: 0.4rem;
+    transition: border-left-color 0.15s ease, background-color 0.15s ease;
+}
+
+.member-item:hover {
+    border-left-color: var(--gold);
+    background-color: var(--card-hover);
 }
 
 .member-info {
     flex: 1;
+    font-size: 0.98rem;
 }
 
 .member-role {
     color: var(--brown-light);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+    font-style: italic;
 }
 
 .member-actions {
@@ -258,107 +473,198 @@ a:hover {
     display: inline;
 }
 
-/* === Action bar (edit/delete buttons row) === */
+/* === ACTION BAR === */
 .action-bar {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.6rem;
     align-items: center;
     margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--parchment-mid);
+    border: 1px solid var(--parchment-deep);
+    border-radius: 2px;
 }
 
 .action-bar form {
     display: inline;
 }
 
-/* === Forms === */
+/* === FORMS === */
 .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.1rem;
 }
 
 .form-group label {
     display: block;
-    font-weight: bold;
-    margin-bottom: 0.3rem;
-    color: var(--brown-text);
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.35rem;
+    color: var(--brown-mid);
 }
 
 .form-group input[type="text"],
 .form-group textarea {
     width: 100%;
-    padding: 0.5rem 0.75rem;
+    padding: 0.55rem 0.8rem;
     font-family: Georgia, "Times New Roman", Times, serif;
     font-size: 1rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
+    border: 1px solid var(--parchment-deep);
+    border-radius: 2px;
     background-color: #fff;
     color: var(--brown-text);
+    box-shadow: inset 0 1px 3px rgba(58, 46, 31, 0.08);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .form-group input[type="text"]:focus,
 .form-group textarea:focus {
     outline: none;
     border-color: var(--colonial-blue);
-    box-shadow: 0 0 0 2px rgba(44, 62, 107, 0.15);
+    box-shadow: inset 0 1px 2px rgba(58, 46, 31, 0.05),
+                0 0 0 3px rgba(44, 62, 107, 0.12);
 }
 
 .form-group textarea {
     min-height: 6rem;
     resize: vertical;
+    line-height: 1.6;
 }
 
 .form-actions {
     display: flex;
     gap: 0.75rem;
     align-items: center;
-    margin-top: 1.25rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--parchment-deep);
 }
 
-/* === Detail block (junto show) === */
+/* === DETAIL BLOCK (junto show — description) === */
 .detail-description {
     font-size: 1.05rem;
-    margin-bottom: 1rem;
-}
-
-/* === Empty state === */
-.empty-state {
-    color: var(--brown-light);
     font-style: italic;
+    color: var(--brown-mid);
+    margin-bottom: 1.25rem;
+    padding: 0.6rem 1rem;
+    border-left: 4px solid var(--gold);
+    background: var(--card-bg);
 }
 
-/* === Footer === */
+/* === EMPTY STATE === */
+.empty-state {
+    color: var(--brown-faint);
+    font-style: italic;
+    padding: 0.75rem 0;
+}
+
+/* === FOOTER — colophon === */
 footer {
     max-width: 800px;
     margin: 3rem auto 1.5rem;
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--border);
+    padding: 1.25rem 1.5rem 1rem;
     text-align: center;
     color: var(--brown-light);
     font-size: 0.85rem;
     font-style: italic;
 }
 
-/* === Responsive === */
+footer::before {
+    content: '— ❦ —';
+    display: block;
+    color: var(--gold);
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.75rem;
+    font-style: normal;
+    opacity: 0.8;
+}
+
+/* === RESPONSIVE === */
 @media (max-width: 600px) {
     header {
-        padding: 1rem;
+        padding: 1rem 1rem 0.6rem;
     }
 
     header nav a.site-title {
-        font-size: 1.35rem;
+        font-size: 1.4rem;
+    }
+
+    .nav-row {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .nav-auth {
+        width: 100%;
+        margin-left: 0;
+        padding-top: 0.4rem;
+        border-top: 1px solid rgba(201, 168, 76, 0.2);
     }
 
     main {
         padding: 0 1rem;
+        margin-top: 1.25rem;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    h1::after {
+        display: none;
     }
 
     .hero {
         flex-direction: column;
         text-align: center;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .hero-franklin {
+        width: 100px;
+        height: auto;
     }
 
     .member-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: 0.6rem;
+    }
+
+    .member-actions {
+        width: 100%;
+        display: flex;
+    }
+
+    .member-actions .btn,
+    .member-actions form {
+        flex: 1;
+    }
+
+    .member-actions .btn {
+        text-align: center;
+        width: 100%;
+    }
+
+    .action-bar {
+        flex-wrap: wrap;
+    }
+
+    .action-bar .btn,
+    .action-bar form {
+        flex: 1;
+        text-align: center;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+        text-align: center;
     }
 }

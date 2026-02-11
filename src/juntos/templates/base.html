@@ -4,13 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}JuntosHQ{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
         <nav>
             <div class="nav-row">
-                <a class="site-title" href="{{ url_for('main.index') }}">JuntosHQ</a>
+                <a class="site-title" href="{{ url_for('main.index') }}">
+                    <img src="{{ url_for('static', filename='press-mark.svg') }}" alt="" width="28" height="28" aria-hidden="true">
+                    JuntosHQ
+                </a>
                 <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
                 <div class="nav-auth">
                     {% if current_user %}
@@ -40,6 +46,7 @@
         {% block content %}{% endblock %}
     </main>
     <footer>
+        <hr class="ornamental">
         &ldquo;An investment in knowledge pays the best interest.&rdquo; &mdash; Benjamin Franklin
     </footer>
 </body>
