@@ -7,7 +7,7 @@ from juntos import create_app
 
 def main():
     app = create_app()
-    app.run(debug=True)
+    app.run(host="localhost", debug=True)
 
 
 if __name__ == "__main__":
