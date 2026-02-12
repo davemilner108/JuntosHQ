@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Meeting — {{ meeting.held_on.strftime('%b %#d, %Y') }} — JuntosHQ{% endblock %}
+
+{% block content %}
+<h1>{{ meeting.held_on.strftime('%B %#d, %Y') }}</h1>
+
+<div class="meeting-detail">
+    <p class="meeting-attendance">
+        Attended:
+        {% set attendees = junto.members | selectattr('id', 'in', attendee_ids) | list %}
+        {{ attendees | map(attribute='name') | join(', ') }}
+        ({{ attendees | length }} of {{ junto.members | length }})
+    </p>
+
+    {% if meeting.location %}
+    <p class="meeting-location">Location: {{ meeting.location }}</p>
+    {% endif %}
+
+    {% if meeting.url %}
+    <p class="meeting-url">Meeting link: <a href="{{ meeting.url }}" rel="noopener noreferrer" target="_blank">{{ meeting.url }}</a></p>
+    {% endif %}
+
+    {% if agenda_html %}
+    <div class="meeting-notes">
+        <h2>Agenda</h2>
+        {{ agenda_html }}
+    </div>
+    {% endif %}
+
+    {% if meeting.instructions %}
+    <div class="meeting-notes">
+        <h2>Instructions</h2>
+        <p>{{ meeting.instructions }}</p>
+    </div>
+    {% endif %}
+
+    {% if notes_html %}
+    <div class="meeting-notes">
+        <h2>Notes</h2>
+        {{ notes_html }}
+    </div>
+    {% endif %}
+
+    {% if current_user and junto.owner_id == current_user.id %}
+    <div class="action-bar">
+        <a class="btn btn-secondary" href="{{ url_for('meetings.edit', junto_id=junto.id, id=meeting.id) }}">Edit</a>
+        <form method="post" action="{{ url_for('meetings.delete', junto_id=junto.id, id=meeting.id) }}">
+            <button class="btn btn-danger" type="submit">Delete</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<p><a href="{{ url_for('juntos.show', id=junto.id) }}">&larr; Back to {{ junto.name }}</a></p>
+{% endblock %}

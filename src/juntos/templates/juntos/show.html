@@ -40,6 +40,26 @@
 {% else %}
 <p class="empty-state">No members yet.</p>
 {% endif %}
+<h2>Meetings</h2>
+{% if current_user and junto.owner_id == current_user.id %}
+<p><a class="btn btn-primary" href="{{ url_for('meetings.new', junto_id=junto.id) }}">+ Log a meeting</a></p>
+{% endif %}
+{% if meetings %}
+<ul class="meeting-list">
+    {% for meeting in meetings %}
+    <li class="meeting-item">
+        <span class="meeting-meta">
+            {{ meeting.held_on.strftime('%b %#d, %Y') }}
+            &middot; {{ meeting.attendances | length }} attended
+        </span>
+        <a href="{{ url_for('meetings.show', junto_id=junto.id, id=meeting.id) }}">View &rarr;</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="empty-state">No meetings logged yet.</p>
+{% endif %}
+
 {% if prompt %}
     <div class="franklin-prompt-card" style="margin: 1.5rem 0; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
       <p style="font-weight: bold; margin-bottom: 0.5rem;">
@@ -54,6 +74,72 @@
       </cite>
     </div>
   {% endif %}
+
+{% if junto.members %}
+<h2>Commitments <span class="member-count">Week {{ current_week }}</span></h2>
+
+{% if current_user and junto.owner_id == current_user.id %}
+<form method="post" action="{{ url_for('juntos.update_commitments', id=junto.id) }}">
+    <ul class="commitment-list">
+    {% for member in junto.members %}
+        {% set commitment = commitments.get(member.id) %}
+        <li class="commitment-item">
+            <div class="commitment-member">{{ member.name }}</div>
+            <div class="commitment-fields">
+                <div class="form-group">
+                    <label for="commitment_desc_{{ member.id }}">Commitment</label>
+                    <input type="text"
+                           id="commitment_desc_{{ member.id }}"
+                           name="commitment_desc_{{ member.id }}"
+                           value="{{ commitment.description if commitment else '' }}"
+                           placeholder="What is {{ member.name }} committing to this week?"
+                           maxlength="500">
+                </div>
+                <div class="form-group">
+                    <label for="commitment_status_{{ member.id }}">Status</label>
+                    <select id="commitment_status_{{ member.id }}"
+                            name="commitment_status_{{ member.id }}">
+                        {% for s in CommitmentStatus %}
+                        <option value="{{ s.value }}"
+                                {% if commitment and commitment.status == s %}selected{% endif %}>
+                            {{ s.value | replace('_', ' ') | title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+    <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save Commitments</button>
+    </div>
+</form>
+
+{% else %}
+<ul class="commitment-list">
+{% for member in junto.members %}
+    {% set commitment = commitments.get(member.id) %}
+    <li class="commitment-item">
+        <div class="commitment-member">{{ member.name }}</div>
+        {% if commitment %}
+        <div class="commitment-summary">
+            <span class="commitment-description">"{{ commitment.description }}"</span>
+            <span class="commitment-status commitment-status--{{ commitment.status.value }}">
+                {{ commitment.status.value | replace('_', ' ') | title }}
+            </span>
+        </div>
+        {% else %}
+        <div class="commitment-summary">
+            <span class="empty-state">No commitment set yet</span>
+        </div>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% endif %}
 
 <p><a href="{{ url_for('main.index') }}">&larr; Back to all juntos</a></p>
 {% endblock %}

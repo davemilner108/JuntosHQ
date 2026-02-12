@@ -1,8 +1,8 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
 from juntos.auth_utils import login_required, require_junto_owner
-from juntos.models import Junto, db
 from juntos.franklin import get_weekly_prompt
+from juntos.models import Commitment, CommitmentStatus, Junto, db
 
 bp = Blueprint("juntos", __name__, url_prefix="/juntos")
 
@@ -33,7 +33,72 @@ def create():
 @bp.route("/<int:id>")
 def show(id):
     junto = db.get_or_404(Junto, id)
-    return render_template("juntos/show.html", junto=junto, prompt=get_weekly_prompt())
+    prompt = get_weekly_prompt()
+    current_week = prompt["week"]
+
+    commitments_list = Commitment.query.filter(
+        Commitment.member_id.in_([m.id for m in junto.members]),
+        Commitment.cycle_week == current_week,
+    ).all()
+    commitments_by_member = {c.member_id: c for c in commitments_list}
+
+    visible_meetings = junto.meetings[: junto.meeting_limit]
+
+    return render_template(
+        "juntos/show.html",
+        junto=junto,
+        prompt=prompt,
+        commitments=commitments_by_member,
+        current_week=current_week,
+        CommitmentStatus=CommitmentStatus,
+        meetings=visible_meetings,
+    )
+
+
+@bp.route("/<int:id>/commitments", methods=["POST"])
+@login_required
+def update_commitments(id):
+    junto = db.get_or_404(Junto, id)
+    require_junto_owner(junto)
+
+    current_week = get_weekly_prompt()["week"]
+
+    for member in junto.members:
+        description = request.form.get(f"commitment_desc_{member.id}", "").strip()
+        status_value = request.form.get(f"commitment_status_{member.id}", "")
+
+        if not description:
+            existing = Commitment.query.filter_by(
+                member_id=member.id, cycle_week=current_week
+            ).first()
+            if existing:
+                db.session.delete(existing)
+            continue
+
+        try:
+            status = CommitmentStatus(status_value)
+        except ValueError:
+            status = CommitmentStatus.NOT_STARTED
+
+        commitment = Commitment.query.filter_by(
+            member_id=member.id, cycle_week=current_week
+        ).first()
+
+        if commitment:
+            commitment.description = description
+            commitment.status = status
+        else:
+            commitment = Commitment(
+                member_id=member.id,
+                cycle_week=current_week,
+                description=description,
+                status=status,
+            )
+            db.session.add(commitment)
+
+    db.session.commit()
+    flash("Commitments updated.", "success")
+    return redirect(url_for("juntos.show", id=junto.id))
 
 
 @bp.route("/<int:id>/edit", methods=["GET", "POST"])

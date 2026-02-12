@@ -28,12 +28,13 @@ def create_app(config_class=Config):
         client_kwargs={"scope": "read:user user:email"},
     )
 
-    from juntos.routes import auth, juntos, main, members
+    from juntos.routes import auth, juntos, main, meetings, members
 
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(juntos.bp)
     app.register_blueprint(members.bp)
+    app.register_blueprint(meetings.bp)
 
     @app.cli.command("seed")
     def seed_command():

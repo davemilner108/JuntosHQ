@@ -5,6 +5,16 @@
   <h1>Simple Plans for Every Junto</h1>
   <p class="lead">Start free. Upgrade when your groups grow. All tiers include Franklin's weekly prompts and core collaboration tools.</p>
 
+  <div class="counsel-feature">
+    <img class="counsel-franklin" src="{{ url_for('static', filename='franklin-counsel.svg') }}" alt="Cartoon Benjamin Franklin with quill" width="140" height="154">
+    <div class="counsel-text">
+      <h2>Ben's Counsel</h2>
+      <p>Ask Ben anything. Drawing on Franklin's own letters, essays, and autobiography, Ben's Counsel is your junto's personal advisor &mdash; offering wit and wisdom as if the man himself were at the table.</p>
+      <div class="price">$4.99 <small>/month add-on</small></div>
+      <a href="/account/subscription/checkout?addon=chatbot" class="btn btn-primary">Add to any plan</a>
+    </div>
+  </div>
+
   <div class="tier-cards">
     <!-- Free Card -->
     <div class="tier-card free">
@@ -51,20 +61,5 @@
       <a href="/account/subscription/checkout?plan=expanded" class="btn">Subscribe to Expanded</a>
     </div>
   </div>
-
-  <div class="addon-section">
-    <h3>Optional Add-on</h3>
-    <div class="addon-card">
-      <h4>Ben's Counsel</h4>
-      <div class="price">$4.99 <small>/month</small></div>
-      <p>Get personalized advice from a RAG-powered Benjamin Franklin AI Chatbot, grounded in his writings and thought processes.</p>
-      <a href="/account/subscription/checkout?addon=chatbot" class="btn secondary">Add Chatbot</a>
-    </div>
-  </div>
 </section>
 {% endblock %}
-
-
-
-
-

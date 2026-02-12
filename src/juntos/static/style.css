@@ -311,6 +311,134 @@ hr.ornamental::before {
     margin-top: 0.5rem;
 }
 
+/* === PRICING PAGE === */
+.pricing .lead {
+    font-style: italic;
+    color: var(--brown-mid);
+    font-size: 1.05rem;
+    margin-bottom: 1.5rem;
+}
+
+.counsel-feature {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-top: 4px solid var(--gold);
+    box-shadow: 2px 3px 8px rgba(58, 46, 31, 0.1);
+}
+
+.counsel-franklin {
+    flex-shrink: 0;
+    filter: drop-shadow(2px 2px 4px rgba(58, 46, 31, 0.2));
+}
+
+.counsel-text h2 {
+    margin-top: 0;
+    color: var(--colonial-blue);
+}
+
+.counsel-text p {
+    font-size: 1.02rem;
+    line-height: 1.65;
+    color: var(--brown-mid);
+}
+
+.counsel-text .price {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 1.3rem;
+    color: var(--colonial-blue);
+    margin: 0.75rem 0;
+}
+
+.counsel-text .price small {
+    font-size: 0.7em;
+    color: var(--brown-faint);
+}
+
+.tier-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.tier-card {
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    padding: 1.25rem;
+    text-align: center;
+    position: relative;
+}
+
+.tier-card.popular {
+    border-color: var(--colonial-blue);
+    border-width: 2px;
+}
+
+.tier-card .badge {
+    position: absolute;
+    top: -0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--colonial-blue);
+    color: var(--parchment);
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.75rem;
+    white-space: nowrap;
+}
+
+.tier-card h2 {
+    border-bottom: none;
+    margin-top: 0.5rem;
+}
+
+.tier-card .price {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 1.5rem;
+    color: var(--colonial-blue);
+    margin: 0.5rem 0;
+}
+
+.tier-card .price small {
+    font-size: 0.6em;
+    color: var(--brown-faint);
+}
+
+.tier-card ul {
+    list-style: none;
+    text-align: left;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+}
+
+.tier-card li {
+    padding: 0.3rem 0;
+    border-bottom: 1px solid var(--parchment-mid);
+    color: var(--brown-mid);
+}
+
+.tier-card li:last-child {
+    border-bottom: none;
+}
+
+.tier-card .tagline {
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--brown-faint);
+    margin-bottom: 0.75rem;
+}
+
+.tier-card .btn {
+    width: 100%;
+    text-align: center;
+}
+
 /* === ABOUT PAGE === */
 .about-prose p {
     margin-bottom: 1rem;
@@ -534,7 +662,8 @@ hr.ornamental::before {
 }
 
 .form-group input[type="text"],
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 0.55rem 0.8rem;
     font-family: Georgia, "Times New Roman", Times, serif;
@@ -548,7 +677,8 @@ hr.ornamental::before {
 }
 
 .form-group input[type="text"]:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--colonial-blue);
     box-shadow: inset 0 1px 2px rgba(58, 46, 31, 0.05),
@@ -579,6 +709,188 @@ hr.ornamental::before {
     padding: 0.6rem 1rem;
     border-left: 4px solid var(--gold);
     background: var(--card-bg);
+}
+
+/* === COMMITMENT LIST === */
+.commitment-list {
+    list-style: none;
+    margin-top: 0.5rem;
+}
+
+.commitment-item {
+    background-color: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-left: 3px solid var(--parchment-deep);
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.4rem;
+    transition: border-left-color 0.15s ease, background-color 0.15s ease;
+}
+
+.commitment-item:hover {
+    border-left-color: var(--gold);
+    background-color: var(--card-hover);
+}
+
+.commitment-member {
+    font-weight: bold;
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+    color: var(--brown-mid);
+}
+
+.commitment-fields {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-end;
+}
+
+.commitment-fields .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.commitment-fields .form-group:last-child {
+    flex: 0 0 180px;
+}
+
+.commitment-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.commitment-description {
+    font-style: italic;
+    color: var(--brown-light);
+    font-size: 0.95rem;
+}
+
+.commitment-status {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+.commitment-status--not_started {
+    background-color: var(--parchment-mid);
+    color: var(--brown-faint);
+}
+
+.commitment-status--in_progress {
+    background-color: #e4e8f0;
+    color: var(--colonial-blue);
+}
+
+.commitment-status--done {
+    background-color: var(--success-bg);
+    color: #3a5a2a;
+}
+
+.commitment-status--partial {
+    background-color: var(--gold-pale);
+    color: var(--brown-mid);
+}
+
+.commitment-status--blocked {
+    background-color: var(--error-bg);
+    color: var(--brick-red);
+}
+
+/* === MEETING LIST === */
+.meeting-list {
+    list-style: none;
+    margin-top: 0.5rem;
+}
+
+.meeting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-left: 3px solid var(--parchment-deep);
+    padding: 0.65rem 1rem;
+    margin-bottom: 0.4rem;
+    transition: border-left-color 0.15s ease, background-color 0.15s ease;
+}
+
+.meeting-item:hover {
+    border-left-color: var(--gold);
+    background-color: var(--card-hover);
+}
+
+.meeting-meta {
+    font-size: 0.95rem;
+    color: var(--brown-mid);
+}
+
+.meeting-item a {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+}
+
+/* === MEETING DETAIL === */
+.meeting-detail {
+    margin-top: 0.5rem;
+}
+
+.meeting-attendance {
+    font-style: italic;
+    color: var(--brown-mid);
+    margin-bottom: 0.75rem;
+}
+
+.meeting-location,
+.meeting-url {
+    font-size: 0.95rem;
+    color: var(--brown-mid);
+    margin-bottom: 0.5rem;
+}
+
+.meeting-url a {
+    word-break: break-all;
+}
+
+.meeting-notes {
+    margin: 1.25rem 0;
+    padding: 1rem 1.25rem;
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-left: 4px solid var(--gold);
+}
+
+.meeting-notes h2 {
+    margin-top: 0;
+}
+
+.meeting-notes p:last-child {
+    margin-bottom: 0;
+}
+
+/* === ATTENDANCE GRID === */
+.attendance-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 0.25rem;
+}
+
+.attendance-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.attendance-checkbox input[type="checkbox"] {
+    accent-color: var(--colonial-blue);
+    cursor: pointer;
 }
 
 /* === EMPTY STATE === */
@@ -704,5 +1016,46 @@ footer::before {
     .form-actions .btn {
         width: 100%;
         text-align: center;
+    }
+
+    .commitment-fields {
+        flex-direction: column;
+    }
+
+    .commitment-fields .form-group:last-child {
+        flex: 1;
+    }
+
+    .commitment-summary {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+
+    .meeting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+    }
+
+    .attendance-grid {
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .counsel-feature {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .counsel-franklin {
+        width: 100px;
+        height: auto;
+    }
+
+    .tier-cards {
+        grid-template-columns: 1fr;
     }
 }

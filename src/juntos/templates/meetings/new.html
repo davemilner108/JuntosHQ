@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Log a Meeting — JuntosHQ{% endblock %}
+
+{% block content %}
+<h1>Log a Meeting for {{ junto.name }}</h1>
+<form method="post" action="{{ url_for('meetings.create', junto_id=junto.id) }}">
+    <div class="form-group">
+        <label for="held_on">Date</label>
+        <input type="date" id="held_on" name="held_on" value="{{ today }}" required>
+    </div>
+    <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" placeholder="e.g. Coffee house on Market Street">
+    </div>
+    <div class="form-group">
+        <label for="url">Meeting URL</label>
+        <input type="text" id="url" name="url" placeholder="e.g. https://teams.microsoft.com/...">
+    </div>
+    <div class="form-group">
+        <label>Who attended</label>
+        <div class="attendance-grid">
+            {% for member in junto.members %}
+            <label class="attendance-checkbox">
+                <input type="checkbox" name="attendees" value="{{ member.id }}" checked>
+                {{ member.name }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="agenda">Agenda</label>
+        <textarea id="agenda" name="agenda" placeholder="Meeting agenda. Markdown is supported."></textarea>
+    </div>
+    <div class="form-group">
+        <label for="instructions">Instructions</label>
+        <textarea id="instructions" name="instructions" placeholder="Pre-meeting instructions or preparation notes."></textarea>
+    </div>
+    <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" placeholder="What was discussed? Markdown is supported."></textarea>
+    </div>
+    <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save meeting</button>
+        <a class="btn btn-secondary" href="{{ url_for('juntos.show', id=junto.id) }}">Cancel</a>
+    </div>
+</form>
+{% endblock %}

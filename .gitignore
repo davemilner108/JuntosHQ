@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# Data
+corpus/
+
+# Docs - new features
+docs/features/
+
 # Distribution / packaging
 .Python
 build/

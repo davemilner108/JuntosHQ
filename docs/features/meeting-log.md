@@ -131,8 +131,9 @@ The generated migration should create `meeting` and `meeting_attendance` tables.
 
 ## Freemium Consideration
 
-- **Free tier**: view the last 3 meetings
-- **Paid tier**: full meeting history, export to PDF/CSV
+- **Free tier**: view the last 1 meetings
+- **Subscription tier**: view last 3 meetings, export to PDF/CSV
+- **Expanded tier**: view last 5 meetings, export to PDF/CSV
 
 This makes history the natural reason to upgrade. A group that's been meeting for a month hits the limit organically.
 
