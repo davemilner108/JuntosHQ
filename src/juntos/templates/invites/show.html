@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Invitation to {{ junto.name }} — JuntosHQ{% endblock %}
+
+{% block content %}
+<div class="invite-page">
+    <h1>You're invited to join {{ junto.name }}</h1>
+
+    {% if already_accepted %}
+    <p class="invite-accepted">This invitation has already been accepted.</p>
+    <p><a class="btn btn-primary" href="{{ url_for('juntos.show', id=junto.id) }}">View Junto &rarr;</a></p>
+    {% else %}
+    <p class="invite-detail">You've been invited to join as <strong>{{ member.name }}</strong>.</p>
+    {% if junto.description %}
+    <p class="invite-description">{{ junto.description }}</p>
+    {% endif %}
+
+    {% if current_user %}
+    <form method="post" action="{{ url_for('invites.accept_invite', token=invite.token) }}">
+        <button class="btn btn-primary" type="submit">Accept Invitation</button>
+    </form>
+    {% else %}
+    <p>Sign in to accept this invitation:</p>
+    <div class="invite-auth-buttons">
+        <a class="btn btn-primary" href="{{ url_for('auth.oauth_login', provider='google', invite_token=invite.token) }}">Sign in with Google</a>
+        <a class="btn btn-secondary" href="{{ url_for('auth.oauth_login', provider='github', invite_token=invite.token) }}">Sign in with GitHub</a>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

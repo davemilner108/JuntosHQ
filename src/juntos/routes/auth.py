@@ -1,4 +1,13 @@
-from flask import Blueprint, flash, g, redirect, render_template, session, url_for
+from flask import (
+    Blueprint,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 from juntos.models import User, db
 from juntos.oauth import oauth
@@ -43,6 +52,10 @@ def oauth_login(provider):
         return redirect(url_for("auth.login"))
     if g.current_user:
         return redirect(url_for("main.index"))
+    # Preserve invite token through OAuth round-trip
+    invite_token = request.args.get("invite_token")
+    if invite_token:
+        session["pending_invite_token"] = invite_token
     callback = url_for("auth.callback", provider=provider, _external=True)
     return getattr(oauth, provider).authorize_redirect(callback)
 
@@ -78,6 +91,12 @@ def callback(provider):
     session["user_id"] = user.id
     session.permanent = True
     flash(f"Welcome, {user.name or 'friend'}!", "success")
+
+    # Redirect to invite accept page if there's a pending invite
+    pending_token = session.pop("pending_invite_token", None)
+    if pending_token:
+        return redirect(url_for("invites.show_invite", token=pending_token))
+
     return redirect(url_for("main.index"))
 
 

@@ -1,4 +1,5 @@
 import os
+from datetime import UTC, datetime
 
 from flask import Flask, g, session
 
@@ -28,13 +29,20 @@ def create_app(config_class=Config):
         client_kwargs={"scope": "read:user user:email"},
     )
 
-    from juntos.routes import auth, juntos, main, meetings, members
+    # Optional Flask-Mail setup
+    if app.config.get("MAIL_SERVER"):
+        from flask_mail import Mail
+
+        app.extensions["mail"] = Mail(app)
+
+    from juntos.routes import auth, invites, juntos, main, meetings, members
 
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(juntos.bp)
     app.register_blueprint(members.bp)
     app.register_blueprint(meetings.bp)
+    app.register_blueprint(invites.bp)
 
     @app.cli.command("seed")
     def seed_command():
@@ -54,6 +62,9 @@ def create_app(config_class=Config):
             g.current_user = db.session.get(User, user_id)
             if g.current_user is None:
                 session.pop("user_id", None)
+            else:
+                g.current_user.last_active_at = datetime.now(UTC)
+                db.session.commit()
 
     @app.context_processor
     def inject_current_user():

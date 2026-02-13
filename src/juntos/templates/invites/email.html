@@ -1,0 +1,9 @@
+<p>You've been invited to join <strong>{{ junto.name }}</strong> on JuntosHQ as <strong>{{ member.name }}</strong>.</p>
+
+{% if junto.description %}
+<p>{{ junto.description }}</p>
+{% endif %}
+
+<p><a href="{{ invite_url }}">Accept your invitation &rarr;</a></p>
+
+<p style="color: #666; font-size: 0.9em;">If you didn't expect this invitation, you can safely ignore this email.</p>

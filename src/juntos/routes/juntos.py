@@ -23,7 +23,13 @@ def create():
         flash("Name is required.", "error")
         return redirect(url_for("juntos.new"))
 
-    junto = Junto(name=name, description=description, owner_id=g.current_user.id)
+    meeting_url = request.form.get("meeting_url", "").strip() or None
+    junto = Junto(
+        name=name,
+        description=description,
+        owner_id=g.current_user.id,
+        meeting_url=meeting_url,
+    )
     db.session.add(junto)
     db.session.commit()
     flash("Junto created.", "success")
@@ -115,8 +121,10 @@ def edit(id):
             flash("Name is required.", "error")
             return redirect(url_for("juntos.edit", id=junto.id))
 
+        meeting_url = request.form.get("meeting_url", "").strip() or None
         junto.name = name
         junto.description = description
+        junto.meeting_url = meeting_url
         db.session.commit()
         flash("Junto updated.", "success")
         return redirect(url_for("juntos.show", id=junto.id))

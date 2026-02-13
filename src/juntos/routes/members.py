@@ -29,12 +29,22 @@ def create(junto_id):
 
     name = request.form.get("name", "").strip()
     role = request.form.get("role", "").strip()
+    email = request.form.get("email", "").strip() or None
+    occupation = request.form.get("occupation", "").strip() or None
+    bio = request.form.get("bio", "").strip() or None
 
     if not name:
         flash("Name is required.", "error")
         return redirect(url_for("members.new", junto_id=junto.id))
 
-    member = Member(name=name, role=role, junto_id=junto.id)
+    member = Member(
+        name=name,
+        role=role,
+        email=email,
+        occupation=occupation,
+        bio=bio,
+        junto_id=junto.id,
+    )
     db.session.add(member)
     db.session.commit()
     flash("Member added.", "success")
@@ -51,6 +61,9 @@ def edit(junto_id, id):
     if request.method == "POST":
         name = request.form.get("name", "").strip()
         role = request.form.get("role", "").strip()
+        email = request.form.get("email", "").strip() or None
+        occupation = request.form.get("occupation", "").strip() or None
+        bio = request.form.get("bio", "").strip() or None
 
         if not name:
             flash("Name is required.", "error")
@@ -58,6 +71,9 @@ def edit(junto_id, id):
 
         member.name = name
         member.role = role
+        member.email = email
+        member.occupation = occupation
+        member.bio = bio
         db.session.commit()
         flash("Member updated.", "success")
         return redirect(url_for("juntos.show", id=junto.id))

@@ -1,9 +1,14 @@
 import enum
-from datetime import datetime, timezone
+import secrets
+from datetime import UTC, datetime
 
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
+
+def _utcnow():
+    return datetime.now(UTC)
 
 
 class JuntoTier(enum.Enum):
@@ -21,11 +26,12 @@ class User(db.Model):
     email = db.Column(db.String(255), nullable=True)
     name = db.Column(db.String(255), nullable=True)
     avatar_url = db.Column(db.String(2048), nullable=True)
-    created_at = db.Column(
-        db.DateTime,
-        nullable=False,
-        default=lambda: datetime.now(timezone.utc),
-    )
+    created_at = db.Column(db.DateTime, nullable=False, default=_utcnow)
+    user_timezone = db.Column(db.String(50), nullable=True)
+    bio = db.Column(db.Text, nullable=True)
+    location = db.Column(db.String(255), nullable=True)
+    last_active_at = db.Column(db.DateTime, nullable=True)
+    notification_prefs = db.Column(db.JSON, nullable=True)
 
     juntos = db.relationship("Junto", backref="owner", lazy=True)
 
@@ -46,6 +52,7 @@ class Junto(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
+    meeting_url = db.Column(db.String(2048), nullable=True)
     tier = db.Column(
         db.Enum(JuntoTier), nullable=False, default=JuntoTier.FREE
     )
@@ -58,6 +65,12 @@ class Junto(db.Model):
         lazy=True,
         cascade="all, delete-orphan",
         order_by="Meeting.held_on.desc()",
+    )
+    invites = db.relationship(
+        "MemberInvite",
+        backref="junto",
+        lazy=True,
+        cascade="all, delete-orphan",
     )
 
     _TIER_MEETING_LIMITS = {
@@ -78,6 +91,12 @@ class Junto(db.Model):
         return f"<Junto {self.name}>"
 
 
+class MemberStatus(enum.Enum):
+    INVITED = "invited"
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+
+
 class Member(db.Model):
     __tablename__ = "member"
 
@@ -85,7 +104,17 @@ class Member(db.Model):
     name = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(100))
     junto_id = db.Column(db.Integer, db.ForeignKey("junto.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
+    email = db.Column(db.String(255), nullable=True)
+    occupation = db.Column(db.String(255), nullable=True)
+    bio = db.Column(db.Text, nullable=True)
+    joined_at = db.Column(db.DateTime, nullable=True, default=_utcnow)
+    status = db.Column(
+        db.Enum(MemberStatus), nullable=False, default=MemberStatus.ACTIVE
+    )
+    avatar_url = db.Column(db.String(2048), nullable=True)
 
+    user = db.relationship("User", backref="memberships", lazy=True)
     attendances = db.relationship(
         "MeetingAttendance", backref="member", lazy=True, cascade="all, delete"
     )
@@ -114,16 +143,9 @@ class Commitment(db.Model):
         nullable=False,
         default=CommitmentStatus.NOT_STARTED,
     )
-    created_at = db.Column(
-        db.DateTime,
-        nullable=False,
-        default=lambda: datetime.now(timezone.utc),
-    )
+    created_at = db.Column(db.DateTime, nullable=False, default=_utcnow)
     updated_at = db.Column(
-        db.DateTime,
-        nullable=False,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        db.DateTime, nullable=False, default=_utcnow, onupdate=_utcnow
     )
 
     member = db.relationship(
@@ -150,11 +172,7 @@ class Meeting(db.Model):
     agenda = db.Column(db.Text)
     instructions = db.Column(db.Text)
     notes = db.Column(db.Text)
-    created_at = db.Column(
-        db.DateTime,
-        nullable=False,
-        default=lambda: datetime.now(timezone.utc),
-    )
+    created_at = db.Column(db.DateTime, nullable=False, default=_utcnow)
 
     attendances = db.relationship(
         "MeetingAttendance",
@@ -173,3 +191,29 @@ class MeetingAttendance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     meeting_id = db.Column(db.Integer, db.ForeignKey("meeting.id"), nullable=False)
     member_id = db.Column(db.Integer, db.ForeignKey("member.id"), nullable=False)
+
+
+class MemberInvite(db.Model):
+    __tablename__ = "member_invite"
+
+    id = db.Column(db.Integer, primary_key=True)
+    junto_id = db.Column(db.Integer, db.ForeignKey("junto.id"), nullable=False)
+    member_id = db.Column(db.Integer, db.ForeignKey("member.id"), nullable=False)
+    token = db.Column(
+        db.String(64),
+        unique=True,
+        nullable=False,
+        default=lambda: secrets.token_urlsafe(48),
+    )
+    email = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=_utcnow)
+    accepted_at = db.Column(db.DateTime, nullable=True)
+
+    member = db.relationship(
+        "Member",
+        backref=db.backref("invites", cascade="all, delete"),
+        lazy=True,
+    )
+
+    def __repr__(self):
+        return f"<MemberInvite junto={self.junto_id} member={self.member_id}>"

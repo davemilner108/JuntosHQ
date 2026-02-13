@@ -23,6 +23,20 @@ class Config:
     GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET", "")
     PERMANENT_SESSION_LIFETIME = 60 * 60 * 24 * 7  # 7 days
 
+    # Optional SMTP config — invite emails only sent if MAIL_SERVER is set
+    MAIL_SERVER = os.environ.get("MAIL_SERVER")
+    MAIL_PORT = int(os.environ.get("MAIL_PORT", "587"))
+    MAIL_USE_TLS = os.environ.get("MAIL_USE_TLS", "true").lower() == "true"
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER = os.environ.get(
+        "MAIL_DEFAULT_SENDER", "noreply@juntoshq.com"
+    )
+
+    @property
+    def MAIL_ENABLED(self):
+        return bool(self.MAIL_SERVER)
+
 
 class TestConfig(Config):
     TESTING = True
@@ -31,3 +45,4 @@ class TestConfig(Config):
     GOOGLE_CLIENT_SECRET = "test-google-client-secret"
     GITHUB_CLIENT_ID = "test-github-client-id"
     GITHUB_CLIENT_SECRET = "test-github-client-secret"
+    MAIL_SUPPRESS_SEND = True

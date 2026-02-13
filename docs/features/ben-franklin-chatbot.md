@@ -225,20 +225,9 @@ Stream response to user
 
 | Option | Pros | Cons |
 |---|---|---|
-| **pgvector** (PostgreSQL extension) | Same database, no extra infra | Requires pg extension install |
-| **ChromaDB** | Simple Python library, embeds in-process | Not as scalable |
-| **Pinecone** | Managed, scalable | External dependency, cost |
+| **pgvector** (PostgreSQL extension) | Same database, no extra infra | Requires pg extension install 
 
-**Recommendation**: Start with pgvector since JuntosHQ already uses PostgreSQL. The Franklin corpus is small (~500 passages) so performance is not a concern.
 
-### Cost management
-
-- **Token budget**: Cap each response at 500 tokens
-- **Daily message limit**: 50 messages per user per day (prevents abuse)
-- **Rate limiting**: 1 message per 3 seconds (prevents rapid-fire)
-- **Estimated cost per message**: ~$0.01-0.03 depending on model
-- **Estimated cost per user per month**: ~$1.50 (assuming 50 messages/month average)
-- **Margin**: $4.99 - $1.50 = $3.49 per user per month (70% margin)
 
 ---
 

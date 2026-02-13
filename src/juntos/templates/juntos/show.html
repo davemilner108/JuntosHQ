@@ -6,6 +6,12 @@
 <h1>{{ junto.name }}</h1>
 <p class="detail-description">{{ junto.description }}</p>
 
+{% if junto.meeting_url %}
+<p class="junto-meeting-url">
+    <a href="{{ junto.meeting_url }}" target="_blank" rel="noopener">Join Meeting &rarr;</a>
+</p>
+{% endif %}
+
 {% if current_user and junto.owner_id == current_user.id %}
 <div class="action-bar">
     <a class="btn btn-secondary" href="{{ url_for('juntos.edit', id=junto.id) }}">Edit</a>
@@ -24,10 +30,31 @@
     {% for member in junto.members %}
     <li class="member-item">
         <div class="member-info">
-            {{ member.name }}{% if member.role %} <span class="member-role">&mdash; {{ member.role }}</span>{% endif %}
+            {% if member.avatar_url %}
+            <img class="member-avatar" src="{{ member.avatar_url }}" alt="{{ member.name }}">
+            {% else %}
+            <span class="member-avatar member-avatar--placeholder">{{ member.name[0] }}</span>
+            {% endif %}
+            <div class="member-details">
+                <span class="member-name">
+                    {{ member.name }}
+                    {% if member.role %}<span class="member-role">&mdash; {{ member.role }}</span>{% endif %}
+                    <span class="member-status-badge member-status-badge--{{ member.status.value }}">{{ member.status.value | title }}</span>
+                </span>
+                {% if member.occupation %}
+                <span class="member-occupation">{{ member.occupation }}</span>
+                {% endif %}
+            </div>
         </div>
         {% if current_user and junto.owner_id == current_user.id %}
         <div class="member-actions">
+            {% if not member.user_id %}
+            <form method="post" action="{{ url_for('invites.create', junto_id=junto.id) }}" class="invite-form">
+                <input type="hidden" name="member_id" value="{{ member.id }}">
+                <input type="email" name="email" placeholder="Email (optional)" class="invite-email-input">
+                <button class="btn btn-invite" type="submit">Invite</button>
+            </form>
+            {% endif %}
             <a class="btn btn-secondary" href="{{ url_for('members.edit', junto_id=junto.id, id=member.id) }}">Edit</a>
             <form method="post" action="{{ url_for('members.delete', junto_id=junto.id, id=member.id) }}">
                 <button class="btn btn-danger" type="submit">Delete</button>
@@ -63,7 +90,7 @@
 {% if prompt %}
     <div class="franklin-prompt-card" style="margin: 1.5rem 0; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
       <p style="font-weight: bold; margin-bottom: 0.5rem;">
-        This week's Franklin question 
+        This week's Franklin question
         <span style="color: #666; font-size: 0.9em;">(Q{{ prompt.number }} of 24)</span>
       </p>
       <blockquote style="font-style: italic; margin: 1rem 0; line-height: 1.5;">

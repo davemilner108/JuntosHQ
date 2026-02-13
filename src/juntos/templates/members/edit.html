@@ -13,6 +13,18 @@
         <label for="role">Role</label>
         <input type="text" id="role" name="role" value="{{ member.role or '' }}">
     </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ member.email or '' }}" placeholder="member@example.com">
+    </div>
+    <div class="form-group">
+        <label for="occupation">Occupation</label>
+        <input type="text" id="occupation" name="occupation" value="{{ member.occupation or '' }}">
+    </div>
+    <div class="form-group">
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio" rows="3">{{ member.bio or '' }}</textarea>
+    </div>
     <div class="form-actions">
         <button class="btn btn-primary" type="submit">Save</button>
         <a class="btn btn-secondary" href="{{ url_for('juntos.show', id=junto.id) }}">Cancel</a>
