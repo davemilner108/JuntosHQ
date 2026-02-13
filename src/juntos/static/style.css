@@ -1091,15 +1091,18 @@ hr.ornamental::before {
 
 /* === FOOTER — colophon === */
 footer {
-    max-width: 800px;
+    background-color: var(--colonial-blue);
+    border-bottom: 3px double var(--gold);
     margin: 3rem auto 1.5rem;
     padding: 1.25rem 1.5rem 1rem;
     text-align: center;
-    color: var(--brown-light);
-    font-size: 0.85rem;
+    color: var(--gold-pale);
+    font-size: 0.8rem;
     font-style: italic;
+    letter-spacing: 0.08em;
+    margin-top: 0.5rem;
+    padding-bottom: 0.5rem;
 }
-
 footer::before {
     content: '— ❦ —';
     display: block;
