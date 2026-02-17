@@ -2,7 +2,10 @@ from juntos.models import Commitment, CommitmentStatus, Junto, Member, User
 
 
 def _create_junto_with_members(db, user, member_count=2):
-    junto = Junto(name="Test Junto", description="For commitment tests", owner_id=user.id)
+    junto = Junto(
+        name="Test Junto", description="For commitment tests",
+        owner_id=user.id,
+    )
     db.session.add(junto)
     db.session.commit()
 
@@ -32,19 +35,19 @@ def test_owner_can_save_commitments(logged_in_client, db, user):
     response = logged_in_client.post(
         f"/juntos/{junto.id}/commitments",
         data={
-            f"commitment_desc_{members[0].id}": "Read a book",
-            f"commitment_status_{members[0].id}": "not_started",
-            f"commitment_desc_{members[1].id}": "Write a letter",
-            f"commitment_status_{members[1].id}": "in_progress",
+            f"commitment_desc_{members[0].id}_0": "Read a book",
+            f"commitment_status_{members[0].id}_0": "not_started",
+            f"commitment_desc_{members[1].id}_0": "Write a letter",
+            f"commitment_status_{members[1].id}_0": "in_progress",
         },
     )
     assert response.status_code == 302
 
-    c0 = Commitment.query.filter_by(member_id=members[0].id, cycle_week=week).one()
+    c0 = Commitment.query.filter_by(member_id=members[0].id, cycle_week=week).first()
     assert c0.description == "Read a book"
     assert c0.status == CommitmentStatus.NOT_STARTED
 
-    c1 = Commitment.query.filter_by(member_id=members[1].id, cycle_week=week).one()
+    c1 = Commitment.query.filter_by(member_id=members[1].id, cycle_week=week).first()
     assert c1.description == "Write a letter"
     assert c1.status == CommitmentStatus.IN_PROGRESS
 
@@ -59,16 +62,16 @@ def test_owner_can_update_existing_commitment(logged_in_client, db, user):
     logged_in_client.post(
         f"/juntos/{junto.id}/commitments",
         data={
-            f"commitment_desc_{members[0].id}": "Original",
-            f"commitment_status_{members[0].id}": "not_started",
+            f"commitment_desc_{members[0].id}_0": "Original",
+            f"commitment_status_{members[0].id}_0": "not_started",
         },
     )
 
     logged_in_client.post(
         f"/juntos/{junto.id}/commitments",
         data={
-            f"commitment_desc_{members[0].id}": "Updated",
-            f"commitment_status_{members[0].id}": "done",
+            f"commitment_desc_{members[0].id}_0": "Updated",
+            f"commitment_status_{members[0].id}_0": "done",
         },
     )
 
@@ -86,8 +89,8 @@ def test_empty_description_skips_commitment(logged_in_client, db, user):
     response = logged_in_client.post(
         f"/juntos/{junto.id}/commitments",
         data={
-            f"commitment_desc_{members[0].id}": "",
-            f"commitment_status_{members[0].id}": "not_started",
+            f"commitment_desc_{members[0].id}_0": "",
+            f"commitment_status_{members[0].id}_0": "not_started",
         },
     )
     assert response.status_code == 302
@@ -100,8 +103,8 @@ def test_clearing_description_deletes_existing_commitment(logged_in_client, db, 
     logged_in_client.post(
         f"/juntos/{junto.id}/commitments",
         data={
-            f"commitment_desc_{members[0].id}": "Something",
-            f"commitment_status_{members[0].id}": "in_progress",
+            f"commitment_desc_{members[0].id}_0": "Something",
+            f"commitment_status_{members[0].id}_0": "in_progress",
         },
     )
     assert Commitment.query.count() == 1
@@ -109,8 +112,8 @@ def test_clearing_description_deletes_existing_commitment(logged_in_client, db, 
     logged_in_client.post(
         f"/juntos/{junto.id}/commitments",
         data={
-            f"commitment_desc_{members[0].id}": "",
-            f"commitment_status_{members[0].id}": "not_started",
+            f"commitment_desc_{members[0].id}_0": "",
+            f"commitment_status_{members[0].id}_0": "not_started",
         },
     )
     assert Commitment.query.count() == 0
@@ -126,8 +129,8 @@ def test_invalid_status_defaults_to_not_started(logged_in_client, db, user):
     logged_in_client.post(
         f"/juntos/{junto.id}/commitments",
         data={
-            f"commitment_desc_{members[0].id}": "Test",
-            f"commitment_status_{members[0].id}": "garbage_value",
+            f"commitment_desc_{members[0].id}_0": "Test",
+            f"commitment_status_{members[0].id}_0": "garbage_value",
         },
     )
 

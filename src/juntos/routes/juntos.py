@@ -24,11 +24,13 @@ def create():
         return redirect(url_for("juntos.new"))
 
     meeting_url = request.form.get("meeting_url", "").strip() or None
+    is_public = request.form.get("is_public") == "1"
     junto = Junto(
         name=name,
         description=description,
         owner_id=g.current_user.id,
         meeting_url=meeting_url,
+        is_public=is_public,
     )
     db.session.add(junto)
     db.session.commit()
@@ -46,7 +48,9 @@ def show(id):
         Commitment.member_id.in_([m.id for m in junto.members]),
         Commitment.cycle_week == current_week,
     ).all()
-    commitments_by_member = {c.member_id: c for c in commitments_list}
+    commitments_by_member = {}
+    for c in commitments_list:
+        commitments_by_member.setdefault(c.member_id, []).append(c)
 
     visible_meetings = junto.meetings[: junto.meeting_limit]
 
@@ -58,6 +62,7 @@ def show(id):
         current_week=current_week,
         CommitmentStatus=CommitmentStatus,
         meetings=visible_meetings,
+        commitment_limit=junto.commitment_limit,
     )
 
 
@@ -69,38 +74,38 @@ def update_commitments(id):
 
     current_week = get_weekly_prompt()["week"]
 
+    limit = junto.commitment_limit
+
     for member in junto.members:
-        description = request.form.get(f"commitment_desc_{member.id}", "").strip()
-        status_value = request.form.get(f"commitment_status_{member.id}", "")
-
-        if not description:
-            existing = Commitment.query.filter_by(
-                member_id=member.id, cycle_week=current_week
-            ).first()
-            if existing:
-                db.session.delete(existing)
-            continue
-
-        try:
-            status = CommitmentStatus(status_value)
-        except ValueError:
-            status = CommitmentStatus.NOT_STARTED
-
-        commitment = Commitment.query.filter_by(
+        # Delete existing commitments for this member + week
+        Commitment.query.filter_by(
             member_id=member.id, cycle_week=current_week
-        ).first()
+        ).delete()
 
-        if commitment:
-            commitment.description = description
-            commitment.status = status
-        else:
-            commitment = Commitment(
-                member_id=member.id,
-                cycle_week=current_week,
-                description=description,
-                status=status,
+        # Recreate from submitted slots (up to limit)
+        for slot in range(limit):
+            desc = request.form.get(
+                f"commitment_desc_{member.id}_{slot}", ""
+            ).strip()
+            status_value = request.form.get(
+                f"commitment_status_{member.id}_{slot}", ""
             )
-            db.session.add(commitment)
+            if not desc:
+                continue
+
+            try:
+                status = CommitmentStatus(status_value)
+            except ValueError:
+                status = CommitmentStatus.NOT_STARTED
+
+            db.session.add(
+                Commitment(
+                    member_id=member.id,
+                    cycle_week=current_week,
+                    description=desc,
+                    status=status,
+                )
+            )
 
     db.session.commit()
     flash("Commitments updated.", "success")
@@ -122,9 +127,11 @@ def edit(id):
             return redirect(url_for("juntos.edit", id=junto.id))
 
         meeting_url = request.form.get("meeting_url", "").strip() or None
+        is_public = request.form.get("is_public") == "1"
         junto.name = name
         junto.description = description
         junto.meeting_url = meeting_url
+        junto.is_public = is_public
         db.session.commit()
         flash("Junto updated.", "success")
         return redirect(url_for("juntos.show", id=junto.id))

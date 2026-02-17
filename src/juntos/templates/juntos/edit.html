@@ -17,6 +17,12 @@
         <label for="meeting_url">Meeting Link</label>
         <input type="url" id="meeting_url" name="meeting_url" value="{{ junto.meeting_url or '' }}" placeholder="https://zoom.us/j/...">
     </div>
+    <div class="form-group form-group--checkbox">
+        <label>
+            <input type="checkbox" name="is_public" value="1" {{ 'checked' if junto.is_public }}>
+            Publicly visible
+        </label>
+    </div>
     <div class="form-actions">
         <button class="btn btn-primary" type="submit">Save</button>
         <a class="btn btn-secondary" href="{{ url_for('juntos.show', id=junto.id) }}">Cancel</a>

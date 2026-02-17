@@ -53,6 +53,7 @@ class Junto(db.Model):
     description = db.Column(db.Text)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
     meeting_url = db.Column(db.String(2048), nullable=True)
+    is_public = db.Column(db.Boolean, nullable=False, default=True)
     tier = db.Column(
         db.Enum(JuntoTier), nullable=False, default=JuntoTier.FREE
     )
@@ -79,9 +80,19 @@ class Junto(db.Model):
         JuntoTier.EXPANDED: 5,
     }
 
+    _TIER_COMMITMENT_LIMITS = {
+        JuntoTier.FREE: 2,
+        JuntoTier.SUBSCRIPTION: 3,
+        JuntoTier.EXPANDED: 5,
+    }
+
     @property
     def meeting_limit(self):
         return self._TIER_MEETING_LIMITS.get(self.tier, 1)
+
+    @property
+    def commitment_limit(self):
+        return self._TIER_COMMITMENT_LIMITS.get(self.tier, 2)
 
     @property
     def is_full(self):
@@ -151,10 +162,6 @@ class Commitment(db.Model):
     member = db.relationship(
         "Member",
         backref=db.backref("commitments", cascade="all, delete-orphan"),
-    )
-
-    __table_args__ = (
-        db.UniqueConstraint("member_id", "cycle_week", name="uq_commitment_member_week"),
     )
 
     def __repr__(self):
