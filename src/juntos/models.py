@@ -32,6 +32,8 @@ class User(db.Model):
     location = db.Column(db.String(255), nullable=True)
     last_active_at = db.Column(db.DateTime, nullable=True)
     notification_prefs = db.Column(db.JSON, nullable=True)
+    chatbot_msgs_used = db.Column(db.Integer, nullable=False, default=0)
+    chatbot_addon = db.Column(db.Boolean, nullable=False, default=False)
 
     juntos = db.relationship("Junto", backref="owner", lazy=True)
 
@@ -224,3 +226,42 @@ class MemberInvite(db.Model):
 
     def __repr__(self):
         return f"<MemberInvite junto={self.junto_id} member={self.member_id}>"
+
+
+class ChatSession(db.Model):
+    __tablename__ = "chat_session"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    junto_id = db.Column(db.Integer, db.ForeignKey("junto.id"), nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=_utcnow)
+    updated_at = db.Column(
+        db.DateTime, nullable=False, default=_utcnow, onupdate=_utcnow
+    )
+
+    messages = db.relationship(
+        "ChatMessage",
+        backref="session",
+        lazy=True,
+        cascade="all, delete-orphan",
+        order_by="ChatMessage.id",
+    )
+    user = db.relationship("User", backref="chat_sessions", lazy=True)
+
+    def __repr__(self):
+        return f"<ChatSession user={self.user_id}>"
+
+
+class ChatMessage(db.Model):
+    __tablename__ = "chat_message"
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(
+        db.Integer, db.ForeignKey("chat_session.id"), nullable=False
+    )
+    role = db.Column(db.String(10), nullable=False)  # "user" | "assistant"
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=_utcnow)
+
+    def __repr__(self):
+        return f"<ChatMessage session={self.session_id} role={self.role}>"

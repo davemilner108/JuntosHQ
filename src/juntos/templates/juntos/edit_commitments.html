@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Commitments — {{ junto.name }}{% endblock %}
+
+{% block content %}
+<h1>Commitments <span class="member-count">Week {{ current_week }}</span></h1>
+<h2>{{ junto.name }}</h2>
+
+<form method="post" action="{{ url_for('juntos.update_commitments', id=junto.id) }}">
+    <ul class="commitment-list">
+    {% for member in junto.members %}
+        {% set member_commitments = commitments.get(member.id, []) %}
+        <li class="commitment-item">
+            <div class="commitment-member">{{ member.name }}</div>
+            {% for slot in range(commitment_limit) %}
+            {% set c = member_commitments[slot] if slot < member_commitments|length else None %}
+            <div class="commitment-fields">
+                <div class="form-group">
+                    <label for="commitment_desc_{{ member.id }}_{{ slot }}">Action {{ slot + 1 }}</label>
+                    <input type="text"
+                           id="commitment_desc_{{ member.id }}_{{ slot }}"
+                           name="commitment_desc_{{ member.id }}_{{ slot }}"
+                           value="{{ c.description if c else '' }}"
+                           placeholder="Action {{ slot + 1 }} for {{ member.name }}"
+                           maxlength="500">
+                </div>
+                <div class="form-group">
+                    <label for="commitment_status_{{ member.id }}_{{ slot }}">Status</label>
+                    <select id="commitment_status_{{ member.id }}_{{ slot }}"
+                            name="commitment_status_{{ member.id }}_{{ slot }}">
+                        {% for s in CommitmentStatus %}
+                        <option value="{{ s.value }}"
+                                {% if c and c.status == s %}selected{% endif %}>
+                            {{ s.value | replace('_', ' ') | title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {% endfor %}
+        </li>
+    {% endfor %}
+    </ul>
+    <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save Commitments</button>
+        <a class="btn btn-secondary" href="{{ url_for('juntos.show', id=junto.id) }}">Cancel</a>
+    </div>
+</form>
+{% endblock %}

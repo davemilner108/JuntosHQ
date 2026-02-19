@@ -60,8 +60,30 @@ def show(id):
         prompt=prompt,
         commitments=commitments_by_member,
         current_week=current_week,
-        CommitmentStatus=CommitmentStatus,
         meetings=visible_meetings,
+    )
+
+
+@bp.route("/<int:id>/commitments/edit")
+@login_required
+def edit_commitments(id):
+    junto = db.get_or_404(Junto, id)
+    require_junto_owner(junto)
+    prompt = get_weekly_prompt()
+    current_week = prompt["week"]
+    commitments_list = Commitment.query.filter(
+        Commitment.member_id.in_([m.id for m in junto.members]),
+        Commitment.cycle_week == current_week,
+    ).all()
+    commitments_by_member = {}
+    for c in commitments_list:
+        commitments_by_member.setdefault(c.member_id, []).append(c)
+    return render_template(
+        "juntos/edit_commitments.html",
+        junto=junto,
+        commitments=commitments_by_member,
+        current_week=current_week,
+        CommitmentStatus=CommitmentStatus,
         commitment_limit=junto.commitment_limit,
     )
 

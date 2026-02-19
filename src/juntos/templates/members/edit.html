@@ -30,4 +30,25 @@
         <a class="btn btn-secondary" href="{{ url_for('juntos.show', id=junto.id) }}">Cancel</a>
     </div>
 </form>
+
+{% if not member.user_id %}
+<hr>
+<h2>Invite Member</h2>
+<form method="post" action="{{ url_for('invites.create', junto_id=junto.id) }}" class="invite-form">
+    <input type="hidden" name="member_id" value="{{ member.id }}">
+    <div class="form-group">
+        <label for="email">Email (optional)</label>
+        <input type="email" id="email" name="email" placeholder="member@example.com" class="invite-email-input">
+    </div>
+    <div class="form-actions">
+        <button class="btn btn-invite" type="submit">Send Invite</button>
+    </div>
+</form>
+{% endif %}
+
+<hr>
+<h2>Danger Zone</h2>
+<form method="post" action="{{ url_for('members.delete', junto_id=junto.id, id=member.id) }}">
+    <button class="btn btn-danger" type="submit">Delete Member</button>
+</form>
 {% endblock %}

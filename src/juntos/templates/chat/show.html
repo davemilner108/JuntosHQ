@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Ask Ben Franklin — JuntosHQ{% endblock %}
+
+{% block content %}
+<div class="chat-page">
+
+<div class="chat-header">
+    <h1>Ben's Counsel</h1>
+    {% if junto %}
+    <p class="chat-context">
+        Speaking with <strong>{{ junto.name }}</strong>
+        {% if current_question %}
+        &mdash; this week's question: &ldquo;{{ current_question }}&rdquo;
+        {% endif %}
+    </p>
+    {% else %}
+    <p class="chat-context">A reasoning companion in the spirit of Franklin's Junto, 1727.</p>
+    {% endif %}
+</div>
+
+{% if not has_access %}
+
+<div class="ben-upsell">
+    <p>&ldquo;An investment in knowledge pays the best interest.&rdquo;</p>
+    <p>You have used your 5 free messages with Ben Franklin.</p>
+    <a class="btn btn-primary" href="{{ url_for('main.pricing') }}">Add Ben's Counsel &mdash; $4.99/month &rarr;</a>
+</div>
+
+{% else %}
+
+<div class="chat-window" id="chat-window">
+    {% if chat_session.messages %}
+    <ul class="chat-messages">
+        {% for msg in chat_session.messages %}
+        <li class="chat-message chat-message--{{ msg.role }}">
+            <div class="chat-bubble">{{ msg.content }}</div>
+            {% if msg.role == "assistant" %}
+            <span class="chat-attribution">&mdash; B. Franklin</span>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    <div id="chat-bottom"></div>
+    {% else %}
+    <p class="chat-empty-state">Good day! I am at your service. What matter weighs on your mind?</p>
+    {% endif %}
+</div>
+
+{% if trial_remaining is not none %}
+<p class="chat-trial-counter">
+    {% if trial_remaining == 0 %}
+    No free messages remaining. <a href="{{ url_for('main.pricing') }}">Upgrade to continue &rarr;</a>
+    {% elif trial_remaining == 1 %}
+    1 free message remaining.
+    {% else %}
+    {{ trial_remaining }} free messages remaining.
+    {% endif %}
+</p>
+{% endif %}
+
+<form class="chat-form" method="post" action="{{ url_for('chat.send_message') }}">
+    {% if junto %}
+    <input type="hidden" name="junto_id" value="{{ junto.id }}">
+    {% endif %}
+    <div class="chat-input-row">
+        <textarea
+            name="message"
+            class="chat-input"
+            placeholder="Write to Mr. Franklin..."
+            rows="3"
+            required
+            autofocus
+        ></textarea>
+        <button class="btn btn-primary" type="submit">Send</button>
+    </div>
+</form>
+
+<form method="post" action="{{ url_for('chat.new_session') }}" style="margin-top: 0.5rem;">
+    {% if junto %}
+    <input type="hidden" name="junto_id" value="{{ junto.id }}">
+    {% endif %}
+    <button class="btn btn-secondary btn-sm" type="submit">New Conversation</button>
+</form>
+
+{% endif %}
+
+<p style="margin-top: 1.5rem;">
+    {% if junto %}
+    <a href="{{ url_for('juntos.show', id=junto.id) }}">&larr; Back to {{ junto.name }}</a>
+    {% else %}
+    <a href="{{ url_for('main.index') }}">&larr; Back to all juntos</a>
+    {% endif %}
+</p>
+
+</div>{# end .chat-page #}
+
+<script>
+    // Scroll chat window to bottom on load so latest message is visible
+    (function () {
+        var bottom = document.getElementById('chat-bottom');
+        if (bottom) { bottom.scrollIntoView(); }
+    })();
+</script>
+{% endblock %}
