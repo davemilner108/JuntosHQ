@@ -49,6 +49,12 @@
         {% if current_user and junto.owner_id == current_user.id %}
         <div class="member-actions">
             <a class="btn btn-secondary" href="{{ url_for('members.edit', junto_id=junto.id, id=member.id) }}">Manage &rarr;</a>
+            {% if member.user_id is none %}
+            <form class="invite-form" method="post" action="{{ url_for('invites.create', junto_id=junto.id) }}" style="display:inline">
+                <input type="hidden" name="member_id" value="{{ member.id }}">
+                <button class="btn btn-secondary btn-sm" type="submit">Invite</button>
+            </form>
+            {% endif %}
         </div>
         {% endif %}
     </li>
@@ -74,6 +80,13 @@
     </li>
     {% endfor %}
 </ul>
+{% if hidden_meeting_count > 0 %}
+<div class="upgrade-prompt" style="margin-top: 0.75rem; padding: 1rem 1.25rem; border: 1px solid #c9b97a; border-radius: 6px; background: #fffdf4;">
+    <strong>{{ hidden_meeting_count }} older meeting{{ 's' if hidden_meeting_count != 1 else '' }} in your history.</strong>
+    Upgrade to see them all.
+    <a href="{{ url_for('main.pricing') }}">Upgrade &rarr;</a>
+</div>
+{% endif %}
 {% else %}
 <p class="empty-state">No meetings logged yet.</p>
 {% endif %}

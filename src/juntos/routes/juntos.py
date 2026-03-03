@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from sqlalchemy import func
 
 from juntos.auth_utils import login_required, require_junto_owner
 from juntos.franklin import get_weekly_prompt
@@ -7,15 +8,46 @@ from juntos.models import Commitment, CommitmentStatus, Junto, db
 bp = Blueprint("juntos", __name__, url_prefix="/juntos")
 
 
+def _user_junto_count(user_id: int) -> int:
+    """Return the number of juntos owned by the given user (efficient DB count)."""
+    return (
+        db.session.query(func.count(Junto.id))
+        .filter(Junto.owner_id == user_id)
+        .scalar()
+        or 0
+    )
+
+
 @bp.route("/new")
 @login_required
 def new():
+    user = g.current_user
+    count = _user_junto_count(user.id)
+    if count >= user.junto_limit:
+        flash(
+            f"You've reached the {user.subscription_tier.value.title()} tier limit "
+            f"({count}/{user.junto_limit} juntos). "
+            "Upgrade your plan to create more.",
+            "error",
+        )
+        return redirect(url_for("main.pricing"))
     return render_template("juntos/new.html")
 
 
 @bp.route("/", methods=["POST"])
 @login_required
 def create():
+    user = g.current_user
+    count = _user_junto_count(user.id)
+    if count >= user.junto_limit:
+        flash(
+            f"You've reached the {user.subscription_tier.value.title()} tier limit "
+            f"({count}/{user.junto_limit} juntos). "
+            "Upgrade your plan to create more.",
+            "error",
+        )
+        return redirect(url_for("main.pricing"))
+
     name = request.form.get("name", "").strip()
     description = request.form.get("description", "").strip()
 
@@ -52,7 +84,9 @@ def show(id):
     for c in commitments_list:
         commitments_by_member.setdefault(c.member_id, []).append(c)
 
+    total_meetings = len(junto.meetings)
     visible_meetings = junto.meetings[: junto.meeting_limit]
+    hidden_meeting_count = max(0, total_meetings - junto.meeting_limit)
 
     return render_template(
         "juntos/show.html",
@@ -61,6 +95,7 @@ def show(id):
         commitments=commitments_by_member,
         current_week=current_week,
         meetings=visible_meetings,
+        hidden_meeting_count=hidden_meeting_count,
     )
 
 
