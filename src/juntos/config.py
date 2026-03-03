@@ -38,6 +38,7 @@ class Config:
     STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
     STRIPE_PRICE_STANDARD = os.environ.get("STRIPE_PRICE_STANDARD", "")
     STRIPE_PRICE_EXPANDED = os.environ.get("STRIPE_PRICE_EXPANDED", "")
+    STRIPE_PRICE_CHATBOT = os.environ.get("STRIPE_PRICE_CHATBOT", "")
 
     @property
     def MAIL_ENABLED(self):

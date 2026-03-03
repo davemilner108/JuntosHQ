@@ -77,6 +77,62 @@ def checkout_success():
     return redirect(url_for("main.index"))
 
 
+@bp.route("/account/addon/chatbot/checkout")
+@login_required
+def chatbot_checkout():
+    """Create a Stripe Checkout session for the Ben's Counsel add-on."""
+    user: User = g.current_user
+
+    if user.chatbot_addon:
+        flash("Ben's Counsel is already active on your account.", "info")
+        return redirect(url_for("main.pricing"))
+
+    stripe_key = current_app.config.get("STRIPE_SECRET_KEY", "")
+    price_id = current_app.config.get("STRIPE_PRICE_CHATBOT", "")
+
+    if not stripe_key or not price_id:
+        flash(
+            "Billing is not yet configured. Please check back soon.",
+            "info",
+        )
+        return redirect(url_for("main.pricing"))
+
+    stripe.api_key = stripe_key
+
+    customer_id = user.stripe_customer_id
+    if not customer_id:
+        customer = stripe.Customer.create(
+            email=user.email or "",
+            name=user.name or "",
+            metadata={"user_id": str(user.id)},
+        )
+        customer_id = customer.id
+        user.stripe_customer_id = customer_id
+        db.session.commit()
+
+    session = stripe.checkout.Session.create(
+        customer=customer_id,
+        payment_method_types=["card"],
+        line_items=[{"price": price_id, "quantity": 1}],
+        mode="subscription",
+        success_url=url_for("billing.chatbot_checkout_success", _external=True),
+        cancel_url=url_for("main.pricing", _external=True),
+        metadata={"user_id": str(user.id), "addon": "chatbot"},
+    )
+    return redirect(session.url, code=303)
+
+
+@bp.route("/account/addon/chatbot/success")
+@login_required
+def chatbot_checkout_success():
+    """Landing page after a successful chatbot add-on checkout."""
+    flash(
+        "Ben's Counsel is now active on your account. Enjoy the wisdom!",
+        "success",
+    )
+    return redirect(url_for("main.index"))
+
+
 @bp.route("/account/subscription/portal")
 @login_required
 def portal():
@@ -146,25 +202,29 @@ def _handle_event(event: stripe.Event) -> None:
 
 
 def _activate_subscription(session_obj) -> None:
-    """Upgrade user tier when checkout completes."""
+    """Upgrade user tier or enable addon when checkout completes."""
     customer_id = session_obj.get("customer")
     sub_id = session_obj.get("subscription")
-    plan = (session_obj.get("metadata") or {}).get("plan", "")
+    metadata = session_obj.get("metadata") or {}
 
     user = User.query.filter_by(stripe_customer_id=customer_id).first()
     if not user:
         return
 
-    tier = _PLAN_TIERS.get(plan)
-    if tier:
-        user.subscription_tier = tier
-    if sub_id:
-        user.stripe_subscription_id = sub_id
+    if metadata.get("addon") == "chatbot":
+        user.chatbot_addon = True
+    else:
+        plan = metadata.get("plan", "")
+        tier = _PLAN_TIERS.get(plan)
+        if tier:
+            user.subscription_tier = tier
+        if sub_id:
+            user.stripe_subscription_id = sub_id
     db.session.commit()
 
 
 def _sync_subscription(sub) -> None:
-    """Downgrade user tier when subscription is cancelled or lapses."""
+    """Downgrade user tier or disable addon when subscription is cancelled or lapses."""
     customer_id = sub.get("customer")
     status = sub.get("status", "")
 
@@ -172,16 +232,21 @@ def _sync_subscription(sub) -> None:
     if not user:
         return
 
+    items = (sub.get("items") or {}).get("data", [])
+    price_ids = [item.get("price", {}).get("id", "") for item in items]
+    chatbot_price_id = current_app.config.get("STRIPE_PRICE_CHATBOT", "")
+    is_chatbot_sub = chatbot_price_id and chatbot_price_id in price_ids
+
     if status in ("canceled", "unpaid", "incomplete_expired"):
-        user.subscription_tier = SubscriptionTier.FREE
-        user.stripe_subscription_id = None
+        if is_chatbot_sub:
+            user.chatbot_addon = False
+        else:
+            user.subscription_tier = SubscriptionTier.FREE
+            user.stripe_subscription_id = None
         db.session.commit()
     elif status == "active":
-        # Determine tier from price ID on first item
-        items = (sub.get("items") or {}).get("data", [])
-        if items:
-            price_id = items[0].get("price", {}).get("id", "")
-            tier = _tier_from_price_id(current_app, price_id)
+        if not is_chatbot_sub and price_ids:
+            tier = _tier_from_price_id(current_app, price_ids[0])
             if tier:
                 user.subscription_tier = tier
                 db.session.commit()
