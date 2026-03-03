@@ -159,4 +159,23 @@
 {% endif %}
 
 <p><a href="{{ url_for('main.index') }}">&larr; Back to all juntos</a></p>
+
+{% if current_user and junto.owner_id == current_user.id %}
+<div class="export-section" style="margin: 1.5rem 0; padding: 1.25rem 1.5rem; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
+    <p style="font-weight: bold; margin: 0 0 0.75rem;">Export Data</p>
+    {% if current_user.subscription_tier.value in ('standard', 'expanded') %}
+    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.export_meetings_csv', id=junto.id) }}">Meetings &mdash; CSV</a>
+        <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.export_meetings_pdf', id=junto.id) }}">Meetings &mdash; PDF</a>
+        <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.export_commitments_csv', id=junto.id) }}">Commitments &mdash; CSV</a>
+    </div>
+    {% else %}
+    <p style="margin: 0; color: #555; font-size: 0.95em;">
+        Export meeting history and commitments as CSV or PDF.
+        <a href="{{ url_for('main.pricing') }}">Upgrade to Standard to unlock &rarr;</a>
+    </p>
+    {% endif %}
+</div>
+{% endif %}
+
 {% endblock %}

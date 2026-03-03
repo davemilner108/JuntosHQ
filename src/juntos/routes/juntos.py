@@ -1,9 +1,23 @@
-from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+import csv
+import io
+import re
+
+from flask import (
+    Blueprint,
+    flash,
+    g,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from fpdf import FPDF
 from sqlalchemy import func
 
 from juntos.auth_utils import login_required, require_junto_owner
 from juntos.franklin import get_weekly_prompt
-from juntos.models import Commitment, CommitmentStatus, Junto, db
+from juntos.models import Commitment, CommitmentStatus, Junto, SubscriptionTier, db
 
 bp = Blueprint("juntos", __name__, url_prefix="/juntos")
 
@@ -206,3 +220,137 @@ def delete(id):
     db.session.commit()
     flash("Junto deleted.", "success")
     return redirect(url_for("main.index"))
+
+
+# ---------------------------------------------------------------------------
+# Export helpers
+# ---------------------------------------------------------------------------
+
+_EXPORT_TIERS = (SubscriptionTier.STANDARD, SubscriptionTier.EXPANDED)
+
+
+def _can_export(user) -> bool:
+    """Return True if the user's subscription tier includes the export feature."""
+    return user.subscription_tier in _EXPORT_TIERS
+
+
+def _safe_filename(name: str) -> str:
+    """Sanitise a junto name for use in a Content-Disposition filename."""
+    return re.sub(r"[^\w\-]", "_", name)
+
+
+# ---------------------------------------------------------------------------
+# Export routes
+# ---------------------------------------------------------------------------
+
+
+@bp.route("/<int:id>/export/meetings.csv")
+@login_required
+def export_meetings_csv(id):
+    junto = db.get_or_404(Junto, id)
+    require_junto_owner(junto)
+
+    if not _can_export(g.current_user):
+        flash("Exporting data requires a Standard or Expanded plan.", "error")
+        return redirect(url_for("main.pricing"))
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Date", "Attendee Count", "Attendee Names", "Notes"])
+    for meeting in junto.meetings:
+        names = ", ".join(a.member.name for a in meeting.attendances)
+        notes = (meeting.notes or "")[:500]
+        writer.writerow([
+            meeting.held_on.isoformat(),
+            len(meeting.attendances),
+            names,
+            notes,
+        ])
+
+    response = make_response(output.getvalue())
+    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    fname = _safe_filename(junto.name)
+    response.headers["Content-Disposition"] = (
+        f"attachment; filename={fname}-meetings.csv"
+    )
+    return response
+
+
+@bp.route("/<int:id>/export/meetings.pdf")
+@login_required
+def export_meetings_pdf(id):
+    junto = db.get_or_404(Junto, id)
+    require_junto_owner(junto)
+
+    if not _can_export(g.current_user):
+        flash("Exporting data requires a Standard or Expanded plan.", "error")
+        return redirect(url_for("main.pricing"))
+
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Helvetica", "B", 16)
+    pdf.cell(0, 10, f"Meeting Log: {junto.name}", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 10)
+    pdf.ln(4)
+
+    for meeting in junto.meetings:
+        pdf.set_font("Helvetica", "B", 12)
+        pdf.cell(
+            0, 8,
+            meeting.held_on.strftime("%B %d, %Y"),
+            new_x="LMARGIN",
+            new_y="NEXT",
+        )
+        pdf.set_font("Helvetica", "", 10)
+        names = ", ".join(a.member.name for a in meeting.attendances) or "None"
+        pdf.cell(
+            0, 6,
+            f"Attended ({len(meeting.attendances)}): {names}",
+            new_x="LMARGIN",
+            new_y="NEXT",
+        )
+        if meeting.notes:
+            pdf.multi_cell(0, 6, meeting.notes[:500])
+        pdf.ln(4)
+
+    response = make_response(bytes(pdf.output()))
+    response.headers["Content-Type"] = "application/pdf"
+    fname = _safe_filename(junto.name)
+    response.headers["Content-Disposition"] = (
+        f"attachment; filename={fname}-meetings.pdf"
+    )
+    return response
+
+
+@bp.route("/<int:id>/export/commitments.csv")
+@login_required
+def export_commitments_csv(id):
+    junto = db.get_or_404(Junto, id)
+    require_junto_owner(junto)
+
+    if not _can_export(g.current_user):
+        flash("Exporting data requires a Standard or Expanded plan.", "error")
+        return redirect(url_for("main.pricing"))
+
+    all_commitments = (
+        Commitment.query.filter(
+            Commitment.member_id.in_([m.id for m in junto.members])
+        )
+        .order_by(Commitment.cycle_week.asc(), Commitment.member_id.asc())
+        .all()
+    )
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Member", "Commitment", "Status", "Cycle Week"])
+    for c in all_commitments:
+        writer.writerow([c.member.name, c.description, c.status.value, c.cycle_week])
+
+    response = make_response(output.getvalue())
+    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    fname = _safe_filename(junto.name)
+    response.headers["Content-Disposition"] = (
+        f"attachment; filename={fname}-commitments.csv"
+    )
+    return response
