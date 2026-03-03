@@ -49,7 +49,7 @@ class User(db.Model):
     chatbot_msgs_used = db.Column(db.Integer, nullable=False, default=0)
     chatbot_addon = db.Column(db.Boolean, nullable=False, default=False)
     subscription_tier = db.Column(
-        db.Enum(SubscriptionTier),
+        db.Enum(SubscriptionTier, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         default=SubscriptionTier.FREE,
     )
