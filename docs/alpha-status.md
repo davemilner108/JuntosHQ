@@ -193,7 +193,7 @@ If `STRIPE_SECRET_KEY` is absent the checkout routes fall back to a "coming soon
 | Invite links | ✅ Works | ✅ Works | ✅ Works |
 | Export CSV/PDF | N/A | ❌ Not built | ❌ Not built |
 | Ben's Counsel chatbot (add-on) | ✅ Trial works; ✅ Billing integrated | ✅ Trial works; ✅ Billing integrated | ✅ Trial works; ✅ Billing integrated |
-| Junto creation limit (1/5/15) | ❌ Not enforced | ❌ Not enforced | ❌ Not enforced |
+| Junto creation limit (1/3/5) | ❌ Not enforced | ❌ Not enforced | ❌ Not enforced |
 | Billing / Stripe | ✅ Chatbot add-on checkout | ✅ Checkout + chatbot add-on | ✅ Checkout + chatbot add-on |
 | Mobile layout | ✅ Done | ✅ Done | ✅ Done |
 
@@ -204,7 +204,7 @@ If `STRIPE_SECRET_KEY` is absent the checkout routes fall back to a "coming soon
 The following six items are the minimum to ship a coherent alpha to real users:
 
 - [ ] Fix 4 broken links on the pricing page
-- [ ] Add junto-creation limit based on `User.subscription_tier` (requires migration)
+- [ ] Add junto-creation limit based on `User.subscription_tier` (Free = 1, Standard = 3, Expanded = 5)
 - [x] Meeting-visibility limits confirmed: Free = 1, Standard = 3, Expanded = 5 (per-junto tier)
 - [ ] Show "upgrade" banners when free-tier limits are hit
 - [ ] Verify end-to-end invite → OAuth → accept flow on production domain

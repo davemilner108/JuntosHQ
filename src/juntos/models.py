@@ -26,8 +26,8 @@ class JuntoTier(enum.Enum):
 # Junto-creation limits per subscription tier
 JUNTO_LIMITS: dict[SubscriptionTier, int] = {
     SubscriptionTier.FREE: 1,
-    SubscriptionTier.STANDARD: 5,
-    SubscriptionTier.EXPANDED: 15,
+    SubscriptionTier.STANDARD: 3,
+    SubscriptionTier.EXPANDED: 5,
 }
 
 

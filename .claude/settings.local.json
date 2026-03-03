@@ -32,7 +32,8 @@
       "Bash(git -C C:UsersDavesourcereposJuntosHQ status)",
       "Bash(del \"c:\\\\Users\\\\Dave\\\\source\\\\repos\\\\JuntosHQ\\\\instance\\\\juntos.db\")",
       "Bash(npx @anthropic-ai/claude-code mcp add:*)",
-      "Bash(py -3.12 -m pip show voyageai)"
+      "Bash(py -3.12 -m pip show voyageai)",
+      "Bash(flask --app src/juntos seed)"
     ],
     "additionalDirectories": [
       "c:\\Users\\dmiln\\source\\repos\\JuntosHQ"
