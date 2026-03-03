@@ -110,10 +110,7 @@ There is **no payment integration** at all. The pricing page describes three pai
    - Wire junto-creation and meeting-visibility limits to this user field instead of the per-junto tier.
    - Generate and apply an Alembic migration.
 
-4. **Align meeting visibility limits with feature docs**
-   - Feature docs say: Free = last 3, Standard = up to 25, Expanded = up to 80.
-   - Code currently enforces: Free = 1, Standard = 3, Expanded = 5.
-   - Agree on one canonical set of numbers and update both the `Junto._TIER_MEETING_LIMITS` dict and the pricing page copy.
+4. ~~**Align meeting visibility limits**~~ ✅ Resolved — canonical limits are **Free = 1, Standard = 3, Expanded = 5** (per-junto tier). Pricing page and `Junto._TIER_MEETING_LIMITS` are consistent.
 
 ### Should-Do Before Alpha (Not Hard Blockers)
 
@@ -166,7 +163,7 @@ There is **no payment integration** at all. The pricing page describes three pai
 | Junto CRUD | ✅ Works | ✅ Works | ✅ Works |
 | Member CRUD | ✅ Works | ✅ Works | ✅ Works |
 | Meeting log | ✅ Works | ✅ Works | ✅ Works |
-| Meeting history limit | ⚠️ Enforced but wrong value (1 vs 3) | ⚠️ Wrong value (3 vs 25) | ⚠️ Wrong value (5 vs 80) |
+| Meeting history limit | ✅ 1 (per-junto tier) | ✅ 3 (per-junto tier) | ✅ 5 (per-junto tier) |
 | Commitments (owner-managed) | ✅ Works | ✅ Works | ✅ Works |
 | Commitments (self-reporting) | N/A | ❌ Not built | ❌ Not built |
 | Weekly Franklin prompt | ✅ Works | ✅ Works | ✅ Works |
@@ -186,7 +183,7 @@ The following six items are the minimum to ship a coherent alpha to real users:
 
 - [ ] Fix 4 broken links on the pricing page
 - [ ] Add junto-creation limit based on `User.subscription_tier` (requires migration)
-- [ ] Correct meeting-visibility limits to match feature docs (Free = 3, Standard = 25, Expanded = 80)
+- [x] Meeting-visibility limits confirmed: Free = 1, Standard = 3, Expanded = 5 (per-junto tier)
 - [ ] Show "upgrade" banners when free-tier limits are hit
 - [ ] Verify end-to-end invite → OAuth → accept flow on production domain
 - [ ] Production environment checklist complete (API keys, DB, secret key)

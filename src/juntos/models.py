@@ -30,13 +30,6 @@ JUNTO_LIMITS: dict[SubscriptionTier, int] = {
     SubscriptionTier.EXPANDED: 15,
 }
 
-# Visible meeting history limits per subscription tier
-MEETING_VISIBILITY_LIMITS: dict[SubscriptionTier, int] = {
-    SubscriptionTier.FREE: 3,
-    SubscriptionTier.STANDARD: 25,
-    SubscriptionTier.EXPANDED: 80,
-}
-
 
 class User(db.Model):
     __tablename__ = "user"
@@ -70,10 +63,6 @@ class User(db.Model):
     @property
     def junto_limit(self) -> int:
         return JUNTO_LIMITS.get(self.subscription_tier, 1)
-
-    @property
-    def meeting_visibility_limit(self) -> int:
-        return MEETING_VISIBILITY_LIMITS.get(self.subscription_tier, 3)
 
     def __repr__(self):
         return f"<User {self.provider}:{self.provider_id}>"
