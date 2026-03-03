@@ -35,7 +35,16 @@ def create_app(config_class=Config):
 
         app.extensions["mail"] = Mail(app)
 
-    from juntos.routes import auth, chat, invites, juntos, main, meetings, members
+    from juntos.routes import (
+        auth,
+        billing,
+        chat,
+        invites,
+        juntos,
+        main,
+        meetings,
+        members,
+    )
 
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
@@ -44,6 +53,7 @@ def create_app(config_class=Config):
     app.register_blueprint(meetings.bp)
     app.register_blueprint(invites.bp)
     app.register_blueprint(chat.bp)
+    app.register_blueprint(billing.bp)
 
     @app.cli.command("seed")
     def seed_command():

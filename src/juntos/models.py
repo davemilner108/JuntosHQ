@@ -53,6 +53,8 @@ class User(db.Model):
         nullable=False,
         default=SubscriptionTier.FREE,
     )
+    stripe_customer_id = db.Column(db.String(255), nullable=True, unique=True)
+    stripe_subscription_id = db.Column(db.String(255), nullable=True)
 
     juntos = db.relationship("Junto", backref="owner", lazy=True)
 

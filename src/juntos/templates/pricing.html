@@ -44,7 +44,7 @@
         <li>+ Everything in Free</li>
       </ul>
       <p class="tagline">Ideal for running multiple groups</p>
-      <a href="{{ url_for('main.billing_soon') }}" class="btn primary">Subscribe to Standard</a>
+      <a href="{{ url_for('billing.checkout', plan='standard') }}" class="btn primary">Subscribe to Standard</a>
     </div>
 
     <!-- Expanded Card -->
@@ -59,7 +59,7 @@
         <li>+ Everything in Standard</li>
       </ul>
       <p class="tagline">For dedicated leaders & multi-group organizers</p>
-      <a href="{{ url_for('main.billing_soon') }}" class="btn">Subscribe to Expanded</a>
+      <a href="{{ url_for('billing.checkout', plan='expanded') }}" class="btn">Subscribe to Expanded</a>
     </div>
   </div>
 </section>

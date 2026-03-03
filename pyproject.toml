@@ -23,6 +23,7 @@ dependencies = [
     "beautifulsoup4>=4.14.3",
     "sentence-transformers>=5.2.2",
     "voyageai>=0.3.2",
+    "stripe>=10.0",
 ]
 
 [project.scripts]
