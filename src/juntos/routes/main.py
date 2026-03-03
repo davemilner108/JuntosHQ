@@ -1,4 +1,4 @@
-from flask import Blueprint, g, render_template
+from flask import Blueprint, flash, g, redirect, render_template, url_for
 from sqlalchemy import or_
 
 from juntos.models import Junto, Member, db
@@ -33,3 +33,12 @@ def pricing():
 @bp.route("/about")
 def about():
     return render_template("about.html")
+
+@bp.route("/billing/soon")
+def billing_soon():
+    flash(
+        "Paid subscriptions are not yet available. "
+        "You are on the free plan. Billing will be enabled before the public launch.",
+        "info",
+    )
+    return redirect(url_for("main.pricing"))

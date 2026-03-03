@@ -11,10 +11,31 @@ def _utcnow():
     return datetime.now(UTC)
 
 
+class SubscriptionTier(enum.Enum):
+    FREE = "free"
+    STANDARD = "standard"
+    EXPANDED = "expanded"
+
+
 class JuntoTier(enum.Enum):
     FREE = "free"
     SUBSCRIPTION = "subscription"
     EXPANDED = "expanded"
+
+
+# Junto-creation limits per subscription tier
+JUNTO_LIMITS: dict[SubscriptionTier, int] = {
+    SubscriptionTier.FREE: 1,
+    SubscriptionTier.STANDARD: 5,
+    SubscriptionTier.EXPANDED: 15,
+}
+
+# Visible meeting history limits per subscription tier
+MEETING_VISIBILITY_LIMITS: dict[SubscriptionTier, int] = {
+    SubscriptionTier.FREE: 3,
+    SubscriptionTier.STANDARD: 25,
+    SubscriptionTier.EXPANDED: 80,
+}
 
 
 class User(db.Model):
@@ -34,12 +55,25 @@ class User(db.Model):
     notification_prefs = db.Column(db.JSON, nullable=True)
     chatbot_msgs_used = db.Column(db.Integer, nullable=False, default=0)
     chatbot_addon = db.Column(db.Boolean, nullable=False, default=False)
+    subscription_tier = db.Column(
+        db.Enum(SubscriptionTier),
+        nullable=False,
+        default=SubscriptionTier.FREE,
+    )
 
     juntos = db.relationship("Junto", backref="owner", lazy=True)
 
     __table_args__ = (
         db.UniqueConstraint("provider", "provider_id", name="uq_user_provider"),
     )
+
+    @property
+    def junto_limit(self) -> int:
+        return JUNTO_LIMITS.get(self.subscription_tier, 1)
+
+    @property
+    def meeting_visibility_limit(self) -> int:
+        return MEETING_VISIBILITY_LIMITS.get(self.subscription_tier, 3)
 
     def __repr__(self):
         return f"<User {self.provider}:{self.provider_id}>"
