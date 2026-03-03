@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS franklin_passages (
     tags TEXT[],
     token_count INT,
     content TEXT NOT NULL,
-    embedding vector(1536)
+    embedding vector(1024)
 );
 
 CREATE INDEX IF NOT EXISTS franklin_embedding_idx

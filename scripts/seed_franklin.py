@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Seed Franklin corpus into pgvector using Ollama embeddings (nomic-embed-text).
+Seed Franklin corpus into pgvector using VoyageAI embeddings (voyage-4).
 
 Enhanced for Founders Online / historical letter files:
 - Aggressive cleaning of footnotes, repetitions, editorial notes
@@ -14,19 +14,24 @@ import time
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
-import ollama
+import voyageai
 from sqlalchemy import create_engine, text
 from tqdm import tqdm, trange
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # ────────────────────────────────────────────────
 # Configuration
 # ────────────────────────────────────────────────
 
-EMBED_MODEL          = "nomic-embed-text"       # 768 dims
+EMBED_MODEL          = "voyage-4"               # 1024 dims
 CHUNK_TOKENS_TARGET  = 350
-MAX_CHUNK_TOKENS     = 1400                     # Conservative Ollama-safe limit
+MAX_CHUNK_TOKENS     = 1400
 OVERLAP_PARAGRAPHS   = 1
-BATCH_SIZE           = 64
+BATCH_SIZE           = 64                       # VoyageAI supports up to 128
+
+vo = voyageai.Client()  # reads VOYAGE_API_KEY from env
 
 MAX_RETRIES    = 5
 BASE_BACKOFF   = 1.0
@@ -214,8 +219,8 @@ def embed_batch_with_retry(texts: List[str]) -> List[List[float]]:
         return []
     for attempt in range(1, MAX_RETRIES + 1):
         try:
-            response = ollama.embed(model=EMBED_MODEL, input=texts)
-            embeddings = response.get("embeddings", [])
+            result = vo.embed(texts, model=EMBED_MODEL)
+            embeddings = result.embeddings
             if len(embeddings) != len(texts):
                 raise RuntimeError(f"Mismatch: {len(embeddings)} vs {len(texts)}")
             return embeddings
@@ -223,7 +228,7 @@ def embed_batch_with_retry(texts: List[str]) -> List[List[float]]:
             if attempt == MAX_RETRIES:
                 raise
             delay = BASE_BACKOFF * (BACKOFF_FACTOR ** (attempt - 1))
-            print(f"  Ollama retry {attempt}/{MAX_RETRIES} after {delay:.1f}s → {e}")
+            print(f"  VoyageAI retry {attempt}/{MAX_RETRIES} after {delay:.1f}s → {e}")
             time.sleep(delay)
 
 
@@ -326,11 +331,11 @@ def main() -> None:
     print("Franklin corpus seeder (enhanced for letters)\n")
 
     db_dim = get_embedding_dimension()
-    expected = 768
+    expected = 1024
     if db_dim is None:
         print("WARNING: Can't detect embedding dim — check table")
     elif db_dim != expected:
-        print(f"ERROR: DB dim {db_dim} != model {expected} — fix VECTOR(768)")
+        print(f"ERROR: DB dim {db_dim} != model {expected} — fix VECTOR(1024)")
         return
     else:
         print(f"Dim check: OK ({db_dim})\n")

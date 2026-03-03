@@ -31,7 +31,8 @@
       "Bash(ls -la \"C:\\\\Users\\\\Dave\\\\source\\\\repos\\\\JuntosHQ\\\\src\\\\juntos\\\\static\"\" 2>&1 || echo \"Directory may not exist \")",
       "Bash(git -C C:UsersDavesourcereposJuntosHQ status)",
       "Bash(del \"c:\\\\Users\\\\Dave\\\\source\\\\repos\\\\JuntosHQ\\\\instance\\\\juntos.db\")",
-      "Bash(npx @anthropic-ai/claude-code mcp add:*)"
+      "Bash(npx @anthropic-ai/claude-code mcp add:*)",
+      "Bash(py -3.12 -m pip show voyageai)"
     ],
     "additionalDirectories": [
       "c:\\Users\\dmiln\\source\\repos\\JuntosHQ"

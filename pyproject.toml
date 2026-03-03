@@ -22,7 +22,7 @@ dependencies = [
     "psycopg2-binary>=2.9.11",
     "beautifulsoup4>=4.14.3",
     "sentence-transformers>=5.2.2",
-    "ollama>=0.6.1",
+    "voyageai>=0.3.2",
 ]
 
 [project.scripts]

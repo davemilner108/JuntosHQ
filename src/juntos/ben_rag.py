@@ -1,9 +1,9 @@
 """RAG module for Ben's Counsel chatbot.
 
-Queries the franklin_passages pgvector table using Ollama nomic-embed-text
+Queries the franklin_passages pgvector table using Voyage AI voyage-4
 (the same model used to seed the corpus via seed_franklin.py).
 
-Falls back gracefully when Ollama is unavailable or the table is empty.
+Falls back gracefully when Voyage AI is unavailable or the table is empty.
 """
 
 import logging
@@ -13,7 +13,7 @@ from sqlalchemy import text
 
 logger = logging.getLogger(__name__)
 
-EMBED_MODEL = "nomic-embed-text"
+EMBED_MODEL = "voyage-4"
 FREE_TRIAL_LIMIT = 5
 
 _SYSTEM_PROMPT_PATH = (
@@ -33,14 +33,15 @@ def _load_system_prompt() -> str:
 
 
 def _embed_query(query: str) -> list[float] | None:
-    """Embed a query string with Ollama. Returns None on failure."""
+    """Embed a query string with Voyage AI. Returns None on failure."""
     try:
-        import ollama
+        import voyageai
 
-        response = ollama.embed(model=EMBED_MODEL, input=[query])
-        return response["embeddings"][0]
+        client = voyageai.Client()
+        result = client.embed([query], model=EMBED_MODEL)
+        return result.embeddings[0]
     except Exception as exc:
-        logger.warning("Ollama embed failed (RAG disabled for this request): %s", exc)
+        logger.warning("Voyage embed failed (RAG disabled for this request): %s", exc)
         return None
 
 
