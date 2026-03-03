@@ -88,7 +88,27 @@ Four links on the pricing page (`/pricing`) point to routes that do not exist:
 
 ### Stripe / Billing
 
-There is **no payment integration** at all. The pricing page describes three paid tiers and an add-on, but no Stripe checkout, webhook handler, or subscription-management pages exist. For a free-only alpha this is acceptable, but the broken links must be resolved before shipping.
+Stripe payment integration is implemented in the `billing` blueprint (`src/juntos/routes/billing.py`). The feature covers:
+
+| Component | Description |
+|---|---|
+| **Checkout** | `GET /account/subscription/checkout?plan=<standard\|expanded>` — creates a Stripe Checkout Session and redirects the user to the hosted payment page. Requires `STRIPE_SECRET_KEY`, `STRIPE_PRICE_STANDARD`, and `STRIPE_PRICE_EXPANDED` env vars. |
+| **Success landing** | `GET /account/subscription/success` — user is redirected here after a successful payment; confirms the subscription is being activated. |
+| **Customer Portal** | `GET /account/subscription/portal` — redirects the user to the Stripe Billing Portal so they can update their card, view invoices, or cancel. |
+| **Webhook** | `POST /stripe/webhook` — handles `checkout.session.completed` (upgrades `User.subscription_tier`), `customer.subscription.deleted` (downgrades to `FREE`), and `customer.subscription.updated` (syncs tier from active price ID). Verifies the Stripe-Signature header when `STRIPE_WEBHOOK_SECRET` is set. |
+| **User model** | `User.stripe_customer_id` and `User.stripe_subscription_id` columns added (migration `e2f3a4b5c6d7`). |
+| **Pricing page** | "Subscribe to Standard" and "Subscribe to Expanded" buttons now link to the checkout endpoint. |
+
+**Required environment variables before enabling billing:**
+
+```
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_STANDARD=price_...   # Monthly Standard price ID from Stripe dashboard
+STRIPE_PRICE_EXPANDED=price_...   # Monthly Expanded price ID from Stripe dashboard
+```
+
+If `STRIPE_SECRET_KEY` is absent the checkout route falls back to a "coming soon" flash message — safe for the free-only alpha.
 
 ---
 
@@ -172,7 +192,7 @@ There is **no payment integration** at all. The pricing page describes three pai
 | Export CSV/PDF | N/A | ❌ Not built | ❌ Not built |
 | Ben's Counsel chatbot (add-on) | ✅ Trial works | ✅ Trial works | ✅ Trial works |
 | Junto creation limit (1/5/15) | ❌ Not enforced | ❌ Not enforced | ❌ Not enforced |
-| Billing / Stripe | ❌ Not built | ❌ Not built | ❌ Not built |
+| Billing / Stripe | ❌ Not built | ✅ Checkout + webhook | ✅ Checkout + webhook |
 | Mobile layout | ✅ Done | ✅ Done | ✅ Done |
 
 ---

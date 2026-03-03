@@ -33,6 +33,12 @@ class Config:
         "MAIL_DEFAULT_SENDER", "noreply@juntoshq.com"
     )
 
+    # Stripe billing
+    STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+    STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+    STRIPE_PRICE_STANDARD = os.environ.get("STRIPE_PRICE_STANDARD", "")
+    STRIPE_PRICE_EXPANDED = os.environ.get("STRIPE_PRICE_EXPANDED", "")
+
     @property
     def MAIL_ENABLED(self):
         return bool(self.MAIL_SERVER)
