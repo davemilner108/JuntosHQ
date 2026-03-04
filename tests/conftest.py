@@ -2,7 +2,8 @@ import pytest
 
 from juntos import create_app
 from juntos.config import TestConfig
-from juntos.models import User, db as _db
+from juntos.models import User
+from juntos.models import db as _db
 
 
 @pytest.fixture

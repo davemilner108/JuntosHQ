@@ -43,6 +43,11 @@ line-length = 88
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
 
+[tool.ruff.lint.per-file-ignores]
+# Long historical quotations and seed strings cannot be meaningfully wrapped
+"src/juntos/franklin.py" = ["E501"]
+"src/juntos/seed.py" = ["E501"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 

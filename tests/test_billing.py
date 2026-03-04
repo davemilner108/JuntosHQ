@@ -133,14 +133,24 @@ def test_portal_redirects_to_stripe(logged_in_client, app, db, user):
 # ---------------------------------------------------------------------------
 
 def _post_webhook(client, app, payload: dict):
-    """Helper: POST a webhook event without signature verification."""
-    app.config["STRIPE_WEBHOOK_SECRET"] = ""
+    """Helper: POST a webhook event with signature verification mocked."""
+    app.config["STRIPE_WEBHOOK_SECRET"] = "whsec_test"
     app.config["STRIPE_SECRET_KEY"] = "sk_test_fake"
-    return client.post(
-        "/stripe/webhook",
-        data=json.dumps(payload),
-        content_type="application/json",
-    )
+
+    import stripe as _stripe
+
+    mock_event = _stripe.Event.construct_from(payload, "sk_test_fake")
+
+    with patch(
+        "stripe.Webhook.construct_event",
+        return_value=mock_event,
+    ):
+        return client.post(
+            "/stripe/webhook",
+            data=json.dumps(payload),
+            content_type="application/json",
+            headers={"Stripe-Signature": "t=fake,v1=fake"},
+        )
 
 
 def test_webhook_checkout_completed_upgrades_user(client, app, db, user):
@@ -203,6 +213,19 @@ def test_webhook_returns_200(client, app, db, user):
     }
     response = _post_webhook(client, app, payload)
     assert response.status_code == 200
+
+
+def test_webhook_no_secret_returns_400(client, app):
+    """Webhooks must be rejected when no STRIPE_WEBHOOK_SECRET is configured."""
+    app.config["STRIPE_WEBHOOK_SECRET"] = ""
+    app.config["STRIPE_SECRET_KEY"] = "sk_test_fake"
+
+    response = client.post(
+        "/stripe/webhook",
+        data=b"{}",
+        content_type="application/json",
+    )
+    assert response.status_code == 400
 
 
 def test_webhook_bad_signature_returns_400(client, app):
