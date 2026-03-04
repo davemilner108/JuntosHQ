@@ -1,14 +1,31 @@
+import logging
 import os
+import warnings
 from datetime import UTC, datetime
 
 from flask import Flask, g, session
 
-from juntos.config import Config
+from juntos.config import _DEFAULT_SECRET_KEY, Config
+
+logger = logging.getLogger(__name__)
 
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    # Warn loudly if the application is running with the default development
+    # secret key outside of a testing context.
+    if (
+        not app.config.get("TESTING")
+        and app.config.get("SECRET_KEY") == _DEFAULT_SECRET_KEY
+    ):
+        warnings.warn(
+            "SECRET_KEY is set to the default development value. "
+            "Set the SECRET_KEY environment variable to a strong random value "
+            "before deploying to production.",
+            stacklevel=1,
+        )
 
     from juntos.models import db
 

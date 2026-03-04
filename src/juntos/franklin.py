@@ -1,5 +1,5 @@
 # src/juntos/franklin.py
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 QUESTIONS = [
     "Have you met with any thing in the author you last read, remarkable, or suitable to be communicated to the junto? Particularly in history, morality, poetry, physics, travels, mechanic arts, or other parts of knowledge?",
@@ -30,7 +30,7 @@ QUESTIONS = [
 
 def get_weekly_prompt() -> dict | None:
     """Return the current week's Franklin prompt (deterministic, no DB needed)."""
-    week_number = datetime.now(timezone.utc).isocalendar()[1]
+    week_number = datetime.now(UTC).isocalendar()[1]
     index = (week_number - 1) % len(QUESTIONS)
     return {
         "number": index + 1,

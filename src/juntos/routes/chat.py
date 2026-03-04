@@ -3,6 +3,7 @@
 import anthropic as anthropic_sdk
 from flask import (
     Blueprint,
+    current_app,
     flash,
     g,
     make_response,
@@ -20,8 +21,6 @@ from juntos.franklin import get_weekly_prompt
 from juntos.models import ChatMessage, ChatSession, Junto, db
 
 bp = Blueprint("chat", __name__, url_prefix="/chat")
-
-CLAUDE_MODEL = "claude-sonnet-4-6"
 
 
 # ---------------------------------------------------------------------------
@@ -131,7 +130,8 @@ def send_message():
     current_question = get_weekly_prompt()["text"] if junto else None
 
     # Build prompt + history and call Claude
-    # Pass history without the message we just added (it's appended inside build_messages)
+    # Pass history without the message we just added (it's appended inside
+    # build_messages)
     history = chat_session.messages[:-1]
     system_prompt, messages = build_messages(
         history=history,
@@ -141,13 +141,24 @@ def send_message():
     )
 
     client = anthropic_sdk.Anthropic()
-    response = client.messages.create(
-        model=CLAUDE_MODEL,
-        max_tokens=1024,
-        system=system_prompt,
-        messages=messages,
-    )
-    assistant_content = response.content[0].text
+    model = current_app.config.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+    try:
+        ai_response = client.messages.create(
+            model=model,
+            max_tokens=1024,
+            system=system_prompt,
+            messages=messages,
+        )
+        assistant_content = ai_response.content[0].text
+    except Exception:
+        current_app.logger.exception("Anthropic API call failed")
+        flash(
+            "Ben Franklin is momentarily indisposed. Please try again shortly.",
+            "error",
+        )
+        if junto_id:
+            return redirect(url_for("chat.junto_chat", junto_id=junto_id))
+        return redirect(url_for("chat.show"))
 
     # Save Ben's reply
     db.session.add(
@@ -195,7 +206,11 @@ _UNICODE_REPLACEMENTS = str.maketrans({
 
 def _safe(text: str) -> str:
     """Replace Unicode characters unsupported by the Helvetica PDF font."""
-    return text.translate(_UNICODE_REPLACEMENTS).encode("latin-1", errors="replace").decode("latin-1")
+    return (
+        text.translate(_UNICODE_REPLACEMENTS)
+        .encode("latin-1", errors="replace")
+        .decode("latin-1")
+    )
 
 
 @bp.route("/session/<int:session_id>/export.pdf")
@@ -208,7 +223,11 @@ def export_pdf(session_id):
         flash("You do not have access to that conversation.", "error")
         return redirect(url_for("chat.show"))
 
-    junto = db.session.get(Junto, chat_session.junto_id) if chat_session.junto_id else None
+    junto = (
+        db.session.get(Junto, chat_session.junto_id)
+        if chat_session.junto_id
+        else None
+    )
 
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)

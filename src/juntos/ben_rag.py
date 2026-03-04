@@ -98,7 +98,8 @@ def build_system_prompt(
     if rag_passages:
         parts.append(
             "\n\n---\n"
-            "The following passages from your own writings may be relevant to this conversation:\n"
+            "The following passages from your own writings may be relevant"
+            " to this conversation:\n"
         )
         for p in rag_passages:
             parts.append(f'[{p["source"]}] {p["text"]}')
@@ -106,7 +107,8 @@ def build_system_prompt(
 
     if junto:
         parts.append(
-            f'\n\nYou are speaking with a member of a modern junto called "{junto.name}".'
+            f"\n\nYou are speaking with a member of a modern junto"
+            f' called "{junto.name}".'
         )
         if junto.description:
             parts.append(f"Their junto's stated purpose: {junto.description}")

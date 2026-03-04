@@ -157,15 +157,16 @@ def webhook():
     payload = request.get_data()
     sig_header = request.headers.get("Stripe-Signature", "")
 
-    if webhook_secret:
-        try:
-            event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
-        except stripe.error.SignatureVerificationError:
-            abort(400)
-    else:
-        import json
+    if not webhook_secret:
+        # Reject unsigned webhooks: without a secret we cannot verify the
+        # request originates from Stripe, so processing it would be a security
+        # risk.  Configure STRIPE_WEBHOOK_SECRET to enable webhook handling.
+        abort(400)
 
-        event = stripe.Event.construct_from(json.loads(payload), stripe.api_key)
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+    except stripe.error.SignatureVerificationError:
+        abort(400)
 
     _handle_event(event)
     return "", 200
@@ -207,7 +208,9 @@ def _activate_subscription(session_obj) -> None:
     sub_id = session_obj.get("subscription")
     metadata = session_obj.get("metadata") or {}
 
-    user = User.query.filter_by(stripe_customer_id=customer_id).first()
+    user = db.session.execute(
+        db.select(User).where(User.stripe_customer_id == customer_id)
+    ).scalar_one_or_none()
     if not user:
         return
 
@@ -228,7 +231,9 @@ def _sync_subscription(sub) -> None:
     customer_id = sub.get("customer")
     status = sub.get("status", "")
 
-    user = User.query.filter_by(stripe_customer_id=customer_id).first()
+    user = db.session.execute(
+        db.select(User).where(User.stripe_customer_id == customer_id)
+    ).scalar_one_or_none()
     if not user:
         return
 
