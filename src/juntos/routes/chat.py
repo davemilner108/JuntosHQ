@@ -5,12 +5,14 @@ from flask import (
     Blueprint,
     flash,
     g,
+    make_response,
     redirect,
     render_template,
     request,
     session,
     url_for,
 )
+from fpdf import FPDF
 
 from juntos.auth_utils import login_required
 from juntos.ben_rag import FREE_TRIAL_LIMIT, build_messages
@@ -176,3 +178,72 @@ def new_session():
     if junto_id:
         return redirect(url_for("chat.junto_chat", junto_id=junto_id))
     return redirect(url_for("chat.show"))
+
+
+_UNICODE_REPLACEMENTS = str.maketrans({
+    "\u2014": "--",   # em dash
+    "\u2013": "-",    # en dash
+    "\u2018": "'",    # left single quote
+    "\u2019": "'",    # right single quote
+    "\u201c": '"',    # left double quote
+    "\u201d": '"',    # right double quote
+    "\u2026": "...",  # ellipsis
+    "\u00a0": " ",    # non-breaking space
+    "\u2022": "*",    # bullet
+})
+
+
+def _safe(text: str) -> str:
+    """Replace Unicode characters unsupported by the Helvetica PDF font."""
+    return text.translate(_UNICODE_REPLACEMENTS).encode("latin-1", errors="replace").decode("latin-1")
+
+
+@bp.route("/session/<int:session_id>/export.pdf")
+@login_required
+def export_pdf(session_id):
+    """Export a chat session as a PDF transcript."""
+    chat_session = db.get_or_404(ChatSession, session_id)
+
+    if chat_session.user_id != g.current_user.id:
+        flash("You do not have access to that conversation.", "error")
+        return redirect(url_for("chat.show"))
+
+    junto = db.session.get(Junto, chat_session.junto_id) if chat_session.junto_id else None
+
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+
+    # Header
+    pdf.set_font("Helvetica", "B", 18)
+    pdf.cell(0, 10, "Ben's Counsel", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 10)
+    if junto:
+        pdf.cell(0, 6, _safe(f"Junto: {junto.name}"), new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(
+        0, 6,
+        f"Session: {chat_session.created_at.strftime('%B %d, %Y')}",
+        new_x="LMARGIN", new_y="NEXT",
+    )
+    pdf.ln(6)
+
+    # Messages
+    for msg in chat_session.messages:
+        if msg.role == "user":
+            label = "You"
+            pdf.set_font("Helvetica", "B", 10)
+        else:
+            label = "B. Franklin"
+            pdf.set_font("Helvetica", "BI", 10)
+
+        pdf.cell(0, 6, label, new_x="LMARGIN", new_y="NEXT")
+        pdf.set_font("Helvetica", "", 10)
+        pdf.multi_cell(0, 6, _safe(msg.content))
+        pdf.ln(3)
+
+    response = make_response(bytes(pdf.output()))
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = (
+        f"attachment; filename=bens-counsel-session-{session_id}.pdf"
+    )
+    return response

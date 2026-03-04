@@ -46,6 +46,11 @@
     <p class="chat-empty-state">Good day! I am at your service. What matter weighs on your mind?</p>
     {% endif %}
 </div>
+{% if chat_session.messages %}
+<p style="margin-top: 0.25rem; font-size: 0.85em; text-align: right;">
+    <a href="{{ url_for('chat.export_pdf', session_id=chat_session.id) }}">Save to PDF</a>
+</p>
+{% endif %}
 
 {% if trial_remaining is not none %}
 <p class="chat-trial-counter">
