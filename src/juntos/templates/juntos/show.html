@@ -156,6 +156,13 @@
 {% endfor %}
 </ul>
 
+{% if current_user and not current_user.subscription_tier.value in ('standard', 'expanded') %}
+<p style="margin: 0.5rem 0 0; color: #555; font-size: 0.9em;">
+    ℹ Upgrade to Standard to let members check in their own commitments.
+    <a href="{{ url_for('main.pricing') }}">See plans &rarr;</a>
+</p>
+{% endif %}
+
 {% endif %}
 
 <p><a href="{{ url_for('main.index') }}">&larr; Back to all juntos</a></p>

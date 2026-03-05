@@ -9,7 +9,15 @@
     </div>
 </div>
 {% if current_user %}
-<p><a class="btn btn-primary" href="{{ url_for('juntos.new') }}">Create Junto</a></p>
+  {% if at_junto_limit %}
+  <div class="upgrade-prompt" style="margin-bottom: 1.25rem; padding: 1rem 1.25rem; border: 1px solid #c9b97a; border-radius: 6px; background: #fffdf4;">
+    <strong>You've reached the {{ current_user.subscription_tier.value | title }} tier limit ({{ owned_junto_count }}/{{ current_user.junto_limit }} junto{{ 's' if current_user.junto_limit != 1 else '' }}).</strong>
+    Upgrade your plan to create more.
+    <a href="{{ url_for('main.pricing') }}">See plans &rarr;</a>
+  </div>
+  {% else %}
+  <p><a class="btn btn-primary" href="{{ url_for('juntos.new') }}">Create Junto</a></p>
+  {% endif %}
 {% endif %}
 {% if juntos %}
 <ul class="card-list">

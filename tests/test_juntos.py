@@ -43,6 +43,54 @@ def test_create_junto_missing_name(logged_in_client, db):
     assert db.session.execute(db.select(Junto)).scalar_one_or_none() is None
 
 
+def test_new_junto_blocked_at_free_limit(logged_in_client, db, user):
+    """Free tier allows only 1 junto; GET /juntos/new redirects once limit is hit."""
+    existing = Junto(name="First", owner_id=user.id)
+    db.session.add(existing)
+    db.session.commit()
+
+    response = logged_in_client.get("/juntos/new")
+    assert response.status_code == 302
+    assert "/pricing" in response.headers["Location"]
+
+
+def test_create_junto_blocked_at_free_limit(logged_in_client, db, user):
+    """Free tier allows only 1 junto; POST /juntos/ redirects once limit is hit."""
+    existing = Junto(name="First", owner_id=user.id)
+    db.session.add(existing)
+    db.session.commit()
+
+    response = logged_in_client.post(
+        "/juntos/", data={"name": "Second", "description": "Should be blocked"}
+    )
+    assert response.status_code == 302
+    assert "/pricing" in response.headers["Location"]
+    count = db.session.query(Junto).filter(Junto.owner_id == user.id).count()
+    assert count == 1
+
+
+def test_create_junto_standard_tier_allows_three(logged_in_client, db, user):
+    """Standard tier allows up to 3 juntos."""
+    user.subscription_tier = SubscriptionTier.STANDARD
+    db.session.commit()
+
+    for i in range(3):
+        resp = logged_in_client.post(
+            "/juntos/", data={"name": f"Group {i}", "description": ""}
+        )
+        assert resp.status_code == 302
+        assert "/pricing" not in resp.headers["Location"]
+
+    # 4th should be blocked
+    resp = logged_in_client.post(
+        "/juntos/", data={"name": "Group 4", "description": ""}
+    )
+    assert resp.status_code == 302
+    assert "/pricing" in resp.headers["Location"]
+    count = db.session.query(Junto).filter(Junto.owner_id == user.id).count()
+    assert count == 3
+
+
 def test_show_junto(client, db):
     junto = Junto(name="Readers", description="Book club")
     db.session.add(junto)
