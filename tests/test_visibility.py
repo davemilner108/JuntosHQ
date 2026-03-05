@@ -171,7 +171,7 @@ def test_anonymous_no_create_button(client, db, user, junto):
     assert b"Create Junto" not in resp.data
 
 
-def test_logged_in_sees_create_button(logged_in_client, db, user, junto):
+def test_logged_in_sees_create_button(logged_in_client):
     resp = logged_in_client.get("/")
     assert b"Create Junto" in resp.data
 

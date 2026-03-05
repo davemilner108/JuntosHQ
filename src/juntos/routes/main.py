@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, g, redirect, render_template, url_for
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 
 from juntos.models import Junto, Member, db
 
@@ -8,6 +8,7 @@ bp = Blueprint("main", __name__)
 
 @bp.route("/")
 def index():
+    at_junto_limit = False
     if g.current_user:
         participating_ids = (
             db.session.query(Member.junto_id)
@@ -21,10 +22,23 @@ def index():
                 Junto.id.in_(participating_ids),
             )
         ).all()
+        owned_count = (
+            db.session.query(func.count(Junto.id))
+            .filter(Junto.owner_id == g.current_user.id)
+            .scalar()
+            or 0
+        )
+        at_junto_limit = owned_count >= g.current_user.junto_limit
     else:
         juntos = Junto.query.filter_by(is_public=True).all()
+        owned_count = 0
 
-    return render_template("index.html", juntos=juntos)
+    return render_template(
+        "index.html",
+        juntos=juntos,
+        at_junto_limit=at_junto_limit,
+        owned_junto_count=owned_count,
+    )
 
 @bp.route("/pricing")
 def pricing():
