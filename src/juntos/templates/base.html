@@ -25,6 +25,7 @@
                         <img class="nav-avatar" src="{{ current_user.avatar_url }}" alt="{{ current_user.name }}" width="28" height="28">
                         {% endif %}
                         <span class="nav-username">{{ current_user.name or current_user.email or "User" }}</span>
+                        <a class="nav-link" href="{{ url_for('coupons.my_coupons') }}">My Coupons</a>
                         <form method="post" action="{{ url_for('auth.logout') }}" style="display:inline">
                             <button class="btn btn-secondary btn-sm" type="submit">Sign out</button>
                         </form>

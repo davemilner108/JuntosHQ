@@ -55,6 +55,7 @@ class User(db.Model):
     )
     stripe_customer_id = db.Column(db.String(255), nullable=True, unique=True)
     stripe_subscription_id = db.Column(db.String(255), nullable=True)
+    signup_verified = db.Column(db.Boolean, nullable=False, default=False)
 
     juntos = db.relationship("Junto", backref="owner", lazy=True)
 
@@ -290,3 +291,38 @@ class ChatMessage(db.Model):
 
     def __repr__(self):
         return f"<ChatMessage session={self.session_id} role={self.role}>"
+
+
+class SignupCoupon(db.Model):
+    """A single-use coupon that gates new user signups during beta rollout."""
+
+    __tablename__ = "signup_coupon"
+
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(32), unique=True, nullable=False)
+    created_by_user_id = db.Column(
+        db.Integer, db.ForeignKey("user.id"), nullable=True
+    )
+    used_by_user_id = db.Column(
+        db.Integer, db.ForeignKey("user.id"), nullable=True
+    )
+    created_at = db.Column(db.DateTime, nullable=False, default=_utcnow)
+    used_at = db.Column(db.DateTime, nullable=True)
+
+    created_by = db.relationship(
+        "User",
+        foreign_keys=[created_by_user_id],
+        backref=db.backref("issued_coupons", lazy=True),
+    )
+    used_by = db.relationship(
+        "User",
+        foreign_keys=[used_by_user_id],
+        backref=db.backref("redeemed_coupon", uselist=False, lazy=True),
+    )
+
+    @property
+    def is_used(self) -> bool:
+        return self.used_by_user_id is not None
+
+    def __repr__(self):
+        return f"<SignupCoupon code={self.code} used={self.is_used}>"
