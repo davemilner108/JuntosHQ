@@ -53,6 +53,11 @@ class Config:
     # AI model configuration
     ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
 
+    # Beta invite / coupon gating
+    INVITE_REQUIRED = os.environ.get("INVITE_REQUIRED", "true").lower() == "true"
+    HARD_CODED_COUPON = os.environ.get("HARD_CODED_COUPON", "JUNTOS-BETA-2024")
+    COUPONS_PER_USER = int(os.environ.get("COUPONS_PER_USER", "10"))
+
     @property
     def MAIL_ENABLED(self):
         return bool(self.MAIL_SERVER)
@@ -67,3 +72,4 @@ class TestConfig(Config):
     GITHUB_CLIENT_ID = "test-github-client-id"
     GITHUB_CLIENT_SECRET = "test-github-client-secret"
     MAIL_SUPPRESS_SEND = True
+    INVITE_REQUIRED = False

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Enter Signup Coupon — JuntosHQ{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h1>Welcome to JuntosHQ Beta</h1>
+    <p>
+        JuntosHQ is currently in an invite-only beta. Please enter your
+        signup coupon code below to activate your account.
+    </p>
+    <form method="post" action="{{ url_for('coupons.enter_coupon') }}">
+        <div class="form-group">
+            <label for="code">Coupon Code</label>
+            <input
+                class="form-control"
+                type="text"
+                id="code"
+                name="code"
+                placeholder="e.g. JUNTOS-BETA-XXXX"
+                autocomplete="off"
+                required
+            >
+        </div>
+        <button class="btn btn-primary" type="submit">Activate Account</button>
+    </form>
+    <p style="margin-top: 1.25rem; color: #666; font-size: 0.9rem;">
+        Don&rsquo;t have a coupon? Ask a friend who is already on JuntosHQ
+        &mdash; each member has sharable invite codes.
+    </p>
+</div>
+{% endblock %}

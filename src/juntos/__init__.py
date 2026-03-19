@@ -56,6 +56,7 @@ def create_app(config_class=Config):
         auth,
         billing,
         chat,
+        coupons,
         invites,
         juntos,
         main,
@@ -65,6 +66,7 @@ def create_app(config_class=Config):
 
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
+    app.register_blueprint(coupons.bp)
     app.register_blueprint(juntos.bp)
     app.register_blueprint(members.bp)
     app.register_blueprint(meetings.bp)
