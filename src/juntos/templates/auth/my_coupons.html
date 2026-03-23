@@ -21,7 +21,20 @@
         {% for coupon in coupons %}
         <tr>
             <td>
-                <code>{{ coupon.code }}</code>
+                <div class="coupon-code-cell">
+                    <code>{{ coupon.code }}</code>
+                    <button
+                        class="btn-copy"
+                        type="button"
+                        aria-label="Copy coupon code {{ coupon.code }}"
+                        onclick="copyCoupon(this, '{{ coupon.code }}')"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                            <path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6z"/>
+                            <path d="M2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h-1v1H2V6h1V5H2z"/>
+                        </svg>
+                    </button>
+                </div>
             </td>
             <td>
                 {% if coupon.is_used %}
@@ -41,4 +54,41 @@
 <p style="margin-top: 1.5rem;">
     <a href="{{ url_for('main.index') }}">&larr; Back to home</a>
 </p>
+
+<div class="copy-toast" id="copyToast" aria-live="polite"></div>
+
+<script>
+(function () {
+    var toastTimer = null;
+
+    window.copyCoupon = function (btn, code) {
+        navigator.clipboard.writeText(code).then(function () {
+            showToast('Copied!');
+        }).catch(function () {
+            /* Fallback for browsers without Clipboard API */
+            var ta = document.createElement('textarea');
+            ta.value = code;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            var ok = false;
+            try { ok = document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
+            showToast(ok ? 'Copied!' : 'Copy failed');
+        });
+    };
+
+    function showToast(msg) {
+        var toast = document.getElementById('copyToast');
+        toast.textContent = msg;
+        toast.classList.add('visible');
+        if (toastTimer) { clearTimeout(toastTimer); }
+        toastTimer = setTimeout(function () {
+            toast.classList.remove('visible');
+        }, 2000);
+    }
+}());
+</script>
 {% endblock %}

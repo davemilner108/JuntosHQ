@@ -1306,6 +1306,130 @@ hr.ornamental::before {
     }
 }
 
+/* === DATA TABLE — broadside ledger style === */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+}
+
+.table thead th {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.07em;
+    color: var(--colonial-blue);
+    text-align: left;
+    padding: 0.55rem 1rem;
+    border-bottom: 2px solid var(--colonial-blue);
+    background-color: var(--parchment-mid);
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--parchment-dark);
+    transition: background-color 0.12s ease;
+}
+
+.table tbody tr:last-child {
+    border-bottom: 2px solid var(--parchment-deep);
+}
+
+.table tbody tr:hover {
+    background-color: var(--card-hover);
+}
+
+.table td {
+    padding: 0.65rem 1rem;
+    vertical-align: middle;
+}
+
+.table td:first-child {
+    width: 60%;
+}
+
+/* === COUPON BADGES === */
+.badge {
+    display: inline-block;
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+.badge--available {
+    background-color: var(--success-bg);
+    border-color: var(--success-border);
+    color: #3a5a2a;
+}
+
+.badge--used {
+    background-color: var(--parchment-mid);
+    border-color: var(--parchment-deep);
+    color: var(--brown-faint);
+}
+
+/* === COPY BUTTON (coupon codes) === */
+.coupon-code-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.btn-copy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--parchment-deep);
+    border-radius: 2px;
+    color: var(--brown-faint);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.btn-copy:hover {
+    background-color: var(--parchment-mid);
+    border-color: var(--colonial-blue);
+    color: var(--colonial-blue);
+}
+
+.btn-copy svg {
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+}
+
+.copy-toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(0.5rem);
+    background-color: var(--colonial-blue);
+    color: var(--parchment);
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 1.1rem;
+    border-radius: 2px;
+    border: 1px solid var(--gold);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+}
+
+.copy-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
 /* === FOOTER — colophon === */
 footer {
     background-color: var(--colonial-blue);
