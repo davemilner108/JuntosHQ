@@ -3,27 +3,74 @@
 {% block title %}{{ junto.name }} — JuntosHQ{% endblock %}
 
 {% block content %}
-<h1>{{ junto.name }}</h1>
-<p class="detail-description">{{ junto.description }}</p>
 
-{% if junto.meeting_url %}
-<p class="junto-meeting-url">
-    <a href="{{ junto.meeting_url }}" target="_blank" rel="noopener">Join Meeting &rarr;</a>
-</p>
-{% endif %}
+{# ── Junto header card ── #}
+<div class="junto-header-card">
+    <div class="junto-header-main">
+        <h1 class="junto-header-title">{{ junto.name }}</h1>
+        {% if junto.description %}
+        <p class="junto-header-description">{{ junto.description }}</p>
+        {% endif %}
+        <div class="junto-header-meta">
+            <span class="junto-header-meta-item junto-meta-members">
+                <strong>{{ junto.members|length }}</strong> / {{ junto.MAX_MEMBERS }} members
+            </span>
+            {% if junto.meeting_url %}
+            <span class="junto-header-meta-item">
+                <a class="junto-meeting-url-btn" href="{{ junto.meeting_url }}" target="_blank" rel="noopener">Join Meeting &rarr;</a>
+            </span>
+            {% endif %}
+        </div>
+    </div>
+    {% if current_user and junto.owner_id == current_user.id %}
+    <div class="junto-header-actions">
+        <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.edit', id=junto.id) }}">Edit Junto</a>
+        <form method="post" action="{{ url_for('juntos.delete', id=junto.id) }}">
+            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
 
-{% if current_user and junto.owner_id == current_user.id %}
-<div class="action-bar">
-    <a class="btn btn-secondary" href="{{ url_for('juntos.edit', id=junto.id) }}">Edit</a>
-    <form method="post" action="{{ url_for('juntos.delete', id=junto.id) }}">
-        <button class="btn btn-danger" type="submit">Delete</button>
-    </form>
+{# ── Franklin prompt ── #}
+{% if prompt %}
+<div class="franklin-prompt-card">
+    <p class="franklin-prompt-heading">
+        This Week's Franklin Question
+        <span class="franklin-prompt-number">Q{{ prompt.number }} of 24</span>
+    </p>
+    <blockquote class="franklin-prompt-quote">{{ prompt.text }}</blockquote>
+    <cite class="franklin-prompt-cite">— Benjamin Franklin, Junto Rules, 1727</cite>
 </div>
 {% endif %}
 
+{# ── Ben Franklin chatbot ── #}
+{% if current_user %}
+<div class="ben-counsel-card">
+    <p class="ben-counsel-heading">Ask Ben Franklin</p>
+    {% if not current_user.chatbot_addon and current_user.chatbot_msgs_used >= 5 %}
+    <p class="ben-counsel-body">
+        &ldquo;An investment in knowledge pays the best interest.&rdquo;
+    </p>
+    <a class="btn btn-primary btn-sm" href="{{ url_for('main.pricing') }}">Add Ben's Counsel &mdash; $4.99/month &rarr;</a>
+    {% else %}
+    <p class="ben-counsel-body">
+        Get advice grounded in Franklin's writings, tailored to this junto.
+        {% if not current_user.chatbot_addon %}
+        <span class="ben-counsel-remaining">({{ [5 - current_user.chatbot_msgs_used, 0] | max }} free message{{ 's' if (5 - current_user.chatbot_msgs_used) != 1 else '' }} remaining)</span>
+        {% endif %}
+    </p>
+    <a class="btn btn-primary btn-sm" href="{{ url_for('chat.junto_chat', junto_id=junto.id) }}">Ask Ben &rarr;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<hr class="ornamental">
+
+{# ── Members ── #}
 <h2>Members <span class="member-count">{{ junto.members|length }}/{{ junto.MAX_MEMBERS }}</span></h2>
 {% if current_user and junto.owner_id == current_user.id and not junto.is_full %}
-<p><a class="btn btn-primary" href="{{ url_for('members.new', junto_id=junto.id) }}">Add Member</a></p>
+<p><a class="btn btn-primary btn-sm" href="{{ url_for('members.new', junto_id=junto.id) }}">+ Add Member</a></p>
 {% endif %}
 {% if junto.members %}
 <ul class="member-list">
@@ -48,7 +95,7 @@
         </div>
         {% if current_user and junto.owner_id == current_user.id %}
         <div class="member-actions">
-            <a class="btn btn-secondary" href="{{ url_for('members.edit', junto_id=junto.id, id=member.id) }}">Manage &rarr;</a>
+            <a class="btn btn-secondary btn-sm" href="{{ url_for('members.edit', junto_id=junto.id, id=member.id) }}">Manage &rarr;</a>
             {% if member.user_id is none %}
             <form class="invite-form" method="post" action="{{ url_for('invites.create', junto_id=junto.id) }}" style="display:inline">
                 <input type="hidden" name="member_id" value="{{ member.id }}">
@@ -64,73 +111,14 @@
 <p class="empty-state">No members yet.</p>
 {% endif %}
 
-<h2>Meetings</h2>
-{% if current_user and junto.owner_id == current_user.id %}
-<p><a class="btn btn-primary" href="{{ url_for('meetings.new', junto_id=junto.id) }}">+ Log a meeting</a></p>
-{% endif %}
-{% if meetings %}
-<ul class="meeting-list">
-    {% for meeting in meetings %}
-    <li class="meeting-item">
-        <span class="meeting-meta">
-            {{ meeting.held_on.strftime('%b %#d, %Y') }}
-            &middot; {{ meeting.attendances | length }} attended
-        </span>
-        <a href="{{ url_for('meetings.show', junto_id=junto.id, id=meeting.id) }}">View &rarr;</a>
-    </li>
-    {% endfor %}
-</ul>
-{% if hidden_meeting_count > 0 %}
-<div class="upgrade-prompt" style="margin-top: 0.75rem; padding: 1rem 1.25rem; border: 1px solid #c9b97a; border-radius: 6px; background: #fffdf4;">
-    <strong>{{ hidden_meeting_count }} older meeting{{ 's' if hidden_meeting_count != 1 else '' }} in your history.</strong>
-    Upgrade to see them all.
-    <a href="{{ url_for('main.pricing') }}">Upgrade &rarr;</a>
-</div>
-{% endif %}
-{% else %}
-<p class="empty-state">No meetings logged yet.</p>
-{% endif %}
+<hr class="ornamental">
 
-{% if prompt %}
-    <div class="franklin-prompt-card" style="margin: 1.5rem 0; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
-      <p style="font-weight: bold; margin-bottom: 0.5rem;">
-        This week's Franklin question
-        <span style="color: #666; font-size: 0.9em;">(Q{{ prompt.number }} of 24)</span>
-      </p>
-      <blockquote style="font-style: italic; margin: 1rem 0; line-height: 1.5;">
-        "{{ prompt.text }}"
-      </blockquote>
-      <cite style="display: block; text-align: right; color: #777; font-size: 0.9em;">
-        — Benjamin Franklin, Junto Rules, 1727
-      </cite>
-    </div>
-  {% endif %}
-
-{% if current_user %}
-<div class="ben-counsel-card" style="margin: 1.5rem 0; padding: 1.25rem 1.5rem; border: 1px solid #c9b97a; border-radius: 8px; background: #fffdf4;">
-    <p style="font-weight: bold; margin: 0 0 0.5rem;">Ask Ben Franklin</p>
-    {% if not current_user.chatbot_addon and current_user.chatbot_msgs_used >= 5 %}
-    <p style="margin: 0 0 0.75rem; color: #555; font-size: 0.95em;">
-        &ldquo;An investment in knowledge pays the best interest.&rdquo;
-    </p>
-    <a class="btn btn-primary btn-sm" href="{{ url_for('main.pricing') }}">Add Ben's Counsel &mdash; $4.99/month &rarr;</a>
-    {% else %}
-    <p style="margin: 0 0 0.75rem; color: #555; font-size: 0.95em;">
-        Get advice grounded in Franklin's writings, tailored to this junto.
-        {% if not current_user.chatbot_addon %}
-        <span style="color: #888;">({{ [5 - current_user.chatbot_msgs_used, 0] | max }} free message{{ 's' if (5 - current_user.chatbot_msgs_used) != 1 else '' }} remaining)</span>
-        {% endif %}
-    </p>
-    <a class="btn btn-primary btn-sm" href="{{ url_for('chat.junto_chat', junto_id=junto.id) }}">Ask Ben &rarr;</a>
-    {% endif %}
-</div>
-{% endif %}
-
+{# ── Commitments ── #}
 {% if junto.members %}
 <h2>Commitments <span class="member-count">Week {{ current_week }}</span></h2>
 
 {% if current_user and junto.owner_id == current_user.id %}
-<p><a class="btn btn-primary" href="{{ url_for('juntos.edit_commitments', id=junto.id) }}">Edit Commitments</a></p>
+<p><a class="btn btn-primary btn-sm" href="{{ url_for('juntos.edit_commitments', id=junto.id) }}">Edit Commitments</a></p>
 {% endif %}
 
 <ul class="commitment-list">
@@ -157,7 +145,7 @@
 </ul>
 
 {% if current_user and not current_user.subscription_tier.value in ('standard', 'expanded') %}
-<p style="margin: 0.5rem 0 0; color: #555; font-size: 0.9em;">
+<p class="upgrade-hint">
     ℹ Upgrade to Standard to let members check in their own commitments.
     <a href="{{ url_for('main.pricing') }}">See plans &rarr;</a>
 </p>
@@ -165,24 +153,59 @@
 
 {% endif %}
 
-<p><a href="{{ url_for('main.index') }}">&larr; Back to all juntos</a></p>
+<hr class="ornamental">
 
+{# ── Meetings ── #}
+<h2>Meetings</h2>
 {% if current_user and junto.owner_id == current_user.id %}
-<div class="export-section" style="margin: 1.5rem 0; padding: 1.25rem 1.5rem; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
-    <p style="font-weight: bold; margin: 0 0 0.75rem;">Export Data</p>
-    {% if current_user.subscription_tier.value in ('standard', 'expanded') %}
-    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-        <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.export_meetings_csv', id=junto.id) }}">Meetings &mdash; CSV</a>
-        <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.export_meetings_pdf', id=junto.id) }}">Meetings &mdash; PDF</a>
-        <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.export_commitments_csv', id=junto.id) }}">Commitments &mdash; CSV</a>
-    </div>
-    {% else %}
-    <p style="margin: 0; color: #555; font-size: 0.95em;">
-        Export meeting history and commitments as CSV or PDF.
-        <a href="{{ url_for('main.pricing') }}">Upgrade to Standard to unlock &rarr;</a>
-    </p>
-    {% endif %}
+<p><a class="btn btn-primary btn-sm" href="{{ url_for('meetings.new', junto_id=junto.id) }}">+ Log a Meeting</a></p>
+{% endif %}
+{% if meetings %}
+<ul class="meeting-list">
+    {% for meeting in meetings %}
+    <li class="meeting-item">
+        <span class="meeting-meta">
+            {{ meeting.held_on.strftime('%b %#d, %Y') }}
+            &middot; {{ meeting.attendances | length }} attended
+        </span>
+        <a href="{{ url_for('meetings.show', junto_id=junto.id, id=meeting.id) }}">View &rarr;</a>
+    </li>
+    {% endfor %}
+</ul>
+{% if hidden_meeting_count > 0 %}
+<div class="upgrade-prompt">
+    <strong>{{ hidden_meeting_count }} older meeting{{ 's' if hidden_meeting_count != 1 else '' }} in your history.</strong>
+    Upgrade to see them all.
+    <a href="{{ url_for('main.pricing') }}">Upgrade &rarr;</a>
 </div>
 {% endif %}
+{% else %}
+<p class="empty-state">No meetings logged yet.</p>
+{% endif %}
+
+<hr class="ornamental">
+
+{# ── Export & Back ── #}
+<div class="junto-footer-row">
+    <a href="{{ url_for('main.index') }}">&larr; Back to all juntos</a>
+
+    {% if current_user and junto.owner_id == current_user.id %}
+    <div class="export-section">
+        <p class="export-section-label">Export Data</p>
+        {% if current_user.subscription_tier.value in ('standard', 'expanded') %}
+        <div class="export-buttons">
+            <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.export_meetings_csv', id=junto.id) }}">Meetings &mdash; CSV</a>
+            <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.export_meetings_pdf', id=junto.id) }}">Meetings &mdash; PDF</a>
+            <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.export_commitments_csv', id=junto.id) }}">Commitments &mdash; CSV</a>
+        </div>
+        {% else %}
+        <p class="export-upgrade-hint">
+            Export meeting history and commitments as CSV or PDF.
+            <a href="{{ url_for('main.pricing') }}">Upgrade to Standard to unlock &rarr;</a>
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
 
 {% endblock %}
