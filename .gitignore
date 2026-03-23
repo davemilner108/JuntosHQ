@@ -9,9 +9,6 @@ __pycache__/
 # Data
 corpus/
 
-# Docs - new features
-docs/features/
-
 # Distribution / packaging
 .Python
 build/
