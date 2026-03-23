@@ -1,5 +1,6 @@
 from flask import (
     Blueprint,
+    current_app,
     flash,
     g,
     redirect,
@@ -81,6 +82,9 @@ def callback(provider):
 
     if user is None:
         user = User(provider=provider, provider_id=info["provider_id"])
+        # If invite gating is disabled, new users are verified immediately.
+        if not current_app.config.get("INVITE_REQUIRED"):
+            user.signup_verified = True
         db.session.add(user)
 
     user.email = info["email"]

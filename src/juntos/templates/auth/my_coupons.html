@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}My Coupons — JuntosHQ{% endblock %}
+
+{% block content %}
+<h1>My Invite Coupons</h1>
+<p>
+    Share these codes with friends so they can join JuntosHQ.
+    Each code can only be used once.
+</p>
+
+{% if coupons %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Coupon Code</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for coupon in coupons %}
+        <tr>
+            <td>
+                <code>{{ coupon.code }}</code>
+            </td>
+            <td>
+                {% if coupon.is_used %}
+                    <span class="badge badge--used">Used</span>
+                {% else %}
+                    <span class="badge badge--available">Available</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty-state">You have no invite coupons yet.</p>
+{% endif %}
+
+<p style="margin-top: 1.5rem;">
+    <a href="{{ url_for('main.index') }}">&larr; Back to home</a>
+</p>
+{% endblock %}
