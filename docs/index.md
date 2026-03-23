@@ -13,6 +13,7 @@ JuntosHQ is a Flask web application for creating and managing small groups — c
 | [Data Models](models.md) | User, Junto, Member — fields, relationships, constraints |
 | [Authentication](authentication.md) | OAuth flow (Google & GitHub), session management |
 | [Authorization](authorization.md) | Ownership model, decorators, HTTP 403 enforcement |
+| [Coupon-Based Invitation](features/coupon-based-invitation.md) | Beta gate: sign up with a coupon, view and share your invite codes |
 | [Routes](routes.md) | Every HTTP endpoint — URL, method, auth requirements, behaviour |
 | [Configuration](configuration.md) | Environment variables, Config and TestConfig classes |
 | [Database & Migrations](database.md) | Alembic workflow, schema overview, adding new migrations |
