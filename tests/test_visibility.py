@@ -191,7 +191,7 @@ def _make_junto_with_member(db, user, tier=JuntoTier.FREE):
 
 def test_free_tier_commitment_limit(db, user):
     j, _ = _make_junto_with_member(db, user, JuntoTier.FREE)
-    assert j.commitment_limit == 2
+    assert j.commitment_limit == 1
 
 
 def test_subscription_tier_commitment_limit(db, user):
@@ -204,7 +204,7 @@ def test_expanded_tier_commitment_limit(db, user):
     assert j.commitment_limit == 5
 
 
-def test_free_tier_allows_two_commitments(logged_in_client, db, user):
+def test_free_tier_allows_one_commitment(logged_in_client, db, user):
     from juntos.franklin import get_weekly_prompt
 
     j, m = _make_junto_with_member(db, user, JuntoTier.FREE)
@@ -215,12 +215,10 @@ def test_free_tier_allows_two_commitments(logged_in_client, db, user):
         data={
             f"commitment_desc_{m.id}_0": "Action one",
             f"commitment_status_{m.id}_0": "not_started",
-            f"commitment_desc_{m.id}_1": "Action two",
-            f"commitment_status_{m.id}_1": "not_started",
         },
     )
     commitments = Commitment.query.filter_by(member_id=m.id, cycle_week=week).all()
-    assert len(commitments) == 2
+    assert len(commitments) == 1
 
 
 def test_free_tier_rejects_beyond_limit(logged_in_client, db, user):
@@ -229,22 +227,19 @@ def test_free_tier_rejects_beyond_limit(logged_in_client, db, user):
     j, m = _make_junto_with_member(db, user, JuntoTier.FREE)
     week = get_weekly_prompt()["week"]
 
-    # Submit 3 actions for a FREE tier (limit is 2)
+    # Submit 2 actions for a FREE tier (limit is 1)
     logged_in_client.post(
         f"/juntos/{j.id}/commitments",
         data={
             f"commitment_desc_{m.id}_0": "Action one",
             f"commitment_status_{m.id}_0": "not_started",
-            f"commitment_desc_{m.id}_1": "Action two",
+            f"commitment_desc_{m.id}_1": "Action two (over limit)",
             f"commitment_status_{m.id}_1": "not_started",
-            f"commitment_desc_{m.id}_2": "Action three (over limit)",
-            f"commitment_status_{m.id}_2": "not_started",
         },
     )
     commitments = Commitment.query.filter_by(member_id=m.id, cycle_week=week).all()
-    assert len(commitments) == 2
-    descriptions = {c.description for c in commitments}
-    assert "Action three (over limit)" not in descriptions
+    assert len(commitments) == 1
+    assert commitments[0].description == "Action one"
 
 
 def test_subscription_tier_allows_three_commitments(logged_in_client, db, user):
@@ -271,7 +266,7 @@ def test_subscription_tier_allows_three_commitments(logged_in_client, db, user):
 def test_multiple_commitments_display_on_show_page(logged_in_client, db, user):
     from juntos.franklin import get_weekly_prompt
 
-    j, m = _make_junto_with_member(db, user, JuntoTier.FREE)
+    j, m = _make_junto_with_member(db, user, JuntoTier.SUBSCRIPTION)
     week = get_weekly_prompt()["week"]
 
     for i in range(2):
@@ -306,14 +301,12 @@ def test_clearing_all_slots_deletes_commitments(logged_in_client, db, user):
     )
     assert Commitment.query.filter_by(member_id=m.id, cycle_week=week).count() == 1
 
-    # Submit with empty slots
+    # Submit with empty slot
     logged_in_client.post(
         f"/juntos/{j.id}/commitments",
         data={
             f"commitment_desc_{m.id}_0": "",
             f"commitment_status_{m.id}_0": "not_started",
-            f"commitment_desc_{m.id}_1": "",
-            f"commitment_status_{m.id}_1": "not_started",
         },
     )
     assert Commitment.query.filter_by(member_id=m.id, cycle_week=week).count() == 0

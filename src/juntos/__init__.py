@@ -109,4 +109,21 @@ def create_app(config_class=Config):
         if uri.startswith("sqlite"):
             db.create_all()
 
+        # Ensure the Philadelphia Junto and its permanent week-0 seed commitments
+        # exist on every startup.  The helper is idempotent — it skips rows that
+        # are already present — so this is safe to run repeatedly.
+        # Skipped in test mode to avoid polluting isolated test databases.
+        if not app.config.get("TESTING"):
+            try:
+                from juntos.seed import run as _seed_run
+
+                _seed_run()
+            except Exception:
+                logger.warning(
+                    "Failed to initialize Philadelphia Junto seed data on startup "
+                    "(non-fatal). Run `flask seed` manually if seed commitments are "
+                    "missing.",
+                    exc_info=True,
+                )
+
     return app
