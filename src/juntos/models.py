@@ -109,7 +109,7 @@ class Junto(db.Model):
     }
 
     _TIER_COMMITMENT_LIMITS = {
-        JuntoTier.FREE: 2,
+        JuntoTier.FREE: 1,
         JuntoTier.SUBSCRIPTION: 3,
         JuntoTier.EXPANDED: 5,
     }

@@ -242,3 +242,46 @@ def test_commitment_cascade_on_junto_delete(logged_in_client, db, user):
     db.session.commit()
     assert Commitment.query.count() == 0
     assert Member.query.count() == 0
+
+
+def test_week_zero_fallback_shows_seed_commitments(client, db):
+    """Week-0 commitments (permanent seed defaults) appear when no current-week
+    entry exists, so Philadelphia Junto members always see their commitments
+    even after the calendar week rolls over."""
+    from juntos.franklin import get_weekly_prompt
+    from juntos.routes.juntos import _commitments_by_member
+
+    owner = User(provider="github", provider_id="owner-seed-w0", name="Owner")
+    db.session.add(owner)
+    db.session.commit()
+
+    junto = Junto(name="Seed Fallback Test", description="Desc", owner_id=owner.id)
+    db.session.add(junto)
+    db.session.commit()
+
+    member = Member(name="Franklin", role="Founder", junto_id=junto.id)
+    db.session.add(member)
+    db.session.commit()
+
+    # Seed a permanent week-0 default (as the seed script does)
+    seed_commitment = Commitment(
+        member_id=member.id,
+        cycle_week=0,
+        description="Permanent seed commitment",
+        status=CommitmentStatus.IN_PROGRESS,
+    )
+    db.session.add(seed_commitment)
+    db.session.commit()
+
+    # Simulate visiting the page at the current ISO week (which has no manual entry)
+    current_week = get_weekly_prompt()["week"]
+    result = _commitments_by_member([member.id], current_week)
+
+    assert member.id in result
+    assert len(result[member.id]) == 1
+    assert result[member.id][0].description == "Permanent seed commitment"
+
+    # Verify the show page renders the commitment (not "No commitments set yet")
+    resp = client.get(f"/juntos/{junto.id}")
+    assert b"Permanent seed commitment" in resp.data
+    assert b"No commitments set yet" not in resp.data
