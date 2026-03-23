@@ -1,0 +1,92 @@
+# Cloud Build CI/CD pipeline — builds a Docker image and deploys it to Cloud Run.
+#
+# Prerequisites
+# ─────────────
+# 1. Enable APIs:
+#      Cloud Build, Cloud Run, Artifact Registry, Secret Manager
+# 2. Create an Artifact Registry Docker repository, e.g.:
+#      gcloud artifacts repositories create juntoshq \
+#        --repository-format=docker --location=us-central1
+# 3. Store all secrets in Secret Manager (see docs/deployment-gcp.md).
+# 4. Grant the Cloud Build service account roles:
+#      roles/run.admin, roles/iam.serviceAccountUser,
+#      roles/secretmanager.secretAccessor, roles/artifactregistry.writer
+#
+# Trigger this manually or wire it to a GitHub push trigger:
+#   gcloud builds triggers create github \
+#     --repo-name=JuntosHQ --repo-owner=<owner> \
+#     --branch-pattern="^main$" --build-config=cloudbuild.yaml
+
+substitutions:
+  _REGION: us-central1
+  _REPO: juntoshq          # Artifact Registry repository name
+  _SERVICE: juntoshq       # Cloud Run service name
+  _IMAGE: ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/juntoshq
+
+steps:
+  # ── Step 1: Build the Docker image ─────────────────────────────────────────
+  - name: gcr.io/cloud-builders/docker
+    id: build
+    args:
+      - build
+      - --tag
+      - ${_IMAGE}:${SHORT_SHA}
+      - --tag
+      - ${_IMAGE}:latest
+      - --cache-from
+      - ${_IMAGE}:latest
+      - .
+
+  # ── Step 2: Push image to Artifact Registry ─────────────────────────────────
+  - name: gcr.io/cloud-builders/docker
+    id: push
+    args:
+      - push
+      - --all-tags
+      - ${_IMAGE}
+    waitFor: [build]
+
+  # ── Step 3: Apply database migrations before cutting traffic ────────────────
+  # Reads DATABASE_URL from Secret Manager at deploy time.
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: migrate
+    entrypoint: bash
+    args:
+      - -c
+      - |
+          DB_URL=$$(gcloud secrets versions access latest \
+                      --secret=DATABASE_URL --project=${PROJECT_ID})
+          docker run --rm \
+            -e DATABASE_URL="$$DB_URL" \
+            -e SECRET_KEY="placeholder-migration-only" \
+            ${_IMAGE}:${SHORT_SHA} \
+            .venv/bin/alembic upgrade head
+    waitFor: [push]
+
+  # ── Step 4: Deploy to Cloud Run ─────────────────────────────────────────────
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: deploy
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image=${_IMAGE}:${SHORT_SHA}
+      - --region=${_REGION}
+      - --platform=managed
+      - --allow-unauthenticated
+      - --min-instances=0
+      - --max-instances=10
+      - --memory=1Gi
+      - --cpu=1
+      - --timeout=300
+      # Inject secrets from Secret Manager as environment variables
+      - --set-secrets=DATABASE_URL=DATABASE_URL:latest,SECRET_KEY=SECRET_KEY:latest,GOOGLE_CLIENT_ID=GOOGLE_CLIENT_ID:latest,GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET:latest,GITHUB_CLIENT_ID=GITHUB_CLIENT_ID:latest,GITHUB_CLIENT_SECRET=GITHUB_CLIENT_SECRET:latest,ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,VOYAGE_API_KEY=VOYAGE_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest
+    waitFor: [migrate]
+
+images:
+  - ${_IMAGE}:${SHORT_SHA}
+  - ${_IMAGE}:latest
+
+options:
+  logging: CLOUD_LOGGING_ONLY

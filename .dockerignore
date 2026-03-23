@@ -1,0 +1,65 @@
+# Python runtime artefacts
+__pycache__/
+*.py[codz]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# UV cache
+.uv/
+
+# Build / packaging output
+*.egg-info/
+dist/
+build/
+
+# Test and coverage artefacts
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Local development secrets — never bake these into the image
+.env
+.env.*
+!.env.example
+
+# SQLite development database
+instance/
+*.db
+*.sqlite3
+
+# Corpus data (large; seeded at runtime, not baked into image)
+corpus/
+
+# Documentation (not needed at runtime)
+docs/
+screenshots/
+README.md
+LICENSE
+
+# Git metadata
+.git/
+.gitignore
+
+# Editor / IDE project files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS artefacts
+.DS_Store
+Thumbs.db
+
+# Ruff linter cache
+.ruff_cache/
+
+# Mypy / pytype caches
+.mypy_cache/
+.pytype/
