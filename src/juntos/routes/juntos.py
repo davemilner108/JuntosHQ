@@ -32,6 +32,33 @@ def _user_junto_count(user_id: int) -> int:
     )
 
 
+def _commitments_by_member(member_ids: list[int], current_week: int) -> dict[int, list]:
+    """Return a member_id → [Commitment] mapping for *current_week*.
+
+    For members who have no commitment entered for the current week, fall back
+    to permanent seeded defaults stored at cycle_week=0 so the page always
+    shows something meaningful without requiring a weekly re-seed.
+    """
+    current = Commitment.query.filter(
+        Commitment.member_id.in_(member_ids),
+        Commitment.cycle_week == current_week,
+    ).all()
+    result: dict[int, list] = {}
+    for c in current:
+        result.setdefault(c.member_id, []).append(c)
+
+    # Fall back to week-0 defaults for members without a current-week entry.
+    missing = [mid for mid in member_ids if mid not in result]
+    if missing:
+        for c in Commitment.query.filter(
+            Commitment.member_id.in_(missing),
+            Commitment.cycle_week == 0,
+        ).all():
+            result.setdefault(c.member_id, []).append(c)
+
+    return result
+
+
 @bp.route("/new")
 @login_required
 def new():
@@ -90,13 +117,8 @@ def show(id):
     prompt = get_weekly_prompt()
     current_week = prompt["week"]
 
-    commitments_list = Commitment.query.filter(
-        Commitment.member_id.in_([m.id for m in junto.members]),
-        Commitment.cycle_week == current_week,
-    ).all()
-    commitments_by_member = {}
-    for c in commitments_list:
-        commitments_by_member.setdefault(c.member_id, []).append(c)
+    member_ids = [m.id for m in junto.members]
+    commitments_by_member = _commitments_by_member(member_ids, current_week)
 
     total_meetings = len(junto.meetings)
     visible_meetings = junto.meetings[: junto.meeting_limit]
@@ -120,13 +142,8 @@ def edit_commitments(id):
     require_junto_owner(junto)
     prompt = get_weekly_prompt()
     current_week = prompt["week"]
-    commitments_list = Commitment.query.filter(
-        Commitment.member_id.in_([m.id for m in junto.members]),
-        Commitment.cycle_week == current_week,
-    ).all()
-    commitments_by_member = {}
-    for c in commitments_list:
-        commitments_by_member.setdefault(c.member_id, []).append(c)
+    member_ids = [m.id for m in junto.members]
+    commitments_by_member = _commitments_by_member(member_ids, current_week)
     return render_template(
         "juntos/edit_commitments.html",
         junto=junto,

@@ -1,7 +1,5 @@
 """Default seed data: the original Philadelphia Junto (1727)."""
 
-from datetime import UTC, datetime
-
 from flask import current_app
 
 from juntos.models import Commitment, CommitmentStatus, Junto, Member, db
@@ -71,11 +69,10 @@ def run():
 
 
 def _seed_commitments(junto: Junto) -> None:
-    """Add one commitment per member if none exist for the current week."""
-    week = datetime.now(UTC).isocalendar()[1]
+    """Add one permanent (week 0) commitment per member if not already seeded."""
     added = 0
     for member in junto.members:
-        already = Commitment.query.filter_by(member_id=member.id, cycle_week=week).first()
+        already = Commitment.query.filter_by(member_id=member.id, cycle_week=0).first()
         if already:
             continue
         desc = COMMITMENTS.get(member.name)
@@ -84,14 +81,14 @@ def _seed_commitments(junto: Junto) -> None:
         db.session.add(
             Commitment(
                 member_id=member.id,
-                cycle_week=week,
+                cycle_week=0,
                 description=desc,
-                status=CommitmentStatus.NOT_STARTED,
+                status=CommitmentStatus.IN_PROGRESS,
             )
         )
         added += 1
     db.session.commit()
     if added:
-        print(f"Seeded {added} commitment(s) for week {week}.")
+        print(f"Seeded {added} commitment(s) as permanent defaults (week 0).")
     else:
-        print(f"Commitments already present for week {week}. Skipping.")
+        print("Permanent default commitments already present. Skipping.")
