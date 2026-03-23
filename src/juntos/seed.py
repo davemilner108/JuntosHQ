@@ -2,6 +2,8 @@
 
 from datetime import UTC, datetime
 
+from flask import current_app
+
 from juntos.models import Commitment, CommitmentStatus, Junto, Member, db
 
 JUNTO_NAME = "Philadelphia Junto \u2014 1727"
@@ -50,19 +52,22 @@ def run():
     if existing:
         print(f"Junto '{JUNTO_NAME}' already exists (id={existing.id}). Skipping junto creation.")
         _seed_commitments(existing)
-        return
+    else:
+        junto = Junto(name=JUNTO_NAME, description=JUNTO_DESCRIPTION)
+        db.session.add(junto)
+        db.session.flush()
 
-    junto = Junto(name=JUNTO_NAME, description=JUNTO_DESCRIPTION)
-    db.session.add(junto)
-    db.session.flush()
+        for name, role in MEMBERS:
+            db.session.add(Member(name=name, role=role, junto_id=junto.id))
 
-    for name, role in MEMBERS:
-        db.session.add(Member(name=name, role=role, junto_id=junto.id))
+        db.session.flush()
+        db.session.commit()
+        print(f"Seeded '{JUNTO_NAME}' with {len(MEMBERS)} members (id={junto.id}).")
+        _seed_commitments(junto)
 
-    db.session.flush()
-    db.session.commit()
-    print(f"Seeded '{JUNTO_NAME}' with {len(MEMBERS)} members (id={junto.id}).")
-    _seed_commitments(junto)
+    founders_coupon = current_app.config.get("HARD_CODED_COUPON", "")
+    if founders_coupon:
+        print(f"Founders coupon (use this to sign in): {founders_coupon}")
 
 
 def _seed_commitments(junto: Junto) -> None:

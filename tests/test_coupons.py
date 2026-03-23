@@ -391,3 +391,19 @@ def test_invite_not_required_coupon_page_redirect(client, db):
         sess["user_id"] = u.id
     resp = client.get("/auth/coupon")
     assert resp.status_code == 302
+
+
+# ── Founders coupon (hard-coded) ──────────────────────────────────
+
+
+def test_seed_prints_founders_coupon(invite_app, capsys):
+    """flask seed prints the HARD_CODED_COUPON so the creator always knows it."""
+    from juntos.seed import run
+
+    with invite_app.app_context():
+        run()
+        expected_code = invite_app.config.get("HARD_CODED_COUPON")
+
+    output = capsys.readouterr().out
+    assert expected_code in output
+    assert "Founders coupon" in output
