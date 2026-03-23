@@ -863,6 +863,170 @@ hr.ornamental::before {
     margin-top: 0.5rem;
 }
 
+/* Meeting info card — date / location / URL consolidated at top */
+.meeting-info-card {
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-top: 4px solid var(--colonial-blue);
+    padding: 1.1rem 1.4rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 2px 3px 8px rgba(58, 46, 31, 0.07);
+}
+
+.meeting-info-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2.5rem;
+}
+
+.meeting-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 140px;
+}
+
+.meeting-info-label {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--brown-faint);
+    text-transform: uppercase;
+}
+
+.meeting-info-value {
+    font-size: 0.97rem;
+    color: var(--brown-text);
+}
+
+.meeting-url-link {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    color: var(--colonial-blue);
+    text-decoration: none;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--colonial-blue);
+    border-radius: 2px;
+    display: inline-block;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.meeting-url-link:hover {
+    background-color: var(--colonial-blue);
+    color: var(--parchment);
+    text-decoration: none;
+}
+
+/* Meeting content sections */
+.meeting-section {
+    margin: 1.5rem 0;
+}
+
+.meeting-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--brown-mid);
+    margin: 0 0 0.6rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--parchment-deep);
+}
+
+.meeting-section-body {
+    padding: 0.9rem 1.1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-left: 4px solid var(--gold);
+    font-size: 0.97rem;
+    line-height: 1.65;
+}
+
+.meeting-section--agenda .meeting-section-title::before {
+    content: '§';
+    color: var(--gold);
+    font-style: normal;
+}
+
+.meeting-section--notes .meeting-section-title::before {
+    content: '✎';
+    color: var(--colonial-blue-light);
+    font-style: normal;
+}
+
+.meeting-section--attendees .meeting-section-title::before {
+    content: '⁋';
+    color: var(--brown-faint);
+    font-style: normal;
+}
+
+.meeting-section-body p:last-child {
+    margin-bottom: 0;
+}
+
+/* Attendees chip list */
+.meeting-attendee-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 0.25rem;
+}
+
+.meeting-attendee-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem 0.25rem 0.35rem;
+    font-size: 0.88rem;
+    color: var(--brown-mid);
+}
+
+.meeting-attendee-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--parchment-deep);
+    flex-shrink: 0;
+}
+
+.meeting-attendee-avatar--placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--parchment-mid);
+    color: var(--brown-mid);
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.meeting-count-badge {
+    font-family: Georgia, serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--brown-faint);
+}
+
+/* Instructions — single compact line */
+.meeting-instructions-line {
+    font-size: 0.88rem;
+    color: var(--brown-faint);
+    margin-top: 1rem;
+    padding: 0.4rem 0.75rem;
+    border-left: 3px solid var(--parchment-deep);
+    background: transparent;
+}
+
+/* Legacy selectors — kept for backward compat */
 .meeting-attendance {
     font-style: italic;
     color: var(--brown-mid);
@@ -938,6 +1102,239 @@ hr.ornamental::before {
     background-color: var(--colonial-blue);
     color: var(--parchment);
     text-decoration: none;
+}
+
+/* === JUNTO HEADER CARD === */
+.junto-header-card {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-top: 4px solid var(--colonial-blue);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 2px 3px 8px rgba(58, 46, 31, 0.08);
+}
+
+.junto-header-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.junto-header-title {
+    border-bottom: none;
+    margin-bottom: 0.4rem;
+}
+
+.junto-header-title::after {
+    display: none;
+}
+
+.junto-header-description {
+    font-size: 1.02rem;
+    font-style: italic;
+    color: var(--brown-mid);
+    margin-bottom: 0.75rem;
+    padding-left: 0.75rem;
+    border-left: 3px solid var(--gold);
+}
+
+.junto-header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    margin-top: 0.25rem;
+}
+
+.junto-header-meta-item {
+    font-size: 0.88rem;
+    color: var(--brown-mid);
+}
+
+.junto-meta-members strong {
+    color: var(--colonial-blue);
+}
+
+.junto-meeting-url-btn {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: var(--colonial-blue);
+    text-decoration: none;
+    padding: 0.2rem 0.65rem;
+    border: 1px solid var(--colonial-blue);
+    border-radius: 2px;
+    display: inline-block;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.junto-meeting-url-btn:hover {
+    background-color: var(--colonial-blue);
+    color: var(--parchment);
+    text-decoration: none;
+}
+
+.junto-header-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+.junto-header-actions form {
+    display: block;
+}
+
+.junto-header-actions .btn {
+    text-align: center;
+    width: 100%;
+}
+
+/* === FRANKLIN PROMPT CARD === */
+.franklin-prompt-card {
+    margin: 1.25rem 0;
+    padding: 1.1rem 1.4rem;
+    border: 1px solid var(--parchment-deep);
+    border-left: 4px solid var(--parchment-deep);
+    background: var(--card-bg);
+    box-shadow: 2px 2px 5px rgba(58, 46, 31, 0.06);
+}
+
+.franklin-prompt-heading {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.05em;
+    color: var(--brown-mid);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.franklin-prompt-number {
+    font-family: Georgia, serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--brown-faint);
+    font-style: italic;
+}
+
+.franklin-prompt-quote {
+    font-style: italic;
+    margin: 0.65rem 0;
+    padding-left: 1rem;
+    border-left: 3px solid var(--gold);
+    line-height: 1.55;
+    color: var(--brown-text);
+}
+
+.franklin-prompt-cite {
+    display: block;
+    text-align: right;
+    color: var(--brown-faint);
+    font-size: 0.85rem;
+    font-style: normal;
+}
+
+/* === BEN COUNSEL CARD === */
+.ben-counsel-card {
+    margin: 1.25rem 0;
+    padding: 1.1rem 1.4rem;
+    border: 1px solid var(--gold-light);
+    border-left: 4px solid var(--gold);
+    background: #fffdf4;
+    box-shadow: 2px 2px 5px rgba(58, 46, 31, 0.06);
+}
+
+.ben-counsel-heading {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.05em;
+    color: var(--brown-mid);
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+}
+
+.ben-counsel-body {
+    margin: 0 0 0.65rem;
+    color: var(--brown-mid);
+    font-size: 0.93rem;
+    line-height: 1.55;
+}
+
+.ben-counsel-remaining {
+    color: var(--brown-faint);
+    font-size: 0.88em;
+}
+
+/* === UPGRADE PROMPT === */
+.upgrade-prompt {
+    margin-top: 0.75rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--gold-light);
+    border-radius: 2px;
+    background: #fffdf4;
+    font-size: 0.93rem;
+    color: var(--brown-mid);
+}
+
+/* === JUNTO FOOTER ROW === */
+.junto-footer-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--parchment-deep);
+}
+
+.junto-footer-row > a {
+    font-size: 0.92rem;
+    color: var(--brown-mid);
+    align-self: center;
+}
+
+/* === EXPORT SECTION === */
+.export-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.export-section-label {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--brown-faint);
+    margin: 0;
+}
+
+.export-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: flex-end;
+}
+
+.export-upgrade-hint {
+    font-size: 0.88rem;
+    color: var(--brown-mid);
+    margin: 0;
+}
+
+/* === UPGRADE HINT (inline) === */
+.upgrade-hint {
+    margin: 0.5rem 0 0;
+    color: var(--brown-faint);
+    font-size: 0.88rem;
 }
 
 /* === MEMBER AVATARS === */
@@ -1607,5 +2004,48 @@ footer::before {
 
     .tier-cards {
         grid-template-columns: 1fr;
+    }
+
+    .junto-header-card {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .junto-header-actions {
+        flex-direction: row;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .junto-header-actions .btn,
+    .junto-header-actions form {
+        flex: 1;
+    }
+
+    .junto-header-actions .btn {
+        text-align: center;
+    }
+
+    .meeting-info-grid {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .meeting-attendee-list {
+        gap: 0.4rem;
+    }
+
+    .junto-footer-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .export-section {
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .export-buttons {
+        justify-content: flex-start;
     }
 }
