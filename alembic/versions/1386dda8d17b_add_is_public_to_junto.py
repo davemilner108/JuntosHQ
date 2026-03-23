@@ -39,7 +39,24 @@ def upgrade():
     $$;
     """)
     #op.drop_constraint(op.f('uq_commitment_member_week'), 'commitment', type_='unique')
-    op.add_column('junto', sa.Column('is_public', sa.Boolean(), nullable=False))
+    from alembic import op
+
+def upgrade():
+    op.execute("""
+    DO $$
+    BEGIN
+        IF NOT EXISTS (
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_name='junto' AND column_name='is_public'
+        ) THEN
+            ALTER TABLE junto
+            ADD COLUMN is_public BOOLEAN NOT NULL DEFAULT TRUE;
+        END IF;
+    END
+    $$;
+    """)
+    #op.add_column('junto', sa.Column('is_public', sa.Boolean(), nullable=False))
     op.create_foreign_key(None, 'member', 'user', ['user_id'], ['id'])
     op.add_column('user', sa.Column('user_timezone', sa.String(length=50), nullable=True))
     op.add_column('user', sa.Column('bio', sa.Text(), nullable=True))
