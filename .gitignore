@@ -212,5 +212,9 @@ __marimo__/
 # Windows reserved device names
 nul
 docs/features/ben-franklin.md
-scripts/ben_systemn_prompt.txt
+scripts/ben_system_prompt.txt
 USB Drive/JuntosHQ
+
+# Local credential / key files — never commit these
+keys1.txt
+*.keys.txt

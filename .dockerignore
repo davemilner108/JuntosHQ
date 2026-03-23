@@ -43,6 +43,10 @@ screenshots/
 README.md
 LICENSE
 
+# Local credential / key files — never bake into the image
+keys1.txt
+*.keys.txt
+
 # Git metadata
 .git/
 .gitignore
