@@ -15,6 +15,7 @@ This document compares four Google Cloud hosting options and provides a Cloud Ru
 6. [Supabase connection notes](#supabase-connection-notes)
 7. [Required environment variables](#required-environment-variables)
 8. [CI/CD with Cloud Build](#cicd-with-cloud-build)
+9. [Updating an already-running service](#updating-an-already-running-service)
 
 ---
 
@@ -67,7 +68,7 @@ gcloud services enable \
 ```bash
 gcloud artifacts repositories create juntoshq \
   --repository-format=docker \
-  --location=us-central1 \
+  --location=us-west1 \
   --description="JuntosHQ container images"
 ```
 
@@ -125,7 +126,7 @@ gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
 ### Step 4 — Build and push the image
 
 ```bash
-REGION=us-central1
+REGION=us-west1
 PROJECT=$(gcloud config get-value project)
 IMAGE="${REGION}-docker.pkg.dev/${PROJECT}/juntoshq/juntoshq"
 
@@ -156,7 +157,7 @@ docker run --rm \
 ```bash
 gcloud run deploy juntoshq \
   --image="${IMAGE}:latest" \
-  --region=us-central1 \
+  --region=us-west1 \
   --platform=managed \
   --allow-unauthenticated \
   --min-instances=0 \
@@ -178,12 +179,12 @@ STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest"
 
 ### Step 7 — Update OAuth redirect URIs
 
-After deploying, note the service URL (e.g. `https://juntoshq-xxxx-uc.a.run.app`).
+After deploying, note the service URL (e.g. `https://juntoshq-xxxx-uw.a.run.app`).
 
 - **Google Cloud Console** → APIs & Services → Credentials → your OAuth 2.0 client:
-  - Add `https://juntoshq-xxxx-uc.a.run.app/auth/callback/google` to Authorized redirect URIs.
+  - Add `https://juntoshq-xxxx-uw.a.run.app/auth/callback/google` to Authorized redirect URIs.
 - **GitHub Developer Settings** → OAuth Apps → your app:
-  - Set Authorization callback URL to `https://juntoshq-xxxx-uc.a.run.app/auth/callback/github`.
+  - Set Authorization callback URL to `https://juntoshq-xxxx-uw.a.run.app/auth/callback/github`.
 
 ### Step 8 — Map a custom domain (optional)
 
@@ -191,7 +192,7 @@ After deploying, note the service URL (e.g. `https://juntoshq-xxxx-uc.a.run.app`
 gcloud run domain-mappings create \
   --service=juntoshq \
   --domain=app.juntoshq.com \
-  --region=us-central1
+  --region=us-west1
 ```
 
 Cloud Run provisions a managed TLS certificate automatically.
@@ -407,7 +408,7 @@ gcloud builds triggers create github \
   --repo-owner=YOUR_GITHUB_USERNAME \
   --branch-pattern="^main$" \
   --build-config=cloudbuild.yaml \
-  --region=us-central1
+  --region=us-west1
 ```
 
 ### Grant Cloud Build permissions
@@ -434,3 +435,44 @@ gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
 ```
 
 After this, every push to `main` will trigger a build, migration run, and Cloud Run deployment automatically.
+
+---
+
+## Updating an already-running service
+
+If the Cloud Run service is already deployed but **OAuth login fails with "Missing required parameter: client_id"**, it means the secrets were never injected into the running service (e.g. the original deploy skipped `--set-secrets`, or secrets don't yet exist in Secret Manager).
+
+### One-command fix
+
+The `scripts/setup-secrets.sh` helper reads your local `.env` file, creates or updates each secret in Secret Manager, grants the Cloud Run service account access, and then calls `gcloud run services update` to inject everything into the live service — no rebuild required.
+
+```bash
+# From the repo root, with gcloud authenticated and your .env file present:
+./scripts/setup-secrets.sh
+
+# Or specify project/region/service explicitly:
+./scripts/setup-secrets.sh -p YOUR_PROJECT_ID -r us-west1 -s juntoshq -e .env
+```
+
+After the script completes, the running Cloud Run revision is immediately updated with the new environment variables. Test at:
+
+```
+https://<your-service-url>/auth/login
+```
+
+### What the script does
+
+1. Reads each secret value from your `.env` file.
+2. Creates the secret in Secret Manager if it doesn't exist; adds a new version if it does.
+3. Grants `roles/secretmanager.secretAccessor` to the Cloud Run default compute service account.
+4. Calls `gcloud run services update --set-secrets=...` to inject all secrets into the live service.
+
+> **Note:** You still need to ensure your Google OAuth client has the Cloud Run service URL listed as an **Authorized redirect URI** in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials):
+> ```
+> https://juntoshq-93682766063.us-west1.run.app/auth/callback/google
+> ```
+> Without that entry, Google will block the OAuth redirect even if `client_id` is correctly configured.
+
+### Why this happens with Cloud Build wired to the repo
+
+`cloudbuild.yaml` uses `--set-secrets` to pull values from Secret Manager at deploy time.  If the Secret Manager secrets don't exist yet, the `gcloud run deploy` step will fail.  Run `setup-secrets.sh` once to populate Secret Manager, then every subsequent push to `main` will automatically deploy with the correct secrets.

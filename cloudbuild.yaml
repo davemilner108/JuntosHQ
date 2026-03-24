@@ -18,7 +18,7 @@
 #     --branch-pattern="^main$" --build-config=cloudbuild.yaml
 
 substitutions:
-  _REGION: us-central1
+  _REGION: us-west1
   _REPO: juntoshq          # Artifact Registry repository name
   _SERVICE: juntoshq       # Cloud Run service name
   _IMAGE: ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/juntoshq
