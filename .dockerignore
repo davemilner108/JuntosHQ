@@ -40,7 +40,7 @@ corpus/
 # Documentation (not needed at runtime)
 docs/
 screenshots/
-README.md
+!README.md
 LICENSE
 
 # Local credential / key files — never bake into the image
