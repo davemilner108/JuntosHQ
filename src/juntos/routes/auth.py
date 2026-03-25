@@ -53,6 +53,15 @@ def oauth_login(provider):
         return redirect(url_for("auth.login"))
     if g.current_user:
         return redirect(url_for("main.index"))
+    # Verify the provider's OAuth credentials are configured before redirecting.
+    # If the secret is missing from the environment the authorize_redirect would
+    # forward an empty client_id to the provider (Error 400: invalid_request).
+    if not current_app.config.get(f"{provider.upper()}_CLIENT_ID"):
+        flash(
+            f"Sign in with {provider.capitalize()} is not currently available.",
+            "error",
+        )
+        return redirect(url_for("auth.login"))
     # Preserve invite token through OAuth round-trip
     invite_token = request.args.get("invite_token")
     if invite_token:
