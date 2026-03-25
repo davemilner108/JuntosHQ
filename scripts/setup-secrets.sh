@@ -196,7 +196,7 @@ fi
 gcloud run services update "$SERVICE" \
   --project="$PROJECT_ID" \
   --region="$REGION" \
-  --set-secrets="$SET_SECRETS_ARG"
+  --update-secrets="$SET_SECRETS_ARG"
 
 echo ""
 echo "=== Done! ==="

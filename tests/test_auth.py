@@ -14,6 +14,29 @@ def test_login_page(client):
     assert b"Sign In" in response.data
 
 
+def test_oauth_login_unconfigured_client_id(client, app):
+    """Missing CLIENT_ID should redirect back to login with an error, not to the provider."""
+    app.config["GOOGLE_CLIENT_ID"] = ""
+    response = client.get("/auth/login/google")
+    assert response.status_code == 302
+    assert "/auth/login" in response.headers["Location"]
+    with client.session_transaction() as sess:
+        flashes = sess.get("_flashes", [])
+        assert any(
+            cat == "error" and "not currently available" in msg
+            for cat, msg in flashes
+        )
+
+
+def test_oauth_login_unknown_provider(client):
+    response = client.get("/auth/login/unknown")
+    assert response.status_code == 302
+    assert "/auth/login" in response.headers["Location"]
+    with client.session_transaction() as sess:
+        flashes = sess.get("_flashes", [])
+        assert any(cat == "error" for cat, msg in flashes)
+
+
 def test_logout_clears_session(logged_in_client):
     response = logged_in_client.post("/auth/logout")
     assert response.status_code == 302
