@@ -107,8 +107,7 @@ echo -n "price_..."                     | gcloud secrets create STRIPE_PRICE_CHA
 echo -n "smtp.sendgrid.net"   | gcloud secrets create MAIL_SERVER    --data-file=-
 echo -n "587"                  | gcloud secrets create MAIL_PORT      --data-file=-
 echo -n "apikey"               | gcloud secrets create MAIL_USERNAME  --data-file=-
-echo -n "YOUR_SENDGRID_KEY"    | gcloud secrets create MAIL_PASSWORD  --data-file=-
-```
+echo -n "YOUR_SENDGRID_KEY"    | gcloud secrets create MAIL_PASSWORD  --data-file=-```
 
 ### Step 3 — Grant Cloud Run access to secrets
 
@@ -174,7 +173,13 @@ GITHUB_CLIENT_SECRET=GITHUB_CLIENT_SECRET:latest,\
 ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,\
 VOYAGE_API_KEY=VOYAGE_API_KEY:latest,\
 STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,\
-STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest"
+STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest,\
+STRIPE_PRICE_STANDARD=STRIPE_PRICE_STANDARD:latest,\
+STRIPE_PRICE_EXPANDED=STRIPE_PRICE_EXPANDED:latest,\
+STRIPE_PRICE_CHATBOT=STRIPE_PRICE_CHATBOT:latest,\
+MAIL_SERVER=MAIL_SERVER:latest,\
+MAIL_USERNAME=MAIL_USERNAME:latest,\
+MAIL_PASSWORD=MAIL_PASSWORD:latest"
 ```
 
 ### Step 7 — Update OAuth redirect URIs

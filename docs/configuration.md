@@ -24,7 +24,30 @@ Configuration classes are defined in [src/juntos/config.py](../src/juntos/config
 | `GITHUB_CLIENT_ID` | OAuth App client ID from GitHub Developer Settings |
 | `GITHUB_CLIENT_SECRET` | OAuth App client secret from GitHub Developer Settings |
 
-If OAuth credentials are absent (empty string), the app will start but the sign-in buttons will fail when clicked. The app can run in a limited capacity without them (read-only views are still accessible).
+### Required for billing (Stripe)
+
+| Variable | Description |
+|---|---|
+| `STRIPE_SECRET_KEY` | Stripe secret key (`sk_live_...` in production) |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret (`whsec_...`) |
+| `STRIPE_PRICE_STANDARD` | Stripe Price ID for the Standard plan (`price_...`) |
+| `STRIPE_PRICE_EXPANDED` | Stripe Price ID for the Expanded plan (`price_...`) |
+| `STRIPE_PRICE_CHATBOT` | Stripe Price ID for the Ben's Counsel add-on (`price_...`) |
+
+If Stripe keys are absent, checkout routes show a "billing not yet configured" flash and redirect to pricing — safe for free-only deployments.
+
+### Optional: email (invite links)
+
+| Variable | Description |
+|---|---|
+| `MAIL_SERVER` | SMTP hostname (e.g. `smtp.sendgrid.net`) |
+| `MAIL_PORT` | SMTP port (default `587`) |
+| `MAIL_USE_TLS` | `true` or `false` (default `true`) |
+| `MAIL_USERNAME` | SMTP username |
+| `MAIL_PASSWORD` | SMTP password or API key |
+| `MAIL_DEFAULT_SENDER` | From address (default `noreply@juntoshq.com`) |
+
+If `MAIL_SERVER` is absent, invite emails are silently skipped — the invite link is still generated and shown in the UI.
 
 ---
 
@@ -83,7 +106,11 @@ class Config:
     GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
     GITHUB_CLIENT_ID     = os.environ.get("GITHUB_CLIENT_ID", "")
     GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET", "")
-    PERMANENT_SESSION_LIFETIME = 60 * 60 * 24 * 7  # 7 days in seconds
+    PERMANENT_SESSION_LIFETIME = timedelta(days=7)
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+    # True in production (HTTPS-only cookies); set SESSION_COOKIE_SECURE=false in .flaskenv for local dev
+    SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", "true").lower() == "true"
 ```
 
 **Defaults without a `.env` file:**
