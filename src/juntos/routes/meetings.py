@@ -1,7 +1,7 @@
 from datetime import date
 
 import mistune
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash, g, redirect, render_template, request, url_for
 from markupsafe import Markup
 
 from juntos.auth_utils import login_required, require_junto_owner
@@ -27,6 +27,16 @@ def _viewable_meeting_ids(junto):
 def new(junto_id):
     junto = db.get_or_404(Junto, junto_id)
     require_junto_owner(junto)
+
+    # Check meeting limit before showing the form
+    if len(junto.meetings) >= junto.meeting_limit:
+        flash(
+            f"This junto has reached its meeting limit ({junto.meeting_limit}). "
+            "Upgrade your plan to log more meetings.",
+            "error",
+        )
+        return redirect(url_for("juntos.show", id=junto.id))
+
     return render_template(
         "meetings/new.html", junto=junto, today=date.today().isoformat()
     )
@@ -37,6 +47,15 @@ def new(junto_id):
 def create(junto_id):
     junto = db.get_or_404(Junto, junto_id)
     require_junto_owner(junto)
+
+    # Enforce meeting limit on POST as well (belt-and-suspenders)
+    if len(junto.meetings) >= junto.meeting_limit:
+        flash(
+            f"This junto has reached its meeting limit ({junto.meeting_limit}). "
+            "Upgrade your plan to log more meetings.",
+            "error",
+        )
+        return redirect(url_for("juntos.show", id=junto.id))
 
     held_on_str = request.form.get("held_on", "").strip()
     if not held_on_str:

@@ -2,7 +2,7 @@ import stripe
 from flask import Blueprint, abort, current_app, flash, g, redirect, request, url_for
 
 from juntos.auth_utils import login_required
-from juntos.models import SubscriptionTier, User, db
+from juntos.models import JuntoTier, SubscriptionTier, User, db
 
 bp = Blueprint("billing", __name__)
 
@@ -15,6 +15,13 @@ _PLAN_TIERS: dict[str, SubscriptionTier] = {
 _PLAN_PRICE_KEYS: dict[str, str] = {
     "standard": "STRIPE_PRICE_STANDARD",
     "expanded": "STRIPE_PRICE_EXPANDED",
+}
+
+# Map SubscriptionTier → JuntoTier so juntos created/upgraded stay in sync
+_SUBSCRIPTION_TO_JUNTO_TIER: dict[SubscriptionTier, JuntoTier] = {
+    SubscriptionTier.FREE: JuntoTier.FREE,
+    SubscriptionTier.STANDARD: JuntoTier.SUBSCRIPTION,
+    SubscriptionTier.EXPANDED: JuntoTier.EXPANDED,
 }
 
 
@@ -176,18 +183,26 @@ def webhook():
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-_PRICE_TO_TIER: dict[str, SubscriptionTier] = {}  # populated lazily at runtime
-
-
-def _price_id_for_tier(app, plan: str) -> str:
-    return app.config.get(_PLAN_PRICE_KEYS.get(plan, ""), "")
+_PLAN_PRICE_KEYS_REF = _PLAN_PRICE_KEYS  # alias for use inside helpers
 
 
 def _tier_from_price_id(app, price_id: str) -> SubscriptionTier | None:
-    for plan, key in _PLAN_PRICE_KEYS.items():
+    for plan, key in _PLAN_PRICE_KEYS_REF.items():
         if app.config.get(key) == price_id:
             return _PLAN_TIERS[plan]
     return None
+
+
+def _sync_junto_tiers(user: User, new_sub_tier: SubscriptionTier) -> None:
+    """Update all juntos owned by the user to match their new subscription tier.
+
+    This keeps junto-level limits (meetings, commitments) in sync whenever
+    a user upgrades or downgrades.
+    """
+    junto_tier = _SUBSCRIPTION_TO_JUNTO_TIER.get(new_sub_tier, JuntoTier.FREE)
+    for junto in user.juntos:
+        junto.tier = junto_tier
+    db.session.flush()
 
 
 def _handle_event(event: stripe.Event) -> None:
@@ -199,6 +214,31 @@ def _handle_event(event: stripe.Event) -> None:
 
     elif etype in ("customer.subscription.deleted", "customer.subscription.updated"):
         sub = event["data"]["object"]
+        _sync_subscription(sub)
+
+    elif etype == "invoice.payment_failed":
+        # A payment attempt failed. The subscription may still be active
+        # (Stripe retries), but we log it. If the subscription reaches
+        # 'past_due' or 'unpaid', _sync_subscription will handle the downgrade
+        # via the customer.subscription.updated event that Stripe also fires.
+        invoice = event["data"]["object"]
+        current_app.logger.warning(
+            "Invoice payment failed: invoice=%s customer=%s",
+            invoice.get("id"),
+            invoice.get("customer"),
+        )
+
+    elif etype == "customer.subscription.updated":
+        sub = event["data"]["object"]
+        # Handle past_due explicitly — subscription is still technically
+        # "active" in Stripe's eyes during retry window, but we want to
+        # surface this to the user without immediately downgrading.
+        if sub.get("status") == "past_due":
+            current_app.logger.warning(
+                "Subscription past_due: sub=%s customer=%s",
+                sub.get("id"),
+                sub.get("customer"),
+            )
         _sync_subscription(sub)
 
 
@@ -221,6 +261,7 @@ def _activate_subscription(session_obj) -> None:
         tier = _PLAN_TIERS.get(plan)
         if tier:
             user.subscription_tier = tier
+            _sync_junto_tiers(user, tier)
         if sub_id:
             user.stripe_subscription_id = sub_id
     db.session.commit()
@@ -248,10 +289,12 @@ def _sync_subscription(sub) -> None:
         else:
             user.subscription_tier = SubscriptionTier.FREE
             user.stripe_subscription_id = None
+            _sync_junto_tiers(user, SubscriptionTier.FREE)
         db.session.commit()
     elif status == "active":
         if not is_chatbot_sub and price_ids:
             tier = _tier_from_price_id(current_app, price_ids[0])
             if tier:
                 user.subscription_tier = tier
+                _sync_junto_tiers(user, tier)
                 db.session.commit()

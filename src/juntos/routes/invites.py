@@ -12,9 +12,16 @@ from flask import (
 )
 
 from juntos.auth_utils import login_required, require_junto_owner
-from juntos.models import Junto, Member, MemberInvite, MemberStatus, db
+from juntos.models import Junto, Member, MemberInvite, MemberStatus, SubscriptionTier, db
 
 bp = Blueprint("invites", __name__)
+
+# Invite links require Standard or Expanded subscription
+_INVITE_TIERS = (SubscriptionTier.STANDARD, SubscriptionTier.EXPANDED)
+
+
+def _can_invite(user) -> bool:
+    return user.subscription_tier in _INVITE_TIERS
 
 
 @bp.route("/juntos/<int:junto_id>/invites", methods=["POST"])
@@ -22,6 +29,14 @@ bp = Blueprint("invites", __name__)
 def create(junto_id):
     junto = db.get_or_404(Junto, junto_id)
     require_junto_owner(junto)
+
+    # Gate invite creation to paid tiers
+    if not _can_invite(g.current_user):
+        flash(
+            "Invite links require a Standard or Expanded plan. Upgrade to invite members by link.",
+            "error",
+        )
+        return redirect(url_for("main.pricing"))
 
     member_id = request.form.get("member_id", type=int)
     email = request.form.get("email", "").strip() or None

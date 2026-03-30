@@ -17,9 +17,23 @@ from sqlalchemy import func
 
 from juntos.auth_utils import login_required, require_junto_owner
 from juntos.franklin import get_weekly_prompt
-from juntos.models import Commitment, CommitmentStatus, Junto, SubscriptionTier, db
+from juntos.models import (
+    Commitment,
+    CommitmentStatus,
+    Junto,
+    JuntoTier,
+    SubscriptionTier,
+    db,
+)
 
 bp = Blueprint("juntos", __name__, url_prefix="/juntos")
+
+# Map user SubscriptionTier → JuntoTier for new juntos
+_SUBSCRIPTION_TO_JUNTO_TIER: dict[SubscriptionTier, JuntoTier] = {
+    SubscriptionTier.FREE: JuntoTier.FREE,
+    SubscriptionTier.STANDARD: JuntoTier.SUBSCRIPTION,
+    SubscriptionTier.EXPANDED: JuntoTier.EXPANDED,
+}
 
 
 def _user_junto_count(user_id: int) -> int:
@@ -98,12 +112,17 @@ def create():
 
     meeting_url = request.form.get("meeting_url", "").strip() or None
     is_public = request.form.get("is_public") == "1"
+
+    # Set the junto's tier to match the owner's current subscription
+    junto_tier = _SUBSCRIPTION_TO_JUNTO_TIER.get(user.subscription_tier, JuntoTier.FREE)
+
     junto = Junto(
         name=name,
         description=description,
         owner_id=g.current_user.id,
         meeting_url=meeting_url,
         is_public=is_public,
+        tier=junto_tier,
     )
     db.session.add(junto)
     db.session.commit()
