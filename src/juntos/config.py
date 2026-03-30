@@ -32,6 +32,8 @@ class Config:
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
+    # Secure cookies: True in production (HTTPS), False for local dev
+    SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", "true").lower() == "true"
 
     # Optional SMTP config — invite emails only sent if MAIL_SERVER is set
     MAIL_SERVER = os.environ.get("MAIL_SERVER")
@@ -73,3 +75,4 @@ class TestConfig(Config):
     GITHUB_CLIENT_SECRET = "test-github-client-secret"
     MAIL_SUPPRESS_SEND = True
     INVITE_REQUIRED = False
+    SESSION_COOKIE_SECURE = False
