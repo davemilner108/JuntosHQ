@@ -19,6 +19,7 @@ JuntosHQ is a Flask web application for creating and managing small groups — c
 | [Database & Migrations](database.md) | Alembic workflow, schema overview, adding new migrations |
 | [Testing](testing.md) | Running the test suite, fixtures, test structure |
 | [Deploying on Google Cloud](deployment-gcp.md) | Cloud Run, App Engine, GKE, Compute Engine — options, quick-start, CI/CD |
+| [Production Launch Checklist](production-checklist.md) | Step-by-step checklist: Stripe, OAuth, secrets, database, smoke tests |
 
 ---
 
