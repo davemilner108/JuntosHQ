@@ -1,13 +1,16 @@
+#!/usr/bin/env python3
 """
-Fix existing juntos that have tier=FREE even though their owner has a paid subscription.
+Backfill junto tiers to match their owner's subscription tier.
 
-Run once after deploying the billing fixes:
-    flask shell < scripts/backfill_junto_tiers.py
-or:
-    python scripts/backfill_junto_tiers.py  (with FLASK_APP set)
+Fixes juntos that were created before junto.tier was set on creation,
+leaving them stuck at FREE even for paid subscribers.
+
+Usage:
+    uv run scripts/backfill_junto_tiers.py
 """
 
-from juntos.models import Junto, JuntoTier, SubscriptionTier, User, db
+from juntos import create_app
+from juntos.models import JuntoTier, SubscriptionTier, User, db
 
 _SUBSCRIPTION_TO_JUNTO_TIER = {
     SubscriptionTier.FREE: JuntoTier.FREE,
@@ -37,15 +40,6 @@ def backfill():
 
 
 if __name__ == "__main__":
-    # Allow running directly with `flask shell < this_file.py`
-    # or as a standalone script if app context is available
-    try:
+    app = create_app()
+    with app.app_context():
         backfill()
-    except RuntimeError:
-        # No app context — set up manually
-        import os
-        from juntos import create_app  # adjust import if your factory is named differently
-
-        app = create_app()
-        with app.app_context():
-            backfill()
