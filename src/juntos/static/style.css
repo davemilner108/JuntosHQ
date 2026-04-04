@@ -1561,42 +1561,100 @@ hr.ornamental::before {
 .chat-page {
     display: flex;
     flex-direction: column;
-    /* Fill from below h1 to bottom of main */
-    min-height: calc(100vh - 220px);
 }
 
+/* === CHAT HEADER with Franklin portrait === */
 .chat-header {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.chat-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem 1.25rem;
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-top: 4px solid var(--colonial-blue);
+    box-shadow: 2px 3px 8px rgba(58, 46, 31, 0.08);
+}
+
+.chat-franklin {
+    flex-shrink: 0;
+    filter: drop-shadow(1px 2px 3px rgba(58, 46, 31, 0.2));
+}
+
+.chat-header-text h1 {
+    border-bottom: none;
+    margin-bottom: 0.25rem;
+    font-size: 1.7rem;
+}
+
+.chat-header-text h1::after {
+    display: none;
 }
 
 .chat-context {
     font-style: italic;
     color: var(--brown-mid);
     font-size: 0.95rem;
-    margin-top: -0.5rem;
-    margin-bottom: 0;
+    margin: 0;
 }
 
-/* Scrollable message window */
+/* === CHAT WINDOW (only shown when there are messages) === */
 .chat-window {
-    flex: 1;
-    min-height: 420px;
-    max-height: 60vh;
+    max-height: 55vh;
     overflow-y: auto;
     background: var(--card-bg);
     border: 1px solid var(--parchment-deep);
     border-top: 3px double var(--parchment-deep);
     padding: 1.25rem 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     scroll-behavior: smooth;
+}
+
+/* Empty state — no giant box, just a gentle prompt */
+.chat-empty-card {
+    padding: 1.25rem 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-left: 4px solid var(--gold);
+    margin-bottom: 1rem;
 }
 
 .chat-empty-state {
     font-style: italic;
+    color: var(--brown-mid);
+    font-size: 1rem;
+    margin: 0;
+    text-align: left;
+}
+
+/* PDF export + meta row */
+.chat-meta-row {
+    text-align: right;
+    margin-bottom: 0.5rem;
+}
+
+.chat-meta-link {
+    font-size: 0.85rem;
     color: var(--brown-faint);
-    text-align: center;
-    padding: 3rem 1rem;
-    font-size: 1.05rem;
+    font-style: italic;
+}
+
+/* Bottom actions: New Conversation + back link */
+.chat-actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.chat-back-link {
+    font-size: 0.92rem;
+    color: var(--brown-mid);
 }
 
 /* Message list — no bullets */
@@ -1731,8 +1789,13 @@ hr.ornamental::before {
 
 /* Chat page responsive */
 @media (max-width: 600px) {
+    .chat-header-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+
     .chat-window {
-        min-height: 300px;
         max-height: 50vh;
         padding: 1rem;
     }
@@ -1749,6 +1812,11 @@ hr.ornamental::before {
     .chat-input-row .btn {
         width: 100%;
         text-align: center;
+    }
+
+    .chat-actions-row {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 
