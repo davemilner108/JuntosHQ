@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if current_user %}
-{# ========== LOGGED-IN VIEW ========== #}
 <div class="hero">
     <img class="hero-franklin" src="{{ url_for('static', filename='franklin.svg') }}" alt="Cartoon Benjamin Franklin" width="160" height="176">
     <div class="hero-text">
@@ -11,83 +9,45 @@
     </div>
 </div>
 
-{% if at_junto_limit %}
-<div class="upgrade-prompt">
-    <strong>You've reached the {{ current_user.subscription_tier.value | title }} tier limit ({{ owned_junto_count }}/{{ current_user.junto_limit }} junto{{ 's' if current_user.junto_limit != 1 else '' }}).</strong>
-    Upgrade your plan to create more.
-    <a href="{{ url_for('main.pricing') }}">See plans &rarr;</a>
-</div>
-{% endif %}
+{% if current_user %}
+  {% if at_junto_limit %}
+  <div class="upgrade-prompt">
+      <strong>You've reached the {{ current_user.subscription_tier.value | title }} tier limit ({{ owned_junto_count }}/{{ current_user.junto_limit }} junto{{ 's' if current_user.junto_limit != 1 else '' }}).</strong>
+      Upgrade your plan to create more.
+      <a href="{{ url_for('main.pricing') }}">See plans &rarr;</a>
+  </div>
+  {% endif %}
 
-{% if juntos %}
-<div class="junto-section-header">
-    <h2 class="junto-section-title">Your Juntos</h2>
-    {% if not at_junto_limit %}
-    <a class="btn btn-primary btn-sm" href="{{ url_for('juntos.new') }}">+ New Junto</a>
-    {% endif %}
-</div>
-<ul class="card-list">
-    {% for junto in juntos %}
-    <li class="card">
-        <a href="{{ url_for('juntos.show', id=junto.id) }}">{{ junto.name }}</a>
-        <div class="card-description">{{ junto.description }}</div>
-    </li>
-    {% endfor %}
-</ul>
+  {% if juntos %}
+  <div class="junto-section-header">
+      <h2 class="junto-section-title">Your Juntos</h2>
+      {% if not at_junto_limit %}
+      <a class="btn btn-primary btn-sm" href="{{ url_for('juntos.new') }}">+ New Junto</a>
+      {% endif %}
+  </div>
+  <ul class="card-list">
+      {% for junto in juntos %}
+      <li class="card">
+          <a href="{{ url_for('juntos.show', id=junto.id) }}">{{ junto.name }}</a>
+          <div class="card-description">{{ junto.description }}</div>
+      </li>
+      {% endfor %}
+  </ul>
+  {% else %}
+  <div class="landing-empty-invite">
+      <blockquote>
+          &ldquo;Tell me and I forget. Teach me and I remember. Involve me and I learn.&rdquo;
+          <cite>&mdash; B. Franklin</cite>
+      </blockquote>
+      <p>Your junto awaits. Gather twelve minds, set your commitments, and meet regularly.</p>
+      <div class="landing-cta">
+          <a class="btn btn-primary" href="{{ url_for('juntos.new') }}">Start your Junto &rarr;</a>
+      </div>
+      <p class="landing-empty-hint">Invite up to twelve members &mdash; accountable to each other, improving together.</p>
+  </div>
+  {% endif %}
+
 {% else %}
-{# ========== EMPTY STATE — logged in, no juntos ========== #}
-<div class="landing-empty-invite">
-    <blockquote>
-        &ldquo;Tell me and I forget. Teach me and I remember. Involve me and I learn.&rdquo;
-        <cite>&mdash; B. Franklin</cite>
-    </blockquote>
-    <p>Your junto awaits. Gather twelve minds, set your commitments, and meet regularly.</p>
-    <div class="landing-cta">
-        <a class="btn btn-primary" href="{{ url_for('juntos.new') }}">Start your Junto &rarr;</a>
-    </div>
-    <p class="landing-empty-hint">Invite up to twelve members &mdash; accountable to each other, improving together.</p>
-</div>
-{% endif %}
-
-{% else %}
-{# ========== LOGGED-OUT MARKETING VIEW ========== #}
-<div class="landing-hero">
-    <img class="hero-franklin landing-franklin" src="{{ url_for('static', filename='franklin.svg') }}" alt="Cartoon Benjamin Franklin" width="200" height="220">
-    <h1>Juntos</h1>
-    <p class="hero-subtitle">A small circle of committed minds.<br>Accountable to each other. Improving together.</p>
-    <div class="landing-cta">
-        <a class="btn btn-primary" href="{{ url_for('auth.login') }}">Join the Junto &rarr;</a>
-    </div>
-</div>
-
-<div class="landing-pillars">
-    <div class="landing-pillar">
-        <span class="landing-pillar-glyph">❦</span>
-        <h3>Accountability</h3>
-        <p>Twelve members. Real commitments.<br>Weekly reckoning, in the open.</p>
-    </div>
-    <div class="landing-pillar">
-        <span class="landing-pillar-glyph">§</span>
-        <h3>Discourse</h3>
-        <p>Franklin&rsquo;s original questions,<br>asked anew each meeting.</p>
-    </div>
-    <div class="landing-pillar">
-        <span class="landing-pillar-glyph">✦</span>
-        <h3>Counsel</h3>
-        <p>Ben himself &mdash; an AI guide trained on Franklin&rsquo;s writings &mdash; is available to your junto.</p>
-    </div>
-</div>
-
-<blockquote class="landing-quote">
-    &ldquo;The first Junto was founded in Philadelphia, 1727, by a printer&rsquo;s apprentice who believed
-    ordinary people, meeting regularly, could improve themselves and their city.
-    Twenty-four years later, it became the American Philosophical Society.&rdquo;
-    <cite>Philadelphia, 1727 &mdash; 1743</cite>
-</blockquote>
-
-<div class="landing-second-cta">
-    <p class="landing-second-cta-label">Ready to begin?</p>
-    <a class="btn btn-primary" href="{{ url_for('auth.login') }}">Begin your junto &rarr;</a>
-</div>
+  <p><a class="btn btn-primary" href="{{ url_for('auth.login') }}">Sign in to get started</a></p>
 {% endif %}
 {% endblock %}

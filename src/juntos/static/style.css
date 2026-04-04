@@ -2051,7 +2051,7 @@ footer::before {
 }
 
 /* ============================================================
-   LANDING PAGE — Logged-out marketing view
+   LANDING PAGE — Logged-in improvements
    ============================================================ */
 
 /* === JUNTO SECTION HEADER (logged-in, has juntos) === */
@@ -2091,152 +2091,10 @@ footer::before {
     border-bottom: none;
 }
 
-/* === LANDING HERO (logged-out centered variant) === */
-.landing-hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 2.5rem 1.5rem 2rem;
-    background: var(--card-bg);
-    border: 1px solid var(--parchment-deep);
-    border-top: 4px solid var(--colonial-blue);
-    box-shadow: 2px 3px 12px rgba(58, 46, 31, 0.1);
-    margin-bottom: 0;
-}
-
-.landing-franklin {
-    filter: drop-shadow(2px 4px 6px rgba(58, 46, 31, 0.25));
-    margin-bottom: 1rem;
-}
-
-.landing-hero h1 {
-    border-bottom: none;
-    margin-bottom: 0.6rem;
-    font-size: 2.6rem;
-    letter-spacing: 0.06em;
-}
-
-.landing-hero h1::after {
-    display: none;
-}
-
-.hero-subtitle {
-    font-style: italic;
-    font-size: 1.1rem;
-    color: var(--brown-mid);
-    max-width: 480px;
-    margin: 0 auto 1.75rem;
-    line-height: 1.65;
-}
-
 /* === LANDING CTA wrapper === */
 .landing-cta {
-    margin: 0.25rem 0 0;
+    margin: 1rem 0 0;
     text-align: center;
-}
-
-/* === THREE PILLARS === */
-.landing-pillars {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    margin: 0 0 0;
-    border: 1px solid var(--parchment-deep);
-    border-top: none;
-    background: var(--parchment-mid);
-}
-
-.landing-pillar {
-    padding: 1.75rem 1.5rem;
-    text-align: center;
-    border-right: 1px solid var(--parchment-deep);
-    background: var(--card-bg);
-}
-
-.landing-pillar:last-child {
-    border-right: none;
-}
-
-.landing-pillar-glyph {
-    display: block;
-    font-size: 1.6rem;
-    color: var(--gold);
-    margin-bottom: 0.6rem;
-    line-height: 1;
-}
-
-.landing-pillar h3 {
-    font-family: 'Playfair Display SC', Georgia, serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--colonial-blue);
-    letter-spacing: 0.06em;
-    margin: 0 0 0.6rem;
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.landing-pillar p {
-    font-size: 0.9rem;
-    color: var(--brown-mid);
-    line-height: 1.6;
-    margin: 0;
-    font-style: italic;
-}
-
-/* === LANDING PULL-QUOTE === */
-.landing-quote {
-    max-width: 580px;
-    margin: 2.5rem auto;
-    padding: 1.5rem 2rem;
-    border-top: 1px solid var(--parchment-deep);
-    border-bottom: 1px solid var(--parchment-deep);
-    font-style: italic;
-    color: var(--brown-mid);
-    font-size: 1rem;
-    line-height: 1.75;
-    text-align: center;
-    position: relative;
-}
-
-.landing-quote::before {
-    content: '\201C';
-    font-family: 'Playfair Display SC', Georgia, serif;
-    font-size: 4rem;
-    color: var(--gold);
-    opacity: 0.35;
-    position: absolute;
-    top: -0.5rem;
-    left: 1rem;
-    line-height: 1;
-    pointer-events: none;
-}
-
-.landing-quote cite {
-    display: block;
-    text-align: right;
-    font-size: 0.8rem;
-    color: var(--brown-faint);
-    font-style: normal;
-    letter-spacing: 0.06em;
-    margin-top: 1rem;
-    font-family: 'Playfair Display SC', Georgia, serif;
-}
-
-/* === SECOND CTA SECTION === */
-.landing-second-cta {
-    text-align: center;
-    padding: 1.5rem 0 0.5rem;
-    border-top: 1px solid var(--parchment-deep);
-}
-
-.landing-second-cta-label {
-    font-family: 'Playfair Display SC', Georgia, serif;
-    font-size: 0.82rem;
-    letter-spacing: 0.08em;
-    color: var(--brown-faint);
-    margin-bottom: 0.75rem;
-    text-transform: uppercase;
 }
 
 /* === EMPTY INVITE CARD (logged-in, no juntos) === */
@@ -2288,45 +2146,6 @@ footer::before {
 
 /* === RESPONSIVE — landing page === */
 @media (max-width: 600px) {
-    .landing-hero {
-        padding: 1.75rem 1rem 1.5rem;
-    }
-
-    .landing-hero h1 {
-        font-size: 2rem;
-    }
-
-    .landing-franklin {
-        width: 130px;
-        height: auto;
-    }
-
-    .hero-subtitle {
-        font-size: 1rem;
-    }
-
-    .landing-pillars {
-        grid-template-columns: 1fr;
-    }
-
-    .landing-pillar {
-        border-right: none;
-        border-bottom: 1px solid var(--parchment-deep);
-    }
-
-    .landing-pillar:last-child {
-        border-bottom: none;
-    }
-
-    .landing-quote {
-        padding: 1.25rem 1rem;
-        margin: 1.75rem auto;
-    }
-
-    .landing-quote::before {
-        display: none;
-    }
-
     .junto-section-header {
         flex-direction: column;
         align-items: flex-start;
