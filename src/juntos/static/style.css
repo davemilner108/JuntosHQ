@@ -2191,3 +2191,54 @@ footer::before {
         padding: 1.5rem 1.25rem;
     }
 }
+
+/* === JUNTO ROLE BADGES (index card list) === */
+.card-title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.card-title-row a {
+    text-decoration: none;
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--colonial-blue);
+}
+
+.card-title-row a:hover {
+    color: var(--colonial-blue-hover);
+    text-decoration: underline;
+}
+
+.junto-role-badge {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    padding: 0.15rem 0.55rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border: 1px solid transparent;
+}
+
+.junto-role-badge--owner {
+    background-color: var(--colonial-blue);
+    color: var(--parchment);
+    border-color: var(--colonial-blue-hover);
+}
+
+.junto-role-badge--member {
+    background-color: var(--success-bg);
+    color: #3a5a2a;
+    border-color: var(--success-border);
+}
+
+.junto-role-badge--public {
+    background-color: var(--parchment-mid);
+    color: var(--brown-faint);
+    border-color: var(--parchment-deep);
+}
