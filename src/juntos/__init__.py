@@ -14,6 +14,11 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # Trust the X-Forwarded-Proto header from Cloud Run's load balancer
+    # so that url_for(..., _external=True) generates https:// URLs.
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
     # Warn loudly if the application is running with the default development
     # secret key outside of a testing context.
     if (
