@@ -60,7 +60,7 @@
         <span class="ben-counsel-remaining">({{ [5 - current_user.chatbot_msgs_used, 0] | max }} free message{{ 's' if (5 - current_user.chatbot_msgs_used) != 1 else '' }} remaining)</span>
         {% endif %}
     </p>
-    <a class="btn btn-primary btn-sm" href="{{ url_for('chat.junto_chat', junto_id=junto.id) }}">Ask Ben &rarr;</a>
+    <a class="ben-counsel-link" href="{{ url_for('chat.junto_chat', junto_id=junto.id) }}">Ask Ben Franklin &rarr;</a>
     {% endif %}
 </div>
 {% endif %}
@@ -68,7 +68,7 @@
 <hr class="ornamental">
 
 {# ── Members ── #}
-<h2>Members <span class="member-count">{{ junto.members|length }}/{{ junto.MAX_MEMBERS }}</span></h2>
+<h2 id="members">Members <span class="member-count">{{ junto.members|length }}/{{ junto.MAX_MEMBERS }}</span></h2>
 {% if current_user and junto.owner_id == current_user.id and not junto.is_full %}
 <p><a class="btn btn-primary btn-sm" href="{{ url_for('members.new', junto_id=junto.id) }}">+ Add Member</a></p>
 {% endif %}
