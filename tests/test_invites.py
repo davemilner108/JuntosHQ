@@ -408,3 +408,19 @@ def test_show_page_no_invite_for_linked(
     resp = logged_in_client.get(f"/juntos/{junto.id}")
     # The invite form should not appear for linked members
     assert b"invite-form" not in resp.data
+
+
+def test_accept_invite_sets_signup_verified(client, db, invite, other_user):
+    """Accepting a member invite marks the user as signup_verified.
+
+    When INVITE_REQUIRED is True, new users who sign in via OAuth have
+    signup_verified=False and are gated behind the coupon page.  Accepting
+    a member invite link should count as verification so the invitee can
+    immediately access the junto without needing a coupon.
+    """
+    assert not other_user.signup_verified
+    with client.session_transaction() as sess:
+        sess["user_id"] = other_user.id
+    client.post(f"/invite/{invite.token}/accept")
+    db.session.refresh(other_user)
+    assert other_user.signup_verified is True
