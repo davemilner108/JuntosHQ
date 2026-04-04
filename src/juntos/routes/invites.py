@@ -131,6 +131,11 @@ def accept_invite(token):
     if not member.avatar_url and user.avatar_url:
         member.avatar_url = user.avatar_url
 
+    # Accepting a member invite counts as signup verification —
+    # the invite link itself is the proof of authorization.
+    if not user.signup_verified:
+        user.signup_verified = True
+
     invite.accepted_at = datetime.now(UTC)
     db.session.commit()
 
