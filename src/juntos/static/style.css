@@ -553,6 +553,15 @@ hr.ornamental::before {
     min-width: 0;
 }
 
+.card-main > div:first-child {
+    display: block;
+    line-height: 1.4;
+}
+
+.card-main > div:first-child > a {
+    display: inline;
+}
+
 .card-actions {
     flex: 0 0 auto;
     display: flex;
@@ -776,7 +785,7 @@ hr.ornamental::before {
 .commitment-fields {
     display: flex;
     gap: 0.75rem;
-    align-items: flex-end;
+    align-items: flex-start;
     margin-bottom: 0.4rem;
 }
 
@@ -790,7 +799,12 @@ hr.ornamental::before {
 }
 
 .commitment-fields .form-group:last-child {
-    flex: 0 0 180px;
+    flex: 0 0 140px;
+}
+
+/* Description input in commitment form — taller for readability */
+.commitment-fields .form-group:first-child input[type="text"] {
+    min-height: 2.6rem;
 }
 
 .commitment-summary {
