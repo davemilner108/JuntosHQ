@@ -2049,3 +2049,110 @@ footer::before {
         justify-content: flex-start;
     }
 }
+
+/* ============================================================
+   LANDING PAGE — Logged-in improvements
+   ============================================================ */
+
+/* === JUNTO SECTION HEADER (logged-in, has juntos) === */
+.junto-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px double var(--parchment-deep);
+    position: relative;
+}
+
+.junto-section-header::after {
+    content: '❦';
+    display: block;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--gold);
+    line-height: 0;
+    position: absolute;
+    bottom: -0.45rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment);
+    padding: 0 0.6rem;
+}
+
+.junto-section-title {
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--colonial-blue);
+    letter-spacing: 0.05em;
+    margin: 0;
+    border-bottom: none;
+}
+
+/* === LANDING CTA wrapper === */
+.landing-cta {
+    margin: 1rem 0 0;
+    text-align: center;
+}
+
+/* === EMPTY INVITE CARD (logged-in, no juntos) === */
+.landing-empty-invite {
+    margin-top: 1.5rem;
+    padding: 2.25rem 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--parchment-deep);
+    border-top: 4px solid var(--gold);
+    box-shadow: 2px 3px 10px rgba(58, 46, 31, 0.08);
+    text-align: center;
+}
+
+.landing-empty-invite blockquote {
+    font-style: italic;
+    color: var(--brown-mid);
+    border-left: 3px solid var(--gold);
+    padding: 0.5rem 1rem;
+    text-align: left;
+    max-width: 420px;
+    margin: 0 auto 1.25rem;
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+.landing-empty-invite blockquote cite {
+    display: block;
+    font-style: normal;
+    font-size: 0.82rem;
+    color: var(--brown-faint);
+    margin-top: 0.5rem;
+    font-family: 'Playfair Display SC', Georgia, serif;
+    letter-spacing: 0.04em;
+}
+
+.landing-empty-invite > p {
+    color: var(--brown-mid);
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.landing-empty-hint {
+    font-size: 0.88rem;
+    color: var(--brown-faint);
+    font-style: italic;
+    margin-top: 0.9rem !important;
+    margin-bottom: 0 !important;
+}
+
+/* === RESPONSIVE — landing page === */
+@media (max-width: 600px) {
+    .junto-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .landing-empty-invite {
+        padding: 1.5rem 1.25rem;
+    }
+}
