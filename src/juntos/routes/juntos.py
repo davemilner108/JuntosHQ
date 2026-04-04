@@ -133,6 +133,20 @@ def create():
 @bp.route("/<int:id>")
 def show(id):
     junto = db.get_or_404(Junto, id)
+
+    # Access control: private juntos are only visible to the owner and members.
+    # Public juntos are visible to everyone (including unauthenticated visitors).
+    if not junto.is_public:
+        current_user = g.current_user
+        if current_user is None:
+            flash("Sign in to view this junto.", "error")
+            return redirect(url_for("auth.login"))
+        is_owner = junto.owner_id == current_user.id
+        is_member = any(m.user_id == current_user.id for m in junto.members)
+        if not is_owner and not is_member:
+            flash("This junto is private.", "error")
+            return redirect(url_for("main.index"))
+
     prompt = get_weekly_prompt()
     current_week = prompt["week"]
 
