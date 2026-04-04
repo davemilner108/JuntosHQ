@@ -17,37 +17,48 @@
       <a href="{{ url_for('main.pricing') }}">See plans &rarr;</a>
   </div>
   {% endif %}
+{% endif %}
 
-  {% if juntos %}
-  <div class="junto-section-header">
-      <h2 class="junto-section-title">Your Juntos</h2>
-      {% if not at_junto_limit %}
-      <a class="btn btn-primary btn-sm" href="{{ url_for('juntos.new') }}">+ New Junto</a>
-      {% endif %}
-  </div>
-  <ul class="card-list">
-      {% for junto in juntos %}
-      <li class="card">
-          <a href="{{ url_for('juntos.show', id=junto.id) }}">{{ junto.name }}</a>
-          <div class="card-description">{{ junto.description }}</div>
-      </li>
-      {% endfor %}
-  </ul>
-  {% else %}
-  <div class="landing-empty-invite">
-      <blockquote>
-          &ldquo;Tell me and I forget. Teach me and I remember. Involve me and I learn.&rdquo;
-          <cite>&mdash; B. Franklin</cite>
-      </blockquote>
-      <p>Your junto awaits. Gather twelve minds, set your commitments, and meet regularly.</p>
-      <div class="landing-cta">
-          <a class="btn btn-primary" href="{{ url_for('juntos.new') }}">Start your Junto &rarr;</a>
-      </div>
-      <p class="landing-empty-hint">Invite up to twelve members &mdash; accountable to each other, improving together.</p>
-  </div>
-  {% endif %}
+{% if juntos %}
+<div class="junto-section-header">
+    <h2 class="junto-section-title">{% if current_user %}Your Juntos{% else %}Juntos{% endif %}</h2>
+    {% if current_user and not at_junto_limit %}
+    <a class="btn btn-primary btn-sm" href="{{ url_for('juntos.new') }}">+ New Junto</a>
+    {% endif %}
+</div>
+<ul class="card-list">
+    {% for junto in juntos %}
+    <li class="card">
+        <div class="card-main">
+            <a href="{{ url_for('juntos.show', id=junto.id) }}">{{ junto.name }}</a>
+            {% if junto.description %}
+            <div class="card-description">{{ junto.description }}</div>
+            {% endif %}
+        </div>
+        {% if current_user and junto.owner_id == current_user.id %}
+        <div class="card-actions">
+            <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.edit', id=junto.id) }}">Edit</a>
+            <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.show', id=junto.id) }}#members">Invite Members</a>
+        </div>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+
+{% elif current_user %}
+<div class="landing-empty-invite">
+    <blockquote>
+        &ldquo;Tell me and I forget. Teach me and I remember. Involve me and I learn.&rdquo;
+        <cite>&mdash; B. Franklin</cite>
+    </blockquote>
+    <p>Your junto awaits. Gather twelve minds, set your commitments, and meet regularly.</p>
+    <div class="landing-cta">
+        <a class="btn btn-primary" href="{{ url_for('juntos.new') }}">Start your Junto &rarr;</a>
+    </div>
+    <p class="landing-empty-hint">Invite up to twelve members &mdash; accountable to each other, improving together.</p>
+</div>
 
 {% else %}
-  <p><a class="btn btn-primary" href="{{ url_for('auth.login') }}">Sign in to get started</a></p>
+<p><a class="btn btn-primary" href="{{ url_for('auth.login') }}">Sign in to get started</a></p>
 {% endif %}
 {% endblock %}

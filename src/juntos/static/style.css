@@ -542,6 +542,22 @@ hr.ornamental::before {
     margin-bottom: 0.75rem;
     box-shadow: 2px 2px 5px rgba(58, 46, 31, 0.07);
     transition: box-shadow 0.15s ease, border-left-color 0.15s ease, background-color 0.15s ease;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.card-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.card-actions {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
 }
 
 .card:hover {
@@ -1270,6 +1286,25 @@ hr.ornamental::before {
 .ben-counsel-remaining {
     color: var(--brown-faint);
     font-size: 0.88em;
+}
+
+.ben-counsel-link {
+    display: inline-block;
+    color: var(--colonial-blue);
+    font-family: 'Playfair Display SC', Georgia, serif;
+    font-size: 0.93rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold-light);
+    padding-bottom: 1px;
+    transition: color 0.15s ease, border-bottom-color 0.15s ease;
+}
+
+.ben-counsel-link:hover {
+    color: var(--colonial-blue-hover);
+    border-bottom-color: var(--gold);
+    text-decoration: none;
 }
 
 /* === UPGRADE PROMPT === */
