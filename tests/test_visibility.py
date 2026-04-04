@@ -105,7 +105,42 @@ def test_private_junto_not_shown_to_non_member(
     assert b"Private Junto" not in resp.data
 
 
-def test_detail_page_accessible_by_url(client, db, private_junto):
+def test_detail_page_redirects_anonymous_for_private(client, db, private_junto):
+    """Anonymous users cannot view a private junto — redirected to login."""
+    resp = client.get(f"/juntos/{private_junto.id}")
+    assert resp.status_code == 302
+    assert "/auth/login" in resp.headers["Location"]
+
+
+def test_detail_page_accessible_for_public(client, db, junto):
+    """Anyone can view a public junto."""
+    resp = client.get(f"/juntos/{junto.id}")
+    assert resp.status_code == 200
+    assert b"Public Junto" in resp.data
+
+
+def test_detail_page_accessible_for_owner(logged_in_client, db, private_junto):
+    """Owner can always view their own private junto."""
+    resp = logged_in_client.get(f"/juntos/{private_junto.id}")
+    assert resp.status_code == 200
+    assert b"Private Junto" in resp.data
+
+
+def test_detail_page_blocked_for_non_member(client, db, user, other_user, private_junto):
+    """A logged-in user who is not a member or owner cannot view a private junto."""
+    with client.session_transaction() as sess:
+        sess["user_id"] = other_user.id
+    resp = client.get(f"/juntos/{private_junto.id}", follow_redirects=True)
+    assert b"Private Junto" not in resp.data
+
+
+def test_detail_page_accessible_for_member(client, db, user, other_user, private_junto):
+    """A linked member can view a private junto."""
+    m = Member(name="Other", junto_id=private_junto.id, user_id=other_user.id)
+    db.session.add(m)
+    db.session.commit()
+    with client.session_transaction() as sess:
+        sess["user_id"] = other_user.id
     resp = client.get(f"/juntos/{private_junto.id}")
     assert resp.status_code == 200
     assert b"Private Junto" in resp.data
