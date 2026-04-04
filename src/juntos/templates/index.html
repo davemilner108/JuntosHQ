@@ -30,21 +30,23 @@
     {% for junto in juntos %}
     {% set role = junto_roles.get(junto.id, 'public') if junto_roles is defined else 'public' %}
     <li class="card">
-        <div class="card-title-row">
-            <a href="{{ url_for('juntos.show', id=junto.id) }}">{{ junto.name }}</a>
-            {% if current_user %}
-              {% if role == 'owner' %}
-              <span class="junto-role-badge junto-role-badge--owner">&#9812; Founder</span>
-              {% elif role == 'member' %}
-              <span class="junto-role-badge junto-role-badge--member">&#10003; Member</span>
-              {% else %}
-              <span class="junto-role-badge junto-role-badge--public">&#9900; Public</span>
-              {% endif %}
+        <div class="card-main">
+            <div>
+                <a href="{{ url_for('juntos.show', id=junto.id) }}">{{ junto.name }}</a>
+                {% if current_user %}
+                  {% if role == 'owner' %}
+                  <span class="junto-role-badge junto-role-badge--owner">&#9812; Founder</span>
+                  {% elif role == 'member' %}
+                  <span class="junto-role-badge junto-role-badge--member">&#10003; Member</span>
+                  {% else %}
+                  <span class="junto-role-badge junto-role-badge--public">&#9900; Public</span>
+                  {% endif %}
+                {% endif %}
+            </div>
+            {% if junto.description %}
+            <div class="card-description">{{ junto.description }}</div>
             {% endif %}
         </div>
-        {% if junto.description %}
-        <div class="card-description">{{ junto.description }}</div>
-        {% endif %}
         {% if current_user and junto.owner_id == current_user.id %}
         <div class="card-actions">
             <a class="btn btn-secondary btn-sm" href="{{ url_for('juntos.edit', id=junto.id) }}">Edit</a>
