@@ -80,22 +80,29 @@
 {% endif %}
 
 {# === INPUT FORM === #}
-<form class="chat-form" method="post" action="{{ url_for('chat.send_message') }}">
+<form class="chat-form" id="chat-form" method="post" action="{{ url_for('chat.send_message') }}">
     {% if junto %}
     <input type="hidden" name="junto_id" value="{{ junto.id }}">
     {% endif %}
     <div class="chat-input-row">
         <textarea
             name="message"
+            id="chat-message-input"
             class="chat-input"
             placeholder="Write to Mr. Franklin&hellip;"
             rows="3"
             required
             autofocus
         ></textarea>
-        <button class="btn btn-primary" type="submit">Send</button>
+        <button class="btn btn-primary" id="chat-send-btn" type="submit">Send</button>
     </div>
 </form>
+
+{# === THINKING PLACEHOLDER (hidden until form submit) === #}
+<div class="chat-thinking" id="chat-thinking" aria-live="polite">
+    <div class="chat-thinking-franklin">&#9998;</div>
+    <span class="chat-thinking-label" id="chat-thinking-label">Mr. Franklin is composing his reply&hellip;</span>
+</div>
 
 <div class="chat-actions-row">
     <form method="post" action="{{ url_for('chat.new_session') }}">
@@ -117,8 +124,52 @@
 
 <script>
     (function () {
+        // Scroll to bottom on load
         var bottom = document.getElementById('chat-bottom');
         if (bottom) { bottom.scrollIntoView(); }
+
+        // Thinking placeholder — rotating labels
+        var phrases = [
+            'Mr. Franklin is composing his reply\u2026',
+            'Consulting his almanac\u2026',
+            'Weighing the matter carefully\u2026',
+            'Dipping his quill\u2026',
+            'Reflecting on experience\u2026',
+            'Deliberating with great care\u2026',
+            'Drafting his counsel\u2026',
+            'Drawing on Poor Richard\u2026',
+        ];
+
+        var form = document.getElementById('chat-form');
+        var btn = document.getElementById('chat-send-btn');
+        var thinking = document.getElementById('chat-thinking');
+        var label = document.getElementById('chat-thinking-label');
+        var input = document.getElementById('chat-message-input');
+        var phraseIndex = 0;
+        var rotateInterval = null;
+
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                // Only activate if there's actual content
+                if (!input || !input.value.trim()) return;
+
+                // Disable form
+                btn.disabled = true;
+                btn.textContent = 'Sending\u2026';
+                input.disabled = true;
+
+                // Show thinking placeholder
+                if (thinking) {
+                    thinking.classList.add('chat-thinking--visible');
+                    label.textContent = phrases[0];
+                    phraseIndex = 1;
+                    rotateInterval = setInterval(function () {
+                        label.textContent = phrases[phraseIndex % phrases.length];
+                        phraseIndex++;
+                    }, 2800);
+                }
+            });
+        }
     })();
 </script>
 {% endblock %}
