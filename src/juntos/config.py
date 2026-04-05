@@ -27,6 +27,11 @@ class Config:
     # (transaction pooler on port 6543 does not support them)
     SQLALCHEMY_ENGINE_OPTIONS = {
         "connect_args": {"prepare_threshold": None},
+        "pool_size": 2,
+        "max_overflow": 8,
+        "pool_timeout": 10,
+        "pool_recycle": 300,
+        "pool_pre_ping": True,
     }
     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
     GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
