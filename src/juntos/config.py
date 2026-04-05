@@ -23,6 +23,11 @@ class Config:
             f"sqlite:///{BASE_DIR / 'instance' / 'juntos.db'}",
         )
     )
+    # Disable prepared statements — required for Supabase PgBouncer
+    # (transaction pooler on port 6543 does not support them)
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "connect_args": {"prepare_threshold": None},
+    }
     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
     GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
 
