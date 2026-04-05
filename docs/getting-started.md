@@ -87,7 +87,7 @@ The app starts in debug mode on `http://localhost:5000`. Flask's reloader will r
 
 ## OAuth Provider Setup
 
-OAuth credentials are required for sign-in to work. You need to register the app with at least one provider.
+OAuth credentials are required for sign-in to work. You need to register the app with Google.
 
 ### Google
 
@@ -96,12 +96,6 @@ OAuth credentials are required for sign-in to work. You need to register the app
 3. Application type: **Web application**.
 4. Add an authorized redirect URI: `http://localhost:5000/auth/callback/google`
 5. Copy the **Client ID** and **Client Secret** into `.env`.
-
-### GitHub
-
-1. Go to [GitHub Developer Settings](https://github.com/settings/developers) → **New OAuth App**.
-2. Set **Authorization callback URL** to: `http://localhost:5000/auth/callback/github`
-3. Copy the **Client ID** and **Client Secret** into `.env`.
 
 ---
 

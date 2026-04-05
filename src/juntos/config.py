@@ -25,8 +25,6 @@ class Config:
     )
     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
     GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
-    GITHUB_CLIENT_ID = os.environ.get("GITHUB_CLIENT_ID", "")
-    GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET", "")
 
     # Session configuration
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
@@ -71,8 +69,6 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     GOOGLE_CLIENT_ID = "test-google-client-id"
     GOOGLE_CLIENT_SECRET = "test-google-client-secret"
-    GITHUB_CLIENT_ID = "test-github-client-id"
-    GITHUB_CLIENT_SECRET = "test-github-client-secret"
     MAIL_SUPPRESS_SEND = True
     INVITE_REQUIRED = False
     SESSION_COOKIE_SECURE = False

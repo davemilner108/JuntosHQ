@@ -23,7 +23,6 @@
     <p>Sign in to accept this invitation:</p>
     <div class="invite-auth-buttons">
         <a class="btn btn-primary" href="{{ url_for('auth.oauth_login', provider='google', invite_token=invite.token) }}">Sign in with Google</a>
-        <a class="btn btn-secondary" href="{{ url_for('auth.oauth_login', provider='github', invite_token=invite.token) }}">Sign in with GitHub</a>
     </div>
     {% endif %}
     {% endif %}

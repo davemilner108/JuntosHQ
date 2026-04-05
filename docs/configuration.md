@@ -104,8 +104,6 @@ class Config:
     )
     GOOGLE_CLIENT_ID     = os.environ.get("GOOGLE_CLIENT_ID", "")
     GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
-    GITHUB_CLIENT_ID     = os.environ.get("GITHUB_CLIENT_ID", "")
-    GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET", "")
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
@@ -130,8 +128,6 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite://"      # in-memory, per test session
     GOOGLE_CLIENT_ID     = "test-google-client-id"
     GOOGLE_CLIENT_SECRET = "test-google-client-secret"
-    GITHUB_CLIENT_ID     = "test-github-client-id"
-    GITHUB_CLIENT_SECRET = "test-github-client-secret"
 ```
 
 - `sqlite://` (no path) creates a brand-new in-memory database for each test session. There is no file on disk and no cleanup needed.
