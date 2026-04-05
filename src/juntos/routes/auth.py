@@ -26,19 +26,7 @@ def _parse_google(token):
     }
 
 
-def _parse_github(token):
-    resp = oauth.github.get("https://api.github.com/user", token=token)
-    resp.raise_for_status()
-    d = resp.json()
-    return {
-        "provider_id": str(d["id"]),
-        "email": d.get("email"),
-        "name": d.get("name") or d.get("login"),
-        "avatar_url": d.get("avatar_url"),
-    }
-
-
-_PARSERS = {"google": _parse_google, "github": _parse_github}
+_PARSERS = {"google": _parse_google}
 
 
 @bp.route("/login")

@@ -42,21 +42,12 @@ def create_app(config_class=Config):
 
     google_client_id = app.config.get("GOOGLE_CLIENT_ID", "")
     google_client_secret = app.config.get("GOOGLE_CLIENT_SECRET", "")
-    github_client_id = app.config.get("GITHUB_CLIENT_ID", "")
-    github_client_secret = app.config.get("GITHUB_CLIENT_SECRET", "")
 
     if not app.config.get("TESTING"):
         if not google_client_id or not google_client_secret:
             warnings.warn(
                 "GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is not set. "
                 "Google OAuth login will not work until these environment "
-                "variables are configured.",
-                stacklevel=1,
-            )
-        if not github_client_id or not github_client_secret:
-            warnings.warn(
-                "GITHUB_CLIENT_ID or GITHUB_CLIENT_SECRET is not set. "
-                "GitHub OAuth login will not work until these environment "
                 "variables are configured.",
                 stacklevel=1,
             )
@@ -67,14 +58,6 @@ def create_app(config_class=Config):
         client_secret=google_client_secret,
         server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
         client_kwargs={"scope": "openid email profile"},
-    )
-    oauth.register(
-        name="github",
-        client_id=github_client_id,
-        client_secret=github_client_secret,
-        access_token_url="https://github.com/login/oauth/access_token",
-        authorize_url="https://github.com/login/oauth/authorize",
-        client_kwargs={"scope": "read:user user:email"},
     )
 
     # Optional Flask-Mail setup

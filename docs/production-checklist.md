@@ -33,11 +33,6 @@ Update both OAuth apps to allow your production domain.
 2. Open your OAuth 2.0 client
 3. Add to **Authorized redirect URIs**: `https://<your-domain>/auth/callback/google`
 
-### GitHub
-1. Go to [GitHub Developer Settings](https://github.com/settings/developers) → OAuth Apps
-2. Open your app
-3. Set **Authorization callback URL** to: `https://<your-domain>/auth/callback/github`
-
 ---
 
 ## 3. Secret Manager
@@ -52,8 +47,6 @@ Secrets required:
 | `SECRET_KEY` | Long random string: `python3 -c "import secrets; print(secrets.token_hex(32))"` |
 | `GOOGLE_CLIENT_ID` | From Google Cloud Console |
 | `GOOGLE_CLIENT_SECRET` | From Google Cloud Console |
-| `GITHUB_CLIENT_ID` | From GitHub Developer Settings |
-| `GITHUB_CLIENT_SECRET` | From GitHub Developer Settings |
 | `ANTHROPIC_API_KEY` | For Ben's Counsel chatbot |
 | `VOYAGE_API_KEY` | For RAG embeddings |
 | `STRIPE_SECRET_KEY` | Live mode key (`sk_live_...`) |
@@ -113,7 +106,6 @@ After deploying, verify each of these manually:
 
 - [ ] Homepage loads at your domain
 - [ ] Google OAuth sign-in completes and lands on homepage
-- [ ] GitHub OAuth sign-in completes and lands on homepage
 - [ ] Creating a junto works for a Free user
 - [ ] Junto limit is enforced (Free user can't create a second junto)
 - [ ] Stripe Checkout opens for Standard plan (`/account/subscription/checkout?plan=standard`)

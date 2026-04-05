@@ -8,7 +8,6 @@
     <p>Choose a provider to continue:</p>
     <div class="auth-providers">
         <a class="btn btn-primary" href="{{ url_for('auth.oauth_login', provider='google') }}">Sign in with Google</a>
-        <a class="btn btn-secondary" href="{{ url_for('auth.oauth_login', provider='github') }}">Sign in with GitHub</a>
     </div>
 </div>
 {% endblock %}

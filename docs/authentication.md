@@ -1,6 +1,6 @@
 # Authentication
 
-JuntosHQ uses **OAuth 2.0** for authentication. No passwords are stored. Users sign in via Google or GitHub; the app receives a verified identity token from the provider and creates or updates a `User` record.
+JuntosHQ uses **OAuth 2.0** for authentication. No passwords are stored. Users sign in via Google; the app receives a verified identity token from the provider and creates or updates a `User` record.
 
 The OAuth library is [Authlib](https://authlib.org/) (`authlib.integrations.flask_client`). Session state is a standard Flask signed cookie.
 
@@ -28,8 +28,6 @@ GET /auth/callback/google?code=...&state=...
 Redirect → homepage
 ```
 
-The same flow applies to GitHub with `_parse_github()` fetching user info from `https://api.github.com/user`.
-
 ---
 
 ## Routes
@@ -38,11 +36,11 @@ All auth routes live in [src/juntos/routes/auth.py](../src/juntos/routes/auth.py
 
 ### `GET /auth/login`
 
-Renders the login page (`auth/login.html`) with buttons for each provider.
+Renders the login page (`auth/login.html`) with a button for Google sign-in.
 
 ### `GET /auth/login/<provider>`
 
-Initiates the OAuth redirect. `provider` must be `"google"` or `"github"`. If the user is already signed in (`g.current_user` is set), they are redirected to the homepage instead.
+Initiates the OAuth redirect. `provider` must be `"google"`. If the user is already signed in (`g.current_user` is set), they are redirected to the homepage instead.
 
 The callback URL passed to the provider is:
 ```
@@ -55,7 +53,7 @@ Handles the provider's redirect after the user approves (or denies) the OAuth re
 
 **On success:**
 1. Exchanges the authorization code for an access token via `authorize_access_token()`.
-2. Extracts user profile data using `_parse_google()` or `_parse_github()`.
+2. Extracts user profile data using `_parse_google()`.
 3. Looks up an existing `User` by `(provider, provider_id)`.
 4. Creates a new `User` if none exists; always updates `email`, `name`, `avatar_url` from the latest token.
 5. Commits the database transaction.
@@ -79,9 +77,6 @@ First sign-in:
 
 Subsequent sign-ins (same provider):
   → User found by (provider, provider_id) → UPDATE name/email/avatar → session["user_id"] set
-
-Sign-in via different provider:
-  → Separate User row per provider (no automatic account merging)
 ```
 
 The unique constraint `uq_user_provider` on `(provider, provider_id)` guarantees that a given provider identity maps to exactly one `User` row.
@@ -111,7 +106,7 @@ If the user record no longer exists in the database (e.g. deleted), the stale `u
 
 ## OAuth Client Registration
 
-Authlib clients are registered in `create_app()` inside [src/juntos/__init__.py](../src/juntos/__init__.py):
+The Authlib client is registered in `create_app()` inside [src/juntos/__init__.py](../src/juntos/__init__.py):
 
 ```python
 oauth.register(
@@ -119,20 +114,11 @@ oauth.register(
     server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={"scope": "openid email profile"},
 )
-
-oauth.register(
-    name="github",
-    access_token_url="https://github.com/login/oauth/access_token",
-    authorize_url="https://github.com/login/oauth/authorize",
-    client_kwargs={"scope": "read:user user:email"},
-)
 ```
 
 **Google** uses the OIDC discovery endpoint (`server_metadata_url`) — Authlib fetches the provider metadata automatically and the `userinfo` claim is embedded in the token response.
 
-**GitHub** does not support OIDC, so the access token URL and authorize URL are specified explicitly. After obtaining the token, the callback route makes a separate `GET https://api.github.com/user` API call to retrieve profile data.
-
-Authlib reads `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, and `GITHUB_CLIENT_SECRET` directly from the Flask app config (set via environment variables).
+Authlib reads `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` directly from the Flask app config (set via environment variables).
 
 ---
 
@@ -152,23 +138,6 @@ return {
 }
 ```
 
-### GitHub — `_parse_github(token)`
-
-GitHub requires a separate API call:
-
-```python
-resp = oauth.github.get("https://api.github.com/user", token=token)
-d = resp.json()
-return {
-    "provider_id": str(d["id"]),
-    "email":       d.get("email"),       # None if private
-    "name":        d.get("name") or d.get("login"),
-    "avatar_url":  d.get("avatar_url"),
-}
-```
-
-GitHub users with a private email will have `email=None` in the database.
-
 ---
 
 ## Testing Without OAuth
@@ -183,4 +152,4 @@ def logged_in_client(client, user):
     return client
 ```
 
-No HTTP calls to Google or GitHub are made in tests. See [Testing](testing.md) for details.
+No HTTP calls to Google are made in tests. See [Testing](testing.md) for details.

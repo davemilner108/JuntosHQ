@@ -188,8 +188,6 @@ After deploying, note the service URL (e.g. `https://juntoshq-xxxx-uw.a.run.app`
 
 - **Google Cloud Console** → APIs & Services → Credentials → your OAuth 2.0 client:
   - Add `https://juntoshq-xxxx-uw.a.run.app/auth/callback/google` to Authorized redirect URIs.
-- **GitHub Developer Settings** → OAuth Apps → your app:
-  - Set Authorization callback URL to `https://juntoshq-xxxx-uw.a.run.app/auth/callback/github`.
 
 ### Step 8 — Map a custom domain (optional)
 

@@ -26,7 +26,7 @@ def db(app):
 @pytest.fixture
 def user(db):
     u = User(
-        provider="github",
+        provider="google",
         provider_id="test-user-123",
         email="testuser@example.com",
         name="Test User",
