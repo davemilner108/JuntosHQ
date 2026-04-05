@@ -94,8 +94,10 @@ def junto_chat(junto_id):
 @login_required
 def send_message():
     user = g.current_user
+    current_app.logger.info("CHAT_DEBUG: send_message called, user=%s", user.id)
 
     if not _has_access(user):
+        current_app.logger.info("CHAT_DEBUG: user has no access")
         flash(
             "You've used your 5 free messages with Ben Franklin. "
             "Add the chatbot to your plan to continue the conversation.",
@@ -105,24 +107,33 @@ def send_message():
 
     junto_id = request.form.get("junto_id", type=int)
     user_message = request.form.get("message", "").strip()
+    current_app.logger.info("CHAT_DEBUG: junto_id=%s, message_len=%s", junto_id, len(user_message))
 
     if not user_message:
+        current_app.logger.info("CHAT_DEBUG: empty message, redirecting")
         if junto_id:
             return redirect(url_for("chat.junto_chat", junto_id=junto_id))
         return redirect(url_for("chat.show"))
 
     # Get/create chat session
     chat_session = _get_or_create_session(user.id, junto_id)
+    current_app.logger.info("CHAT_DEBUG: chat_session id=%s", chat_session.id)
 
     # Save the user's message
-    db.session.add(
-        ChatMessage(
-            session_id=chat_session.id,
-            role="user",
-            content=user_message,
+    try:
+        db.session.add(
+            ChatMessage(
+                session_id=chat_session.id,
+                role="user",
+                content=user_message,
+            )
         )
-    )
-    db.session.commit()
+        db.session.commit()
+        current_app.logger.info("CHAT_DEBUG: user message saved successfully")
+    except Exception as e:
+        current_app.logger.error("CHAT_DEBUG: failed to save user message: %s", e)
+        raise
+
     db.session.refresh(chat_session)
 
     # Optional junto context
