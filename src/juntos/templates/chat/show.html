@@ -5,6 +5,17 @@
 {% block content %}
 <div class="chat-page">
 
+{# === FLASH MESSAGES (debug: always show) === #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-messages" style="background: #ffebee; border: 2px solid #c62828; padding: 15px; margin: 15px; border-radius: 5px;">
+  {% for category, message in messages %}
+  <p class="flash {{ category }}" style="color: #c62828; font-weight: bold; margin: 0;">{{ message }}</p>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
 {# === HEADER === #}
 <div class="chat-header">
     <div class="chat-header-inner">
