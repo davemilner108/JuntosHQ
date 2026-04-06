@@ -94,33 +94,35 @@ def junto_chat(junto_id):
 @login_required
 def send_message():
     user = g.current_user
-    current_app.logger.info("CHAT_DEBUG: send_message called, user=%s", user.id)
-
-    if not _has_access(user):
-        current_app.logger.info("CHAT_DEBUG: user has no access")
-        flash(
-            "You've used your 5 free messages with Ben Franklin. "
-            "Add the chatbot to your plan to continue the conversation.",
-            "error",
-        )
-        return redirect(url_for("main.pricing"))
-
     junto_id = request.form.get("junto_id", type=int)
-    user_message = request.form.get("message", "").strip()
-    current_app.logger.info("CHAT_DEBUG: junto_id=%s, message_len=%s", junto_id, len(user_message))
 
-    if not user_message:
-        current_app.logger.info("CHAT_DEBUG: empty message, redirecting")
+    def _redirect():
         if junto_id:
             return redirect(url_for("chat.junto_chat", junto_id=junto_id))
         return redirect(url_for("chat.show"))
 
-    # Get/create chat session
-    chat_session = _get_or_create_session(user.id, junto_id)
-    current_app.logger.info("CHAT_DEBUG: chat_session id=%s", chat_session.id)
-
-    # Save the user's message
     try:
+        current_app.logger.info("CHAT_DEBUG: send_message called, user=%s junto=%s", user.id, junto_id)
+
+        if not _has_access(user):
+            flash(
+                "You've used your 5 free messages with Ben Franklin. "
+                "Add the chatbot to your plan to continue the conversation.",
+                "error",
+            )
+            return redirect(url_for("main.pricing"))
+
+        user_message = request.form.get("message", "").strip()
+        current_app.logger.info("CHAT_DEBUG: message_len=%s", len(user_message))
+
+        if not user_message:
+            return _redirect()
+
+        # Get/create chat session
+        chat_session = _get_or_create_session(user.id, junto_id)
+        current_app.logger.info("CHAT_DEBUG: chat_session id=%s", chat_session.id)
+
+        # Save the user's message
         db.session.add(
             ChatMessage(
                 session_id=chat_session.id,
@@ -129,31 +131,26 @@ def send_message():
             )
         )
         db.session.commit()
-        current_app.logger.info("CHAT_DEBUG: user message saved successfully")
-    except Exception as e:
-        current_app.logger.error("CHAT_DEBUG: failed to save user message: %s", e)
-        raise
+        current_app.logger.info("CHAT_DEBUG: user message saved")
 
-    db.session.refresh(chat_session)
+        db.session.refresh(chat_session)
 
-    # Optional junto context
-    junto = db.session.get(Junto, junto_id) if junto_id else None
-    current_question = get_weekly_prompt()["text"] if junto else None
+        # Optional junto context
+        junto = db.session.get(Junto, junto_id) if junto_id else None
+        current_question = get_weekly_prompt()["text"] if junto else None
 
-    # Build prompt + history and call Claude
-    # Pass history without the message we just added (it's appended inside
-    # build_messages)
-    history = chat_session.messages[:-1]
-    system_prompt, messages = build_messages(
-        history=history,
-        user_message=user_message,
-        junto=junto,
-        current_question=current_question,
-    )
+        # Build prompt + history and call Claude
+        history = chat_session.messages[:-1]
+        system_prompt, messages = build_messages(
+            history=history,
+            user_message=user_message,
+            junto=junto,
+            current_question=current_question,
+        )
+        current_app.logger.info("CHAT_DEBUG: calling Anthropic")
 
-    client = anthropic_sdk.Anthropic()
-    model = current_app.config.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
-    try:
+        client = anthropic_sdk.Anthropic()
+        model = current_app.config.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
         ai_response = client.messages.create(
             model=model,
             max_tokens=512,
@@ -161,17 +158,14 @@ def send_message():
             messages=messages,
         )
         assistant_content = ai_response.content[0].text
+        current_app.logger.info("CHAT_DEBUG: Anthropic response received")
+
     except Exception as e:
-        import traceback
-        error_detail = f"{type(e).__name__}: {str(e)[:200]}"
-        current_app.logger.exception("Anthropic API call failed: %s", error_detail)
-        flash(
-            f"Ben Franklin is momentarily indisposed. Error: {error_detail}",
-            "error",
-        )
-        if junto_id:
-            return redirect(url_for("chat.junto_chat", junto_id=junto_id))
-        return redirect(url_for("chat.show"))
+        db.session.rollback()
+        error_detail = f"{type(e).__name__}: {str(e)[:300]}"
+        current_app.logger.exception("CHAT_DEBUG: send_message failed: %s", error_detail)
+        flash(f"Error: {error_detail}", "error")
+        return _redirect()
 
     # Save Ben's reply
     db.session.add(
