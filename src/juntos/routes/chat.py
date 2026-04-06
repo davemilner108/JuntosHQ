@@ -161,10 +161,12 @@ def send_message():
             messages=messages,
         )
         assistant_content = ai_response.content[0].text
-    except Exception:
-        current_app.logger.exception("Anthropic API call failed")
+    except Exception as e:
+        import traceback
+        error_detail = f"{type(e).__name__}: {str(e)[:200]}"
+        current_app.logger.exception("Anthropic API call failed: %s", error_detail)
         flash(
-            "Ben Franklin is momentarily indisposed. Please try again shortly.",
+            f"Ben Franklin is momentarily indisposed. Error: {error_detail}",
             "error",
         )
         if junto_id:
