@@ -2,6 +2,8 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from sqlalchemy.pool import StaticPool
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 _DEFAULT_SECRET_KEY = "dev-secret-change-in-production"
@@ -77,6 +79,13 @@ class TestConfig(Config):
     TESTING = True
     SECRET_KEY = "test-secret-key"
     SQLALCHEMY_DATABASE_URI = "sqlite://"
+    # StaticPool shares one in-memory connection across the test session;
+    # pool_size / max_overflow / pool_timeout are PostgreSQL-only options and
+    # must be omitted for SQLite.
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "connect_args": {"check_same_thread": False},
+        "poolclass": StaticPool,
+    }
     GOOGLE_CLIENT_ID = "test-google-client-id"
     GOOGLE_CLIENT_SECRET = "test-google-client-secret"
     MAIL_SUPPRESS_SEND = True

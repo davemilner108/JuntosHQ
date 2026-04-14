@@ -4,7 +4,7 @@ from juntos.models import Junto, SubscriptionTier
 def test_index_empty(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert b"No juntos yet" in response.data
+    assert b"Sign in to get started" in response.data
 
 
 def test_about(client):
@@ -27,7 +27,7 @@ def test_index_with_junto(client, db):
 def test_index_shows_create_button_when_under_limit(logged_in_client):
     response = logged_in_client.get("/")
     assert response.status_code == 200
-    assert b"Create Junto" in response.data
+    assert b"Start your Junto" in response.data
 
 
 def test_index_shows_upgrade_prompt_when_at_limit(logged_in_client, db, user):
@@ -53,4 +53,4 @@ def test_index_shows_create_button_standard_user_under_limit(logged_in_client, d
 
     response = logged_in_client.get("/")
     assert response.status_code == 200
-    assert b"Create Junto" in response.data
+    assert b"New Junto" in response.data

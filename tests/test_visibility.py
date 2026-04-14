@@ -203,12 +203,12 @@ def test_edit_junto_toggle_public(logged_in_client, db, junto):
 
 def test_anonymous_no_create_button(client, db, user, junto):
     resp = client.get("/")
-    assert b"Create Junto" not in resp.data
+    assert b"Start your Junto" not in resp.data
 
 
 def test_logged_in_sees_create_button(logged_in_client):
     resp = logged_in_client.get("/")
-    assert b"Create Junto" in resp.data
+    assert b"Start your Junto" in resp.data
 
 
 # ── Commitment Limits ────────────────────────────────────────────

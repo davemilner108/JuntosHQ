@@ -9,6 +9,7 @@ from juntos.models import (
     Member,
     MemberInvite,
     MemberStatus,
+    SubscriptionTier,
     User,
     db,
 )
@@ -57,7 +58,9 @@ def invite(db, junto, member):
 # ── Create Invite ─────────────────────────────────────────────────
 
 
-def test_create_invite_generates_token(logged_in_client, junto, member):
+def test_create_invite_generates_token(logged_in_client, db, user, junto, member):
+    user.subscription_tier = SubscriptionTier.STANDARD
+    db.session.commit()
     resp = logged_in_client.post(
         f"/juntos/{junto.id}/invites",
         data={"member_id": member.id},
@@ -70,7 +73,9 @@ def test_create_invite_generates_token(logged_in_client, junto, member):
     assert inv.accepted_at is None
 
 
-def test_create_invite_with_email(logged_in_client, junto, member):
+def test_create_invite_with_email(logged_in_client, db, user, junto, member):
+    user.subscription_tier = SubscriptionTier.STANDARD
+    db.session.commit()
     resp = logged_in_client.post(
         f"/juntos/{junto.id}/invites",
         data={"member_id": member.id, "email": "alice@example.com"},
@@ -84,7 +89,9 @@ def test_create_invite_with_email(logged_in_client, junto, member):
     assert m.email == "alice@example.com"
 
 
-def test_create_invite_sets_status_invited(logged_in_client, junto, member):
+def test_create_invite_sets_status_invited(logged_in_client, db, user, junto, member):
+    user.subscription_tier = SubscriptionTier.STANDARD
+    db.session.commit()
     logged_in_client.post(
         f"/juntos/{junto.id}/invites",
         data={"member_id": member.id},
@@ -108,8 +115,9 @@ def test_create_invite_non_owner_403(client, db, junto, member):
 
 
 def test_create_invite_already_linked_member(
-    logged_in_client, db, junto, member, other_user
+    logged_in_client, db, user, junto, member, other_user
 ):
+    user.subscription_tier = SubscriptionTier.STANDARD
     member.user_id = other_user.id
     db.session.commit()
     resp = logged_in_client.post(
@@ -122,6 +130,7 @@ def test_create_invite_already_linked_member(
 
 
 def test_create_invite_wrong_junto(logged_in_client, db, user, member):
+    user.subscription_tier = SubscriptionTier.STANDARD
     other_junto = Junto(name="Other", owner_id=user.id)
     db.session.add(other_junto)
     db.session.commit()
@@ -163,7 +172,6 @@ def test_show_invite_not_logged_in_shows_oauth(client, invite):
     resp = client.get(f"/invite/{invite.token}")
     assert resp.status_code == 200
     assert b"Sign in with Google" in resp.data
-    assert b"Sign in with GitHub" in resp.data
 
 
 def test_show_invite_already_accepted(client, db, invite):

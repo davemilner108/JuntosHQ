@@ -34,6 +34,7 @@ juntos = "juntos.cli:main"
 [dependency-groups]
 dev = [
     "pytest>=8.0",
+    "pytest-html>=4.0",
     "ruff>=0.9",
 ]
 
@@ -51,6 +52,7 @@ select = ["E", "F", "I", "UP"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--html=test-results/report.html --self-contained-html"
 
 [build-system]
 requires = ["hatchling"]
