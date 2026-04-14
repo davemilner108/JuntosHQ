@@ -553,7 +553,7 @@ def test_show_page_includes_meetings_section(logged_in_client, db, user):
 def test_show_page_owner_sees_log_button(logged_in_client, db, user):
     junto, _ = _create_junto_with_members(db, user)
     response = logged_in_client.get(f"/juntos/{junto.id}")
-    assert b"Log a meeting" in response.data
+    assert b"Log a Meeting" in response.data
 
 
 def test_show_page_non_owner_no_log_button(client, db):
@@ -567,4 +567,4 @@ def test_show_page_non_owner_no_log_button(client, db):
 
     response = client.get(f"/juntos/{junto.id}")
     assert response.status_code == 200
-    assert b"Log a meeting" not in response.data
+    assert b"Log a Meeting" not in response.data
