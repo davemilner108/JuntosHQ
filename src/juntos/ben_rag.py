@@ -61,27 +61,26 @@ def search(query: str, top_k: int = 5) -> list[dict]:
     try:
         from juntos.models import db
 
-        with db.engine.connect() as conn:
-            # Inline the embedding literal — it's pure floats so no injection risk.
-            # SQLAlchemy's :name syntax clashes with psycopg's ::vector cast.
-            sql = text(
-                f"""
-                SELECT content, source,
-                       1 - (embedding <=> '{emb_literal}'::vector) AS similarity
-                FROM franklin_passages
-                ORDER BY embedding <=> '{emb_literal}'::vector
-                LIMIT :k
-                """
-            )
-            result = conn.execute(sql, {"k": top_k})
-            return [
-                {
-                    "text": row.content,
-                    "source": row.source,
-                    "similarity": float(row.similarity),
-                }
-                for row in result
-            ]
+        # Use the request-scoped session rather than opening a second engine
+        # connection — avoids pool exhaustion and connection-state bleed-over.
+        sql = text(
+            f"""
+            SELECT content, source,
+                   1 - (embedding <=> '{emb_literal}'::vector) AS similarity
+            FROM franklin_passages
+            ORDER BY embedding <=> '{emb_literal}'::vector
+            LIMIT :k
+            """
+        )
+        result = db.session.execute(sql, {"k": top_k})
+        return [
+            {
+                "text": row.content,
+                "source": row.source,
+                "similarity": float(row.similarity),
+            }
+            for row in result
+        ]
     except Exception as exc:
         logger.warning("pgvector search failed: %s", exc)
         return []
