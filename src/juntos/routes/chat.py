@@ -1,6 +1,7 @@
 """Chat blueprint: Ben's Counsel AI chatbot."""
 
-import anthropic as anthropic_sdk
+from google import genai
+from google.genai import types as genai_types
 from flask import (
     Blueprint,
     current_app,
@@ -144,15 +145,25 @@ def send_message():
             current_question=current_question,
         )
 
-        client = anthropic_sdk.Anthropic()
-        model = current_app.config.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
-        ai_response = client.messages.create(
-            model=model,
-            max_tokens=512,
-            system=system_prompt,
-            messages=messages,
+        client = genai.Client(api_key=current_app.config["GEMINI_API_KEY"])
+        model_name = current_app.config.get("GEMINI_MODEL", "gemini-2.0-flash-lite")
+        # Gemini uses "model" for the assistant role
+        gemini_messages = [
+            genai_types.Content(
+                role="model" if m["role"] == "assistant" else "user",
+                parts=[genai_types.Part(text=m["content"])],
+            )
+            for m in messages
+        ]
+        response = client.models.generate_content(
+            model=model_name,
+            contents=gemini_messages,
+            config=genai_types.GenerateContentConfig(
+                system_instruction=system_prompt,
+                max_output_tokens=512,
+            ),
         )
-        assistant_content = ai_response.content[0].text
+        assistant_content = response.text
 
     except Exception:
         db.session.rollback()

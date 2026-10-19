@@ -63,7 +63,8 @@ class Config:
     STRIPE_PRICE_CHATBOT = os.environ.get("STRIPE_PRICE_CHATBOT", "")
 
     # AI model configuration
-    ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6")
+    GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+    GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
     # Beta invite / coupon gating
     INVITE_REQUIRED = os.environ.get("INVITE_REQUIRED", "true").lower() == "true"

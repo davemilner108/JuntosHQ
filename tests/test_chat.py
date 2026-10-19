@@ -123,17 +123,20 @@ def test_send_message_no_access_redirects_to_pricing(logged_in_client, db, user)
     assert "/pricing" in resp.headers["Location"]
 
 
+def _mock_genai(text: str):
+    """Context manager: patches genai in chat.py and returns a fake response."""
+    mock = MagicMock()
+    mock.Client.return_value.models.generate_content.return_value.text = text
+    return patch("juntos.routes.chat.genai", mock)
+
+
 def test_send_message_success(logged_in_client, db, user):
     """Successful call saves user+assistant messages and increments counter."""
-    mock_response = MagicMock()
-    mock_response.content = [MagicMock(text="Virtue is its own reward.")]
-
     with patch(
         "juntos.routes.chat.build_messages",
         return_value=("sys", [{"role": "user", "content": "Hello"}]),
     ):
-        with patch("juntos.routes.chat.anthropic_sdk.Anthropic") as mock_cls:
-            mock_cls.return_value.messages.create.return_value = mock_response
+        with _mock_genai("Virtue is its own reward."):
             resp = logged_in_client.post("/chat/message", data={"message": "Hello Ben"})
 
     assert resp.status_code == 302
@@ -148,12 +151,8 @@ def test_send_message_success(logged_in_client, db, user):
 
 def test_send_message_saves_correct_content(logged_in_client, db, user):
     """Assistant reply text is stored verbatim in ChatMessage."""
-    mock_response = MagicMock()
-    mock_response.content = [MagicMock(text="Industry need not wish.")]
-
     with patch("juntos.routes.chat.build_messages", return_value=("sys", [])):
-        with patch("juntos.routes.chat.anthropic_sdk.Anthropic") as mock_cls:
-            mock_cls.return_value.messages.create.return_value = mock_response
+        with _mock_genai("Industry need not wish."):
             logged_in_client.post("/chat/message", data={"message": "Work hard?"})
 
     assistant_msgs = (
@@ -167,12 +166,8 @@ def test_send_message_does_not_increment_for_addon_users(logged_in_client, db, u
     user.chatbot_addon = True
     db.session.commit()
 
-    mock_response = MagicMock()
-    mock_response.content = [MagicMock(text="A penny saved is a penny earned.")]
-
     with patch("juntos.routes.chat.build_messages", return_value=("sys", [])):
-        with patch("juntos.routes.chat.anthropic_sdk.Anthropic") as mock_cls:
-            mock_cls.return_value.messages.create.return_value = mock_response
+        with _mock_genai("A penny saved is a penny earned."):
             logged_in_client.post("/chat/message", data={"message": "Hello"})
 
     db.session.refresh(user)
@@ -180,10 +175,11 @@ def test_send_message_does_not_increment_for_addon_users(logged_in_client, db, u
 
 
 def test_send_message_api_error_shows_flash(logged_in_client):
-    """Anthropic API failure should redirect with a flash error message."""
+    """Gemini API failure should redirect with a flash error message."""
+    mock = MagicMock()
+    mock.Client.return_value.models.generate_content.side_effect = Exception("API timeout")
     with patch("juntos.routes.chat.build_messages", return_value=("sys", [])):
-        with patch("juntos.routes.chat.anthropic_sdk.Anthropic") as mock_cls:
-            mock_cls.return_value.messages.create.side_effect = Exception("API timeout")
+        with patch("juntos.routes.chat.genai", mock):
             resp = logged_in_client.post(
                 "/chat/message",
                 data={"message": "Hello"},
@@ -196,9 +192,10 @@ def test_send_message_api_error_shows_flash(logged_in_client):
 
 def test_send_message_api_error_rolls_back_db(logged_in_client, db, user):
     """On API error the user message should still be saved (it's committed before the call)."""
+    mock = MagicMock()
+    mock.Client.return_value.models.generate_content.side_effect = Exception("boom")
     with patch("juntos.routes.chat.build_messages", return_value=("sys", [])):
-        with patch("juntos.routes.chat.anthropic_sdk.Anthropic") as mock_cls:
-            mock_cls.return_value.messages.create.side_effect = Exception("boom")
+        with patch("juntos.routes.chat.genai", mock):
             logged_in_client.post("/chat/message", data={"message": "Before error"})
 
     # The user message was committed before the API call, so it persists
@@ -215,12 +212,8 @@ def test_send_message_junto_context_redirects_to_junto(logged_in_client, db, use
     db.session.add(j)
     db.session.commit()
 
-    mock_response = MagicMock()
-    mock_response.content = [MagicMock(text="Industry need not wish.")]
-
     with patch("juntos.routes.chat.build_messages", return_value=("sys", [])):
-        with patch("juntos.routes.chat.anthropic_sdk.Anthropic") as mock_cls:
-            mock_cls.return_value.messages.create.return_value = mock_response
+        with _mock_genai("Industry need not wish."):
             resp = logged_in_client.post(
                 "/chat/message",
                 data={"message": "Hello Ben", "junto_id": str(j.id)},
