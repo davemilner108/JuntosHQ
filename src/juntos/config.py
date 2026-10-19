@@ -63,7 +63,7 @@ class Config:
     STRIPE_PRICE_CHATBOT = os.environ.get("STRIPE_PRICE_CHATBOT", "")
 
     # AI model configuration
-    ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+    ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 
     # Beta invite / coupon gating
     INVITE_REQUIRED = os.environ.get("INVITE_REQUIRED", "true").lower() == "true"

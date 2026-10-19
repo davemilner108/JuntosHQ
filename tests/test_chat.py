@@ -191,7 +191,7 @@ def test_send_message_api_error_shows_flash(logged_in_client):
             )
 
     assert resp.status_code == 200
-    assert b"Error" in resp.data
+    assert b"couldn" in resp.data
 
 
 def test_send_message_api_error_rolls_back_db(logged_in_client, db, user):
