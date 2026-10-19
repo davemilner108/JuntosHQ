@@ -102,7 +102,6 @@ def send_message():
         return redirect(url_for("chat.show"))
 
     try:
-        current_app.logger.info("CHAT_DEBUG: send_message called, user=%s junto=%s", user.id, junto_id)
 
         if not _has_access(user):
             flash(
@@ -113,14 +112,12 @@ def send_message():
             return redirect(url_for("main.pricing"))
 
         user_message = request.form.get("message", "").strip()
-        current_app.logger.info("CHAT_DEBUG: message_len=%s", len(user_message))
 
         if not user_message:
             return _redirect()
 
         # Get/create chat session
         chat_session = _get_or_create_session(user.id, junto_id)
-        current_app.logger.info("CHAT_DEBUG: chat_session id=%s", chat_session.id)
 
         # Save the user's message
         db.session.add(
@@ -131,7 +128,6 @@ def send_message():
             )
         )
         db.session.commit()
-        current_app.logger.info("CHAT_DEBUG: user message saved")
 
         db.session.refresh(chat_session)
 
@@ -147,7 +143,6 @@ def send_message():
             junto=junto,
             current_question=current_question,
         )
-        current_app.logger.info("CHAT_DEBUG: calling Anthropic")
 
         client = anthropic_sdk.Anthropic()
         model = current_app.config.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
@@ -158,13 +153,11 @@ def send_message():
             messages=messages,
         )
         assistant_content = ai_response.content[0].text
-        current_app.logger.info("CHAT_DEBUG: Anthropic response received")
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        error_detail = f"{type(e).__name__}: {str(e)[:300]}"
-        current_app.logger.exception("CHAT_DEBUG: send_message failed: %s", error_detail)
-        flash(f"Error: {error_detail}", "error")
+        current_app.logger.exception("send_message failed")
+        flash("Sorry, Ben Franklin couldn't reply just now. Please try again.", "error")
         return _redirect()
 
     # Save Ben's reply
